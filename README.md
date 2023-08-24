@@ -1,0 +1,2 @@
+# osd
+cloud deployments
