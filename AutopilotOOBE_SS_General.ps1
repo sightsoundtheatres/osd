@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param()
-#region Initialize
+#region Initialize - testing
 
 #Start the Transcript
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-OSDCloud.log"
