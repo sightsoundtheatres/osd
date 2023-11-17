@@ -34,7 +34,8 @@ $AutopilotOOBEJson = @'
                         ],   
     "AddToGroup": "",
     "AddToGroupOptions": [
-                              "Autopilot_Devices-GeneralUsers"
+                              "Autopilot_Devices-GeneralUsers",
+                              "Autopilot_Devices-Box_CC"
                          ],
     "AssignedComputerName": "",                     
     "AssignedComputerNameExample": "XXWIN-EID-XXXX",
