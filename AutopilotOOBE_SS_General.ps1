@@ -11,8 +11,8 @@ $null = Start-Transcript -Path (Join-Path "$env:SystemRoot\Temp" $Transcript) -E
 #   oobeCloud Settings
 #=================================================
 $Global:oobeCloud = @{
-    oobeUpdateDrivers = $false
-    oobeUpdateWindows = $false
+    oobeUpdateDrivers = $true
+    oobeUpdateWindows = $true
     oobeSetDisplay = $false
     oobeSetDateTime = $true
     oobeRemoveAppxPackage = $true
