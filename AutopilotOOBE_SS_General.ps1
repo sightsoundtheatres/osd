@@ -5,7 +5,7 @@ param()
 #Start the Transcript
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-OSDCloud.log"
 $null = Start-Transcript -Path (Join-Path "$env:SystemRoot\Temp" $Transcript) -ErrorAction Ignore
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 
 #=================================================
 #   oobeCloud Settings
@@ -98,6 +98,7 @@ function Step-oobePackageManagement {
         }
         else {
             Write-Host -ForegroundColor Cyan 'Install-Package PackageManagement,PowerShellGet'
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
             Install-Package -Name PowerShellGet -MinimumVersion 2.2.5 -Force -Confirm:$false -Source PSGallery | Out-Null
     
             Write-Host -ForegroundColor Cyan 'Import-Module PackageManagement,PowerShellGet'
