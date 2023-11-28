@@ -98,7 +98,6 @@ function Step-oobePackageManagement {
         }
         else {
             Write-Host -ForegroundColor Cyan 'Install-Package PackageManagement,PowerShellGet'
-            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
             Install-Package -Name PowerShellGet -MinimumVersion 2.2.5 -Force -Confirm:$false -Source PSGallery | Out-Null
     
             Write-Host -ForegroundColor Cyan 'Import-Module PackageManagement,PowerShellGet'
