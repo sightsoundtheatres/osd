@@ -93,9 +93,6 @@ function Step-oobePackageManagement {
     [CmdletBinding()]
     param ()
     if ($env:UserName -eq 'defaultuser0') {
-        [Net.ServicePointManager]::SecurityProtocol =
-        [Net.ServicePointManager]::SecurityProtocol -bor
-        [Net.SecurityProtocolType]::Tls12
         if (Get-Module -Name PowerShellGet -ListAvailable | Where-Object {$_.Version -ge '2.2.5'}) {
             Write-Host -ForegroundColor Cyan 'PowerShellGet 2.2.5 or greater is installed'
         }
