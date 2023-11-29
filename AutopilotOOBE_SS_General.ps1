@@ -374,8 +374,8 @@ function Step-oobeRestartComputer {
 
 # Execute functions
 Step-oobeExecutionPolicy
-Step-oobePackageManagement
 Step-oobeTrustPSGallery
+Step-oobePackageManagement
 Step-oobeUpdateDrivers
 Step-oobeUpdateWindows
 Step-RestartConfirmation
