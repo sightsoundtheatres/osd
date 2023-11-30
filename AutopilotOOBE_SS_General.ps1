@@ -398,9 +398,9 @@ function Step-oobeRestartComputer {
 
 # Execute functions
 Step-oobeExecutionPolicy
-Step-oobeTrustPSGallery
 Step-installCiscoRootCert
 Step-oobePackageManagement
+Step-oobeTrustPSGallery
 Step-oobeUpdateDrivers
 Step-oobeUpdateWindows
 Step-RestartConfirmation
