@@ -59,24 +59,37 @@ function Step-installCiscoRootCert {
     [CmdletBinding()]
     param ()
     if (($env:UserName -eq 'defaultuser0') -and ($Global:oobeCloud.oobeCiscoRootCert -eq $true)) {
-        Write-Host -ForegroundColor Cyan 'Installing Cisco Umbrella Root Certificate'
+        # Define the certificate URL and file
         $certUrl = "https://ssintunedata.blob.core.windows.net/cert/Cisco_Umbrella_Root_CA.cer"
         $certFile = "C:\OSDCloud\Temp\Cisco_Umbrella_Root_CA.cer"
-        Invoke-WebRequest -Uri $certUrl -OutFile $certFile
 
-        # Load the certificate and add it to the root store
-        $Cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
-        $Cert.Import($certFile)
-        $Store = New-Object System.Security.Cryptography.X509Certificates.X509Store(
-            "Root", "LocalMachine")
-        $Store.Open("ReadWrite")
-        $Store.Add($Cert)
-        $Store.Close()
+        # Check if the certificate is already installed by the issuer name
+        $certExists = Get-ChildItem -Path 'Cert:\LocalMachine\Root\' | Where-Object {$_.Issuer -like "*Cisco Umbrella*"}
 
-        # Delete the downloaded file
-        Remove-Item $certFile -Force
+        if ($certExists) {
+            # Do nothing
+            Write-Host -ForegroundColor Green "The Cisco Umbrella certificate is already installed"
+        }
+        else {
+            # Download and install the certificate
+            Write-Host -ForegroundColor Cyan "Installing Cisco Umbrella root certificate"
+            Invoke-WebRequest -Uri $certUrl -OutFile $certFile
+
+            # Load the certificate and add it to the root store
+            $Cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+            $Cert.Import($certFile)
+            $Store = New-Object System.Security.Cryptography.X509Certificates.X509Store(
+                "Root", "LocalMachine")
+            $Store.Open("ReadWrite")
+            $Store.Add($Cert)
+            $Store.Close()
+
+            # Delete the downloaded file
+            Remove-Item $certFile -Force
+        }
     }
 }
+
 
 function Step-oobeSetDisplay {
     [CmdletBinding()]
