@@ -403,9 +403,7 @@ function Step-oobeRestartComputer {
         Restart-Computer
     }
 }
-    
 
-#endregion
 
 # Execute functions
 Step-oobeExecutionPolicy
