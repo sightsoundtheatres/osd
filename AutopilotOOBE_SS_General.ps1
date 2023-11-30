@@ -59,6 +59,7 @@ function Step-installCiscoRootCert {
     [CmdletBinding()]
     param ()
     if (($env:UserName -eq 'defaultuser0') -and ($Global:oobeCloud.oobeCiscoRootCert -eq $true)) {
+        Write-Host -ForegroundColor Cyan 'Installing Cisco Umbrella Root Certificate'
         $certUrl = "https://ssintunedata.blob.core.windows.net/cert/Cisco_Umbrella_Root_CA.cer"
         $certFile = "C:\OSDCloud\Temp\Cisco_Umbrella_Root_CA.cer"
         Invoke-WebRequest -Uri $certUrl -OutFile $certFile
