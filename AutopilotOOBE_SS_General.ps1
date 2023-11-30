@@ -89,8 +89,6 @@ function Step-installCiscoRootCert {
         }
     }
 }
-
-
 function Step-oobeSetDisplay {
     [CmdletBinding()]
     param ()
