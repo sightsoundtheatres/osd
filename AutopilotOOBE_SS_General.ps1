@@ -12,14 +12,15 @@ $null = Start-Transcript -Path (Join-Path "$env:SystemRoot\Temp" $Transcript) -E
 #=================================================
 $Global:oobeCloud = @{
     oobeCiscoRootCert = $true
-    oobeUpdateDrivers = $true
-    oobeUpdateWindows = $true
+    oobeUpdateDrivers = $false
+    oobeUpdateWindows = $false
     oobeSetDisplay = $false
     oobeSetDateTime = $true
     oobeRemoveAppxPackage = $true
     oobeRemoveAppxPackageName = 'Microsoft.BingNews','Microsoft.BingWeather','Microsoft.GamingApp','Microsoft.GetHelp','Microsoft.Getstarted','Microsoft.MicrosoftSolitaireCollection','Microsoft.People','microsoft.windowscommunicationsapps','Microsoft.WindowsFeedbackHub','Microsoft.WindowsMaps','Microsoft.Xbox.TCUI','Microsoft.XboxGameOverlay','Microsoft.XboxGamingOverlay','Microsoft.XboxIdentityProvider','Microsoft.XboxSpeechToTextOverlay','Microsoft.ZuneMusic','Microsoft.ZuneVideo','Clipchamp.Clipchamp','Microsoft.YourPhone','MicrosoftTeams'
     oobeSetUserRegSettings = $true
     oobeSetDeviceRegSettings = $true
+    oobeWallpaper = $true
     oobeRegisterAutopilot = $true
     oobeCreateLocalUser = $true
     oobeExecutionPolicyRestricted = $true
@@ -317,7 +318,10 @@ function Step-oobeSetUserRegSettings {
     REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "AutoCheckSelect" /t REG_DWORD /d 1 /f
 
     Write-host -ForegroundColor DarkCyan "Disable Chat on Taskbar"
-    REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f    
+    REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f   
+    
+    Write-host -ForegroundColor DarkCyan "Disable Windows Spotlight on lockscreen"
+    REG ADD "HKU\Default\Software\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsSpotlightFeatures" /t REG_DWORD /d 1 /f
 
     Write-Host -ForegroundColor DarkCyan "Unloading the default user registry hive"
     REG UNLOAD "HKU\Default"
@@ -404,12 +408,22 @@ function Step-oobeRestartComputer {
     }
 }
 
+function Step-oobeWallpaper {
+    [CmdletBinding()]
+    param ()
+    if (($env:UserName -eq 'defaultuser0') -and ($Global:oobeCloud.oobeWallpaper -eq $true)) {
+        Write-Host -ForegroundColor Cyan 'Replacing the default wallpaer and lockscreen images'
+        Invoke-Expression (Invoke-Restmethod 'https://raw.githubusercontent.com/sightsoundtheatres/osd/main/set-WindowsDesktopWallpaper.ps1')        
+    }
+}
+
 
 # Execute functions
 Step-oobeExecutionPolicy
 Step-installCiscoRootCert
 Step-oobePackageManagement
 Step-oobeTrustPSGallery
+Step-oobeWallpaper
 Step-oobeUpdateDrivers
 Step-oobeUpdateWindows
 Step-RestartConfirmation
