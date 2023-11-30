@@ -11,6 +11,7 @@ $null = Start-Transcript -Path (Join-Path "$env:SystemRoot\Temp" $Transcript) -E
 #   oobeCloud Settings
 #=================================================
 $Global:oobeCloud = @{
+    oobeCiscoRootCert = $true
     oobeUpdateDrivers = $true
     oobeUpdateWindows = $true
     oobeSetDisplay = $false
@@ -53,6 +54,28 @@ $AutopilotOOBEJson = @'
     "Title": "Sight & Sound Autopilot Registration"
 }
 '@
+
+function Step-installCiscoRootCert {
+    [CmdletBinding()]
+    param ()
+    if (($env:UserName -eq 'defaultuser0') -and ($Global:oobeCloud.oobeCiscoRootCert -eq $true)) {
+        $certUrl = "https://ssintunedata.blob.core.windows.net/cert/Cisco_Umbrella_Root_CA.cer"
+        $certFile = "C:\OSDCloud\Temp\Cisco_Umbrella_Root_CA.cer"
+        Invoke-WebRequest -Uri $certUrl -OutFile $certFile
+
+        # Load the certificate and add it to the root store
+        $Cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+        $Cert.Import($certFile)
+        $Store = New-Object System.Security.Cryptography.X509Certificates.X509Store(
+            "Root", "LocalMachine")
+        $Store.Open("ReadWrite")
+        $Store.Add($Cert)
+        $Store.Close()
+
+        # Delete the downloaded file
+        Remove-Item $certFile -Force
+    }
+}
 
 function Step-oobeSetDisplay {
     [CmdletBinding()]
@@ -375,6 +398,7 @@ function Step-oobeRestartComputer {
 # Execute functions
 Step-oobeExecutionPolicy
 Step-oobeTrustPSGallery
+Step-installCiscoRootCert
 Step-oobePackageManagement
 Step-oobeUpdateDrivers
 Step-oobeUpdateWindows
