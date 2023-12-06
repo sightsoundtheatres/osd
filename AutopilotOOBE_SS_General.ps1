@@ -11,7 +11,7 @@ $null = Start-Transcript -Path (Join-Path "$env:SystemRoot\Temp" $Transcript) -E
 #   oobeCloud Settings
 #=================================================
 $Global:oobeCloud = @{
-    oobeCiscoRootCert = $true
+    oobeCiscoRootCert = $false
     oobeUpdateDrivers = $true
     oobeUpdateWindows = $true
     oobeSetDisplay = $false
