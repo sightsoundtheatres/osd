@@ -190,10 +190,22 @@ function Step-oobeRegisterAutopilot {
         [System.String]
         $Command
     )
+    
     if (($env:UserName -eq 'defaultuser0') -and ($Global:oobeCloud.oobeRegisterAutopilot -eq $true)) {
-        Step-oobeInstallModuleAutopilotOOBE
         
-        Write-Host -ForegroundColor Cyan 'Registering Device in Autopilot using AutopilotOOBE ' -NoNewline        
+        # Display a pop-up asking for user confirmation
+        $caption = "Register Device with Autopilot?"
+        $message = "Would you like to register this device with Autopilot?"
+        $options = [System.Windows.Forms.MessageBoxButtons]::YesNo
+        $result = [System.Windows.Forms.MessageBox]::Show($message, $caption, $options, [System.Windows.Forms.MessageBoxIcon]::Question)
+        
+        if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
+            Write-Host -ForegroundColor Cyan 'Registering Device in Autopilot using AutopilotOOBE'
+            Step-oobeInstallModuleAutopilotOOBE
+        }
+        else {
+            Write-Host -ForegroundColor Yellow 'Device registration with Autopilot skipped.'
+        }
     }
 }
 function Step-oobeRemoveAppxPackage {
