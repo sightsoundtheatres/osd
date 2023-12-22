@@ -80,8 +80,7 @@ function Step-installCiscoRootCert {
             # Load the certificate and add it to the root store
             $Cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
             $Cert.Import($certFile)
-            $Store = New-Object System.Security.Cryptography.X509Certificates.X509Store(
-                "Root", "LocalMachine")
+            $Store = New-Object System.Security.Cryptography.X509Certificates.X509Store("Root", "LocalMachine")
             $Store.Open("ReadWrite")
             $Store.Add($Cert)
             $Store.Close()
@@ -403,10 +402,11 @@ function Step-windowsWallpaper {
     [CmdletBinding()]
     param ()
     if (($env:UserName -eq 'defaultuser0') -and ($Global:oobeCloud.oobeSetWindowsWallpaper -eq $true)) {
+        Write-Host -ForegroundColor Cyan "Replacing default wallpaper and lockscreen images..."
         # Download the script
         Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/set-WindowsDesktopWallpaper.ps1 -OutFile C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1
         # Execute the script
-        Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1"
+        & C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1
         # Remove script
         Remove-Item -Path C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1
     }
