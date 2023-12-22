@@ -426,6 +426,8 @@ function Step-oobeRestartComputer {
     param ()
     if (($env:UserName -eq 'defaultuser0') -and ($Global:oobeCloud.oobeRestartComputer -eq $true)) {
         Write-Host -ForegroundColor Cyan 'Build Complete!'
+        Write-Host -ForegroundColor Cyan 'Cleaning up... Removing c:\OSDCloud directory'
+        Remove-Item -LiteralPath "c:\osdcloud" -Force -Recurse
         Write-Warning 'Device will restart in 30 seconds.  Press Ctrl + C to cancel'
         Stop-Transcript
         Start-Sleep -Seconds 30
