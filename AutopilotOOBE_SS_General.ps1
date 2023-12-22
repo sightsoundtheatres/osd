@@ -346,7 +346,7 @@ function Step-oobeSetDeviceRegSettings {
 
     Write-host -ForegroundColor DarkCyan "Disable IPv6 on all adapters"
 
-        Set-NetAdapterBinding -Name "*" -ComponentID ms_tcpip6 -Enabled$false
+        Set-NetAdapterBinding -Name "*" -ComponentID ms_tcpip6 -Enabled $false
 
     Write-host -ForegroundColor DarkCyan "Disable firstlogon animation"
 
