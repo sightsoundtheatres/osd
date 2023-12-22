@@ -20,6 +20,7 @@ $Global:oobeCloud = @{
     oobeRemoveAppxPackageName = 'Microsoft.BingNews','Microsoft.BingWeather','Microsoft.GamingApp','Microsoft.GetHelp','Microsoft.Getstarted','Microsoft.MicrosoftSolitaireCollection','Microsoft.People','microsoft.windowscommunicationsapps','Microsoft.WindowsFeedbackHub','Microsoft.WindowsMaps','Microsoft.Xbox.TCUI','Microsoft.XboxGameOverlay','Microsoft.XboxGamingOverlay','Microsoft.XboxIdentityProvider','Microsoft.XboxSpeechToTextOverlay','Microsoft.ZuneMusic','Microsoft.ZuneVideo','Clipchamp.Clipchamp','Microsoft.YourPhone','MicrosoftTeams'
     oobeSetUserRegSettings = $true
     oobeSetDeviceRegSettings = $true
+    oobeSetWindowsWallpaper = $true
     oobeRegisterAutopilot = $true
     oobeCreateLocalUser = $true
     oobeExecutionPolicyRestricted = $true
@@ -398,6 +399,18 @@ function Step-oobeCreateLocalUser {
             Add-LocalGroupMember -Group "Administrators" -Member $Username
     }
 }
+function Step-windowsWallpaper {
+    [CmdletBinding()]
+    param ()
+    if (($env:UserName -eq 'defaultuser0') -and ($Global:oobeCloud.oobeSetWindowsWallpaper -eq $true)) {
+        # Download the script
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/set-WindowsDesktopWallpaper.ps1 -OutFile C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1
+        # Execute the script
+        Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1"
+        # Remove script
+        Remove-Item -Path C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1
+    }
+}
 function Step-oobeExecutionPolicyRestricted {
     [CmdletBinding()]
     param ()
@@ -434,6 +447,7 @@ Step-oobeSetDateTime
 Step-oobeRemoveAppxPackage
 Step-oobeSetUserRegSettings
 Step-oobeSetDeviceRegSettings
+Step-windowsWallpaper
 Step-oobeRegisterAutopilot
 Step-oobeCreateLocalUser
 Step-oobeExecutionPolicyRestricted
