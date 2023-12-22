@@ -406,7 +406,7 @@ function Step-windowsWallpaper {
         # Download the script
         Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/set-WindowsDesktopWallpaper.ps1 -OutFile C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1
         # Execute the script
-        & C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1
+        & C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1 -ErrorAction SilentlyContinue
         # Remove script
         Remove-Item -Path C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1
     }
