@@ -24,6 +24,7 @@
     Version history:
     1.0.0 - (2020-06-04) Script created
     1.1.0 - (2020-11-26) Added support for 4K wallpapers
+    1.2.0 - (2023-12-21) Added support for lockscreen pictures - Matthew Miles
 #>
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
