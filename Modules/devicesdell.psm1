@@ -94,26 +94,20 @@ Function osdcloud-InstallDCU {
                 }
 
                 if ($ProcessPath -ne "") {
-                    Write-Host "The process path is not blank. Performing further actions..."
-                    # Add your logic for the case when $ProcessPath is not blank here
-                } else {
-                    Write-Host "The process path is blank."
-            #                Add your logic for the case when $ProcessPath is blank here
-}
-
+                    # Write-Host "The process path is not blank. Performing further actions..."
+                        $existingDCUPath = $ProcessPath
+                        # Get version information
+                        $existingDCUVersion = (Get-Command $existingDCUPath).FileVersionInfo.FileVersion -replace '\.\d+$'
+                        Write-Host "Dell Command Update current installed Version: $existingDCUVersion" -ForegroundColor Cyan
+                        #Compare the current installed version to the latest version
+                        if ($existingDCUVersion -ge $DCUVersion) {
+                            Write-Host "The application is already up to date. Version $existingDCUVersion" -ForegroundColor Green
+                            return
+                        } else {
+                            Write-Host "The application needs to be updated." -ForegroundColor Yellow
+                        }        
                 
                 
-                $existingDCUPath = $ProcessPath
-                # Get version information
-                $existingDCUVersion = (Get-Command $existingDCUPath).FileVersionInfo.FileVersion -replace '\.\d+$'
-                Write-Host "Dell Command Update current installed Version: $existingDCUVersion" -ForegroundColor Cyan
-
-                #Compare the current installed version to the latest version
-                if ($existingDCUVersion -ge $DCUVersion) {
-                    Write-Host "The application is already up to date. Version $existingDCUVersion" -ForegroundColor Green
-                    return
-                } else {
-                    Write-Host "The application needs to be updated." -ForegroundColor Yellow
 
                      # Create $TargetLink for to download the Universal App version of DCU
                 $TargetLink = "http://downloads.dell.com/$($DellItem.path)"
