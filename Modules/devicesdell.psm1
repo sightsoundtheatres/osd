@@ -83,9 +83,41 @@ Function osdcloud-InstallDCU {
                 Write-Host "Unable to parse DCU Release Date: $($DellItem.releaseDate)" -ForegroundColor Red
             }
 
+                #check to see if DCU is already installed and if so, what version
+                if (Test-path -Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe'){
+                  $ProcessPath = 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe'
+                } elseif (Test-path -Path 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe'){
+                  $ProcessPath = 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe'
+                } else {
+                  $ProcessPath = ""
+                  Write-host "No DCU Installed" -ForegroundColor Red
+                }
 
+                if ($ProcessPath -ne "") {
+                    Write-Host "The process path is not blank. Performing further actions..."
+                    # Add your logic for the case when $ProcessPath is not blank here
+                } else {
+                    Write-Host "The process path is blank."
+            #                Add your logic for the case when $ProcessPath is blank here
+}
+
+                
+                
+                $existingDCUPath = $ProcessPath
+                # Get version information
+                $existingDCUVersion = (Get-Command $existingDCUPath).FileVersionInfo.FileVersion -replace '\.\d+$'
+                Write-Host "Dell Command Update current installed Version: $existingDCUVersion" -ForegroundColor Cyan
+
+                #Compare the current installed version to the latest version
+                if ($existingDCUVersion -ge $DCUVersion) {
+                    Write-Host "The application is already up to date. Version $existingDCUVersion" -ForegroundColor Green
+                    return
+                } else {
+                    Write-Host "The application needs to be updated." -ForegroundColor Yellow
+
+                     # Create $TargetLink for to download the Universal App version of DCU
                 $TargetLink = "http://downloads.dell.com/$($DellItem.path)"
-                $TargetFileName = ($DellItem.path).Split("/") | Select-Object -Last 1
+                $TargetFileName = ($DellItem.path).Split("`n") | Select-Object -Last 1
 
                 Write-Host " New Update available: Installed = $CurrentVersion DCU = $DCUVersion" -ForegroundColor Yellow 
                 Write-Output "  Title: $($DellItem.Name.Display.'#cdata-section')"
@@ -101,6 +133,14 @@ Function osdcloud-InstallDCU {
                 #Build Required Info to Download and Update CM Package
                 $TargetFilePathName = "$($DellCabExtractPath)\$($TargetFileName)"
                 $TargetLink = $TargetLink.Substring(0, $TargetLink.IndexOf(".EXE") + 4)
+
+                #Test to see if $targetFilePathName exists, and if not create the folder
+                if (-not (Test-Path $TargetFilePathName)) {
+                    # Create the directory if it doesn't exist
+                    New-Item -ItemType Directory -Path (Split-Path $TargetFilePathName)
+                }
+
+                #Download DCU universal application
                 Invoke-WebRequest -Uri $TargetLink -OutFile $TargetFilePathName -UseBasicParsing -Verbose -Proxy $ProxyServer
 
                 #Confirm Download
@@ -132,8 +172,8 @@ Function osdcloud-InstallDCU {
         {
         #No Match in the DCU XML for this Model (SKUNumber)
         Write-Host "No Match in XML for $SystemSKUNumber"
-        }
-
+        }                    
+    }
  } 
 
 #Function to Run DCU to install drivers, BIOS and firmware updates.
