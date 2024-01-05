@@ -344,7 +344,11 @@ function Step-oobeSetDeviceRegSettings {
     param ()
     if (($env:UserName -eq 'defaultuser0') -and ($Global:oobeCloud.oobeSetDeviceRegSettings -eq $true)) {
 
-    Write-host -ForegroundColor DarkCyan "disable firstlogon animation"
+    Write-host -ForegroundColor DarkCyan "Disable IPv6 on all adapters"
+
+        Set-NetAdapterBinding -Name "*" -ComponentID ms_tcpip6 -Enabled $false
+
+    Write-host -ForegroundColor DarkCyan "Disable firstlogon animation"
 
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableFirstLogonAnimation" -Value 0 -Type DWord
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "EnableFirstLogonAnimation" -Value 0 -Type DWord
@@ -406,7 +410,7 @@ function Step-windowsWallpaper {
         # Download the script
         Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/set-WindowsDesktopWallpaper.ps1 -OutFile C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1
         # Execute the script
-        & C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1
+        & C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1 -ErrorAction SilentlyContinue
         # Remove script
         Remove-Item -Path C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1
     }
@@ -426,6 +430,9 @@ function Step-oobeRestartComputer {
     param ()
     if (($env:UserName -eq 'defaultuser0') -and ($Global:oobeCloud.oobeRestartComputer -eq $true)) {
         Write-Host -ForegroundColor Cyan 'Build Complete!'
+        Write-Host -ForegroundColor Cyan 'Cleaning up... Removing c:\OSDCloud and c:\Drivers directory'
+        Remove-Item -LiteralPath "c:\osdcloud" -Force -Recurse
+        Remove-Item -LiteralPath "c:\Drivers" -Force -Recurse
         Write-Warning 'Device will restart in 30 seconds.  Press Ctrl + C to cancel'
         Stop-Transcript
         Start-Sleep -Seconds 30
