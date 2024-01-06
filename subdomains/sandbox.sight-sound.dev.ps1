@@ -109,4 +109,5 @@ if ($WindowsPhase -eq 'Windows') {
     $null = Stop-Transcript -ErrorAction Ignore
     Write-Host "[-] This script is not intended to run in Windows phase at this time" -ForegroundColor Red
 }
+
 #endregion
