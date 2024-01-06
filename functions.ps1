@@ -85,8 +85,7 @@ if ($Manufacturer -match "Dell"){
 #endregion
 
 #region Load Modules
-if ($WindowsPhase -eq 'WinPE') {
-    Write-Host "[-] This script is not intended to run in WinPE at this time" -ForegroundColor Red
+if ($WindowsPhase -eq 'WinPE') {    
 }
 if ($WindowsPhase -eq 'OOBE') {
     Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/osd/main/Modules/_anywhere.psm1')
