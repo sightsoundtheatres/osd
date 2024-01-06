@@ -107,6 +107,7 @@ if ($WindowsPhase -eq 'Specialize') {
 }
 if ($WindowsPhase -eq 'Windows') {
     Write-Host "[-] This script is not intended to run in Windows phase at this time" -ForegroundColor Red
+}
 #endregion
 
 #region PowerShell Prompt
