@@ -102,11 +102,9 @@ if ($WindowsPhase -eq 'OOBE') {
         Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/osd/main/Modules/devicesdell.psm1')
     }
 }
-if ($WindowsPhase -eq 'Specialize') {
-    Write-Host "[-] This script is not intended to run in the specialize phase at this time" -ForegroundColor Red
+if ($WindowsPhase -eq 'Specialize') {    
 }
 if ($WindowsPhase -eq 'Windows') {
-    Write-Host "[-] This script is not intended to run in Windows phase at this time" -ForegroundColor Red
 }
 #endregion
 
