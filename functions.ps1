@@ -104,6 +104,7 @@ if ($WindowsPhase -eq 'OOBE') {
 if ($WindowsPhase -eq 'Specialize') {    
 }
 if ($WindowsPhase -eq 'Windows') {
+    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/osd/main/Modules/autopilot.psm1')
 }
 #endregion
 
