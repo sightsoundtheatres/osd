@@ -107,5 +107,6 @@ if ($WindowsPhase -eq 'OOBE') {
 if ($WindowsPhase -eq 'Windows') {
     #Load OSD and Azure stuff
     $null = Stop-Transcript -ErrorAction Ignore
+    Write-Host "[-] This script is not intended to run in Windows phase at this time" -ForegroundColor Red
 }
 #endregion
