@@ -89,17 +89,17 @@ if ($WindowsPhase -eq 'WinPE') {
     Write-Host "[-] This script is not intended to run in WinPE at this time" -ForegroundColor Red
 }
 if ($WindowsPhase -eq 'OOBE') {
-    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/modules/_anywhere.psm1')
-    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/modules/eq-oobe.psm1')
-    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/modules/ne-winpe.psm1')
-    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/modules/eq-oobe-startup.psm1')
-    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/modules/autopilot.psm1')
-    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/modules/azosdpad.psm1')
-    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/modules/defender.psm1')
-    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/modules/secrets.psm1')
+    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/osd/main/Modules/_anywhere.psm1')
+    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/osd/main/Modules/eq-oobe.psm1')
+    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/osd/main/Modules/ne-winpe.psm1')
+    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/osd/main/Modules/eq-oobe-startup.psm1')
+    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/osd/main/Modules/autopilot.psm1')
+    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/osd/main/Modules/azosdpad.psm1')
+    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/osd/main/Modules/defender.psm1')
+    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/osd/main/Modules/secrets.psm1')
 
     if ($DellEnterprise -eq $true) {
-        Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/modules/devicesdell.psm1')
+        Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/osd/main/Modules/devicesdell.psm1')
     }
 }
 if ($WindowsPhase -eq 'Specialize') {
