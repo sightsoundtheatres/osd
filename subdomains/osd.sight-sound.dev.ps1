@@ -101,6 +101,17 @@ if ($WindowsPhase -eq 'OOBE') {
     #Load everything needed to run AutoPilot and Azure KeyVault
     osdcloud-StartOOBE -DateTime -InstallWinGet -WinGetUpgrade -WinGetPwsh
     Step-installCiscoRootCert
+    Step-oobeUpdateDrivers
+    Step-oobeUpdateWindows
+    Step-RestartConfirmation
+    Step-oobeRemoveAppxPackage
+    Step-oobeSetUserRegSettings
+    Step-oobeSetDeviceRegSettings
+    Step-windowsWallpaper
+    Step-oobeRegisterAutopilot
+    Step-oobeCreateLocalUser
+    Step-oobeExecutionPolicyRestricted
+
     $null = Stop-Transcript -ErrorAction Ignore
 }
 #endregion
