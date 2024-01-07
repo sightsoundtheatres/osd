@@ -24,7 +24,7 @@ powershell iex (irm sandbox.osdcloud.com)
 .DESCRIPTION
     PowerShell Script which supports the OSDCloud environment
 .NOTES
-    Version 24.1.6.1
+    Version 24.1.7.1
 .LINK
     https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/sandbox.osdcloud.com.ps1
 .EXAMPLE
@@ -33,7 +33,7 @@ powershell iex (irm sandbox.osdcloud.com)
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '24.1.6.1'
+$ScriptVersion = '24.1.7.1'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
@@ -101,8 +101,20 @@ if ($WindowsPhase -eq 'OOBE') {
     #Load everything needed to run AutoPilot and Azure KeyVault
     osdcloud-StartOOBE -DateTime -InstallWinGet -WinGetUpgrade -WinGetPwsh
     Step-installCiscoRootCert
-    Step-oobeUpdateDrivers
-    Step-oobeUpdateWindows
+
+    #Test / Install Dell DCU if supported
+    if ($DellEnterprise -eq $true) {
+        Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/OSD/master/modules/devicesdell.psm1')
+        Write-Host -ForegroundColor Yellow "[-] System = Dell - Installing Dell Dell Command Update"
+        osdcloud-InstallDCU
+        osdcloud-RunDCU
+    } else {
+        Write-Host -ForegroundColor Cyan "[-] System is not = Dell - Dell DCU not supported"
+    }
+
+
+    #Step-oobeUpdateDrivers
+    #Step-oobeUpdateWindows
     Step-RestartConfirmation
     Step-oobeRemoveAppxPackage
     Step-oobeSetUserRegSettings
