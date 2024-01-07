@@ -24,7 +24,7 @@ powershell iex (irm sandbox.osdcloud.com)
 .DESCRIPTION
     PowerShell Script which supports the OSDCloud environment
 .NOTES
-    Version 24.1.5.1
+    Version 24.1.6.1
 .LINK
     https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/sandbox.osdcloud.com.ps1
 .EXAMPLE
