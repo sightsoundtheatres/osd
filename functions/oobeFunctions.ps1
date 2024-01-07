@@ -70,11 +70,11 @@ function Step-installCiscoRootCert {
 
         if ($certExists) {
             # Do nothing
-            Write-Host -ForegroundColor Green "The Cisco Umbrella certificate is already installed"
+            Write-Host -ForegroundColor Green "[+] Cisco Umbrella certificate root installed"
         }
         else {
             # Download and install the certificate
-            Write-Host -ForegroundColor Cyan "Installing Cisco Umbrella root certificate"
+            Write-Host -ForegroundColor Yellow "[-] Installing Cisco Umbrella root certificate"
             Invoke-WebRequest -Uri $certUrl -OutFile $certFile
 
             # Load the certificate and add it to the root store
