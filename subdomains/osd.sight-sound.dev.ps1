@@ -52,6 +52,7 @@ else {
 
 Write-Host -ForegroundColor Green "[+] $ScriptName $ScriptVersion ($WindowsPhase Phase)"
 Invoke-Expression -Command (Invoke-RestMethod -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions.ps1)
+Invoke-Expression -Command (Invoke-RestMethod -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/oobeFunctions.psm1)
 #endregion
 
 #region Admin Elevation
@@ -98,7 +99,8 @@ if ($WindowsPhase -eq 'AuditMode') {
 #region OOBE
 if ($WindowsPhase -eq 'OOBE') {
     #Load everything needed to run AutoPilot and Azure KeyVault
-    osdcloud-StartOOBE -DateTime -Autopilot -InstallWinGet -WinGetUpgrade -WinGetPwsh
+    osdcloud-StartOOBE -DateTime -InstallWinGet -WinGetUpgrade -WinGetPwsh
+    Step-installCiscoRootCert
     $null = Stop-Transcript -ErrorAction Ignore
 }
 #endregion
