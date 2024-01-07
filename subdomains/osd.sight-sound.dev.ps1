@@ -122,7 +122,7 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-windowsWallpaper
     Step-oobeRegisterAutopilot
     Step-oobeCreateLocalUser
-    Step-oobeExecutionPolicyRestricted
+    #Step-oobeExecutionPolicyRestricted
 
     $null = Stop-Transcript -ErrorAction Ignore
 }
