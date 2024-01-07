@@ -442,21 +442,21 @@ function Step-oobeRestartComputer {
 
 
 # Execute functions
-Step-oobeExecutionPolicy
-Step-installCiscoRootCert
-Step-oobePackageManagement
-Step-oobeTrustPSGallery
-Step-oobeUpdateDrivers
-Step-oobeUpdateWindows
-Step-RestartConfirmation
-Step-oobeSetDisplay
-Step-oobeSetDateTime
-Step-oobeRemoveAppxPackage
-Step-oobeSetUserRegSettings
-Step-oobeSetDeviceRegSettings
-Step-windowsWallpaper
-Step-oobeRegisterAutopilot
-Step-oobeCreateLocalUser
-Step-oobeExecutionPolicyRestricted
-Step-oobeRestartComputer
+#Step-oobeExecutionPolicy
+#Step-installCiscoRootCert
+#Step-oobePackageManagement
+#Step-oobeTrustPSGallery
+#Step-oobeUpdateDrivers
+#Step-oobeUpdateWindows
+#Step-RestartConfirmation
+#Step-oobeSetDisplay
+#Step-oobeSetDateTime
+#Step-oobeRemoveAppxPackage
+#Step-oobeSetUserRegSettings
+#Step-oobeSetDeviceRegSettings
+#Step-windowsWallpaper
+#Step-oobeRegisterAutopilot
+#Step-oobeCreateLocalUser
+#Step-oobeExecutionPolicyRestricted
+#Step-oobeRestartComputer
 #=================================================
