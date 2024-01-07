@@ -83,7 +83,7 @@ Function osdcloud-InstallDCU {
                 Write-Host "Unable to parse DCU Release Date: $($DellItem.releaseDate)" -ForegroundColor Red
             }
 
-
+                #Create download link to DCU Universal version
                 $TargetLink = "http://downloads.dell.com/$($DellItem.path)"
                 $TargetFileName = ($DellItem.path).Split("/") | Select-Object -Last 1
 
