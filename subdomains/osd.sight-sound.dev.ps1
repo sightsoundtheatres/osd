@@ -112,9 +112,8 @@ if ($WindowsPhase -eq 'OOBE') {
         Write-Host -ForegroundColor Cyan "[-] System is not = Dell - Dell DCU not supported"
     }
 
-
-    #Step-oobeUpdateDrivers
-    #Step-oobeUpdateWindows
+    Step-oobeUpdateDrivers
+    Step-oobeUpdateWindows
     Step-RestartConfirmation
     Step-oobeRemoveAppxPackage
     Step-oobeSetUserRegSettings
@@ -122,7 +121,7 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-windowsWallpaper
     Step-oobeRegisterAutopilot
     Step-oobeCreateLocalUser
-    #Step-oobeExecutionPolicyRestricted
+    Step-oobeRestartComputer
 
     $null = Stop-Transcript -ErrorAction Ignore
 }
