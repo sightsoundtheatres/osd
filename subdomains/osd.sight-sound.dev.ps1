@@ -32,8 +32,8 @@ powershell iex (irm sandbox.osdcloud.com)
 #>
 [CmdletBinding()]
 param()
-$ScriptName = 'sandbox.sight-sound.dev'
-$ScriptVersion = '24.1.5.1'
+$ScriptName = 'osd.sight-sound.dev'
+$ScriptVersion = '24.1.6.1'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
