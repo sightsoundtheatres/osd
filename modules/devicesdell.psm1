@@ -217,7 +217,7 @@ function osdcloud-DCUAutoUpdate {
 
     if ($DCUService -ne $null -and $DCUService.Status -eq 'Running') {
         Write-Host -ForegroundColor Yellow "[-] Stopping Dell Client Management Service..."
-        Stop-Service -Name $DCUServiceName
+        Stop-Service -DisplayName $DCUServiceName
         Start-Sleep -Seconds 5  # Give some time for the service to stop
     }    
     
@@ -227,7 +227,7 @@ function osdcloud-DCUAutoUpdate {
 
     Write-Host "DCU Finished with Code: $($DCU.ExitCode): $($DCUReturn.Description)"
     Write-Host -ForegroundColor Yellow "[-] Starting Dell Client Management Service..."
-    Stop-Service -Name $DCUServiceName
+    Start-Service -DisplayName $DCUServiceName
 }
 
 
