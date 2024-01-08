@@ -159,6 +159,7 @@ function Step-oobeRegisterAutopilot {
         }
         else {
             Write-Host -ForegroundColor Cyan "[-] Device registration with Autopilot skipped."
+            return
         }
     }
 
@@ -296,25 +297,26 @@ function Step-oobeSetDeviceRegSettings {
     
     Write-host -ForegroundColor Yellow "[-] Setting default machine registry settings ..."
 
-    Write-host -ForegroundColor DarkGray "[+] Disable IPv6 on all adapters"
+    Write-host -ForegroundColor DarkGray "[-] Disable IPv6 on all adapters"
 
         Set-NetAdapterBinding -Name "*" -ComponentID ms_tcpip6 -Enabled $false -ErrorAction SilentlyContinue
 
-    Write-host -ForegroundColor DarkGray "[+] Disable firstlogon animation"
+    Write-host -ForegroundColor DarkGray "[-] Disable firstlogon animation"
 
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableFirstLogonAnimation" -Value 0 -Type DWord -ErrorAction SilentlyContinue
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "EnableFirstLogonAnimation" -Value 0 -Type DWord -ErrorAction SilentlyContinue
 
-    Write-host -ForegroundColor DarkGray "[+] Autoset time zone"
+    Write-host -ForegroundColor DarkGray "[-] Autoset time zone"
 
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name Value -Value "Allow" -ErrorAction SilentlyContinue
         Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\tzautoupdate" -Name start -Value "3" -ErrorAction SilentlyContinue
 
-    Write-Host -ForegroundColor DarkGray "[+] Setting start menu items"
+    Write-Host -ForegroundColor DarkGray "[-] Setting start menu items"
         
         if (-Not (Test-Path "HKLM:\Software\Microsoft\PolicyManager\current\device\Start")) {
-            New-Item -Path "HKLM:\Software\Microsoft\PolicyManager\current\device\Start" -Force -ErrorAction SilentlyContinue
+            New-Item -Path "HKLM:\Software\Microsoft\PolicyManager\current\device\Start" -Force -ErrorAction SilentlyContinue | Out-Null
         }        
+            Write-host -ForegroundColor DarkGray "[-] Setting start menu settings"
             Set-ItemProperty -Path "HKLM:\Software\Microsoft\PolicyManager\current\device\Start" -Name "AllowPinnedFolderDocuments" -Value 1 -Type DWord -ErrorAction SilentlyContinue
             Set-ItemProperty -Path "HKLM:\Software\Microsoft\PolicyManager\current\device\Start" -Name "AllowPinnedFolderDocuments_ProviderSet" -Value 1 -Type DWord -ErrorAction SilentlyContinue
             Set-ItemProperty -Path "HKLM:\Software\Microsoft\PolicyManager\current\device\Start" -Name "AllowPinnedFolderDownloads" -Value 1 -Type DWord -ErrorAction SilentlyContinue
