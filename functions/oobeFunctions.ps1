@@ -431,8 +431,7 @@ if (Test-Path -Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe') {
 
 function Step-oobeSetDateTime {
     [CmdletBinding()]
-    param ()
-    if (($env:UserName -eq 'defaultuser0') -and ($Global:oobeCloud.oobeSetDateTime -eq $true)) {
+    param ()    
         Write-Host -ForegroundColor Yellow 'Verify the Date and Time is set properly including the Time Zone'
         Write-Host -ForegroundColor Yellow 'If this is not configured properly, Certificates and Autopilot may fail'
         Start-Process 'ms-settings:dateandtime' | Out-Null
@@ -441,6 +440,6 @@ function Step-oobeSetDateTime {
             Wait-Process $ProcessId
         }
     }
-}
+
 
 
