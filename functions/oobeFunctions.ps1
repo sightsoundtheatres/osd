@@ -400,7 +400,8 @@ if (Test-Path -Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe') {
 } else {
     # DCU is not installed, perform installation
     if ($DellEnterprise -eq $true) {
-        Write-Host -ForegroundColor Yellow "[-] System = Dell - Installing Dell Command Update"        
+        Write-Host -ForegroundColor Yellow "[-] System = Dell - Installing Dell Command Update" 
+        Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/OSD/master/modules/devicesdell.psm1')       
         osdcloud-InstallDCU
         osdcloud-RunDCU
         Write-Host -ForegroundColor Green "[+] Dell Command Update installed successfully"
