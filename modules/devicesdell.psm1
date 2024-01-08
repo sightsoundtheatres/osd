@@ -207,7 +207,7 @@ function osdcloud-DCUAutoUpdate {
     else {
         throw "No DCU Installed"
     }
-    $ProcessArgs = "/configure -scheduleAuto -scheduleAction=DownloadInstallAndNotify -scheduledReboot=60"
+    $ProcessArgs = "/configure -scheduleAuto -scheduleAction=DownloadInstallAndNotify"
     $DCU = Start-Process -FilePath $ProcessPath -ArgumentList $ProcessArgs -Wait -PassThru -NoNewWindow
     $DCUReturn = $DCUReturnTablet | Where-Object {$_.ReturnCode -eq $DCU.ExitCode}
 
