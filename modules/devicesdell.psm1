@@ -200,12 +200,12 @@ function osdcloud-DCUAutoUpdate {
     #>
     $ProcessArgs = "/configure -scheduleAuto -scheduleAction=DownloadInstallAndNotify"    
 
-    if (Test-Path -Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe') {
-        $ProcessPath = 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe'
+    if (Test-Path -Path "C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe") {
+        $ProcessPath = "C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe"
         Write-Host -ForegroundColor Green "[+] Dell Command Update installed"
         Start-Process -FilePath $ProcessPath -ArgumentList $ProcessArgs -Wait -PassThru -NoNewWindow
-    } elseif (Test-Path -Path 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe') {
-        $ProcessPath = 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe'
+    } elseif (Test-Path -Path "C:\Program Files\Dell\CommandUpdate\dcu-cli.exe") {
+        $ProcessPath = "C:\Program Files\Dell\CommandUpdate\dcu-cli.exe"
         Write-Host -ForegroundColor Green "[+] Dell Command Update installed"
         Start-Process -FilePath $ProcessPath -ArgumentList $ProcessArgs -Wait -PassThru -NoNewWindow
     } else {
