@@ -198,17 +198,16 @@ function osdcloud-DCUAutoUpdate {
     <#
     Enables DCU Auto Update
     #>
-    $ProcessArgs = "/configure -scheduleAuto -scheduleAction=DownloadInstallAndNotify"
-    $DCU = Start-Process -FilePath $ProcessPath -ArgumentList $ProcessArgs -Wait -PassThru -NoNewWindow
+    $ProcessArgs = "/configure -scheduleAuto -scheduleAction=DownloadInstallAndNotify"    
 
     if (Test-Path -Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe') {
         $ProcessPath = 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe'
         Write-Host -ForegroundColor Green "[+] Dell Command Update installed"
-        $DCU
+        Start-Process -FilePath $ProcessPath -ArgumentList $ProcessArgs -Wait -PassThru -NoNewWindow
     } elseif (Test-Path -Path 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe') {
         $ProcessPath = 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe'
         Write-Host -ForegroundColor Green "[+] Dell Command Update installed"
-        $DCU
+        Start-Process -FilePath $ProcessPath -ArgumentList $ProcessArgs -Wait -PassThru -NoNewWindow
     } else {
         Write-Host -ForegroundColor Cyan "[-] System not = Dell - DCU not supported"
     }
