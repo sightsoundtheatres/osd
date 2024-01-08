@@ -387,7 +387,8 @@ function Step-oobeRestartComputer {
     param ()        
         # Removing downloaded content
         Write-Host -ForegroundColor Yellow '[-] Cleaning up... Removing c:\OSDCloud and c:\Drivers directory'
-        Remove-Item -LiteralPath "c:\osdcloud\*" -Exclude "logs" -Force -Recurse
+        # Get-ChildItem -Path "C:\osdcloud\*" | Where-Object { $_.Name -ne "Logs" } | ForEach-Object { Remove-Item $_.FullName -Force -Recurse }
+        Remove-Item -LiteralPath "c:\osdcloud" -Force -Recurse
         Remove-Item -LiteralPath "c:\Drivers" -Force -Recurse
 
         Write-Host -ForegroundColor Green '[+] Build Complete!'
