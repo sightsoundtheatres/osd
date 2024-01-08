@@ -341,7 +341,7 @@ function Step-oobeCreateLocalUser {
         # Generate a random password of 16 characters
         function Generate-RandomPassword {
             $validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:,.<>?/"
-            $passwordLength = 64
+            $passwordLength = 32
             $random = New-Object System.Random
             $password = 1..$passwordLength | ForEach-Object { $validCharacters[$random.Next(0, $validCharacters.Length)] }
             return $password -join ''
@@ -359,7 +359,7 @@ function Step-oobeCreateLocalUser {
         # Create the user
         New-LocalUser @UserParams | Out-Null
     
-        Write-Output -ForegroundColor DarkGreen "[+] User '$Username' has been created with password: $Password"
+        Write-Output -ForegroundColor DarkGray "[+] User '$Username' has been created with password: $Password"
     
         # Add the user to the Administrators group
         Add-LocalGroupMember -Group "Administrators" -Member $Username
