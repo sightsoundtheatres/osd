@@ -181,10 +181,10 @@ function osdcloud-RunDCU {
     }
 
     if ($UpdateType -eq "CleanImage"){
-        $ProcessArgs = "/DriverInstall -outputLog=$logfile -reboot=enable"
+        $ProcessArgs = "/DriverInstall -outputLog=$logfile -reboot=disable"
     }
     else {
-        $ProcessArgs = "/applyUpdates -updateType=$UpdateType -outputLog=$logfile -reboot=enable"
+        $ProcessArgs = "/applyUpdates -updateType=$UpdateType -outputLog=$logfile -reboot=disable"
     }
     try {[void][System.IO.Directory]::CreateDirectory($LogFolder)}
     catch {throw}
