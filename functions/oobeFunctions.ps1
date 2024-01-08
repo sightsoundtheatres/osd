@@ -264,30 +264,30 @@ function Step-oobeSetUserRegSettings {
 
     # Changes to Default User Registry
 
-    Write-host -ForegroundColor DarkGray "[+] Show known file extensions" 
+    Write-host -ForegroundColor DarkGray "[-] Show known file extensions" 
     REG ADD "HKU\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "HideFileExt" /t REG_DWORD /d 0 /f | Out-Null
 
-    Write-host -ForegroundColor DarkGray "[+] Change default Explorer view to This PC"
+    Write-host -ForegroundColor DarkGray "[-] Change default Explorer view to This PC"
     REG ADD "HKU\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "LaunchTo" /t REG_DWORD /d 1 /f | Out-Null
 
-    Write-host -ForegroundColor DarkGray "[+] Show User Folder shortcut on desktop"
+    Write-host -ForegroundColor DarkGray "[-] Show User Folder shortcut on desktop"
     REG ADD "HKU\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu" /v "{59031a47-3f72-44a7-89c5-5595fe6b30ee}" /t REG_DWORD /d 0 /f | Out-Null
     REG ADD "HKU\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel" /v "{59031a47-3f72-44a7-89c5-5595fe6b30ee}" /t REG_DWORD /d 0 /f | Out-Null
 
-    Write-host -ForegroundColor DarkGray "[+] Show This PC shortcut on desktop"
+    Write-host -ForegroundColor DarkGray "[-] Show This PC shortcut on desktop"
     REG ADD "HKU\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu" /v "{20D04FE0-3AEA-1069-A2D8-08002B30309D}" /t REG_DWORD /d 0 /f | Out-Null
     REG ADD "HKU\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel" /v "{20D04FE0-3AEA-1069-A2D8-08002B30309D}" /t REG_DWORD /d 0 /f | Out-Null
 
-    Write-host -ForegroundColor DarkGray "[+] Show item checkboxes"
+    Write-host -ForegroundColor DarkGray "[-] Show item checkboxes"
     REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "AutoCheckSelect" /t REG_DWORD /d 1 /f | Out-Null
 
-    Write-host -ForegroundColor DarkGray "[+] Disable Chat on Taskbar"
+    Write-host -ForegroundColor DarkGray "[-] Disable Chat on Taskbar"
     REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f | Out-Null   
     
-    Write-host -ForegroundColor DarkGray "[+] Disable Windows Spotlight on lockscreen"
+    Write-host -ForegroundColor DarkGray "[-] Disable Windows Spotlight on lockscreen"
     REG ADD "HKU\Default\Software\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsSpotlightFeatures" /t REG_DWORD /d 1 /f | Out-Null
 
-    Write-Host -ForegroundColor DarkGray "[+] Unloading the default user registry hive"
+    Write-Host -ForegroundColor DarkGray "[-] Unloading the default user registry hive"
     REG UNLOAD "HKU\Default" | Out-Null
     }
 
@@ -386,11 +386,43 @@ function Step-windowsWallpaper {
 
 function Step-oobeRestartComputer {
     [CmdletBinding()]
-    param ()
-        Write-Host -ForegroundColor Cyan 'Build Complete!'
-        Write-Host -ForegroundColor Cyan 'Cleaning up... Removing c:\OSDCloud and c:\Drivers directory'
-        # Remove-Item -LiteralPath "c:\osdcloud" -Force -Recurse
-        # Remove-Item -LiteralPath "c:\Drivers" -Force -Recurse
+    param ()        
+        # Removing downloaded content
+        Write-Host -ForegroundColor Yellow '[-] Cleaning up... Removing c:\OSDCloud and c:\Drivers directory'
+        Remove-Item -LiteralPath "c:\osdcloud\*" -Exclude "logs" -Force -Recurse
+        Remove-Item -LiteralPath "c:\Drivers" -Force -Recurse
+
+        $modulesToRemove = @(
+            "Az.Accounts",
+            "Az.Resources",
+            "Az.Storage",
+            "Microsoft.Graph.Authentication",
+            "Microsoft.Graph.Groups",
+            "Microsoft.Graph.Intune",
+            "NTFSSecurity",
+            "OSD",
+            "Pester",
+            "PSWindowsUpdate",
+            "WindowsAutoPilotIntune"
+        )
+
+        foreach ($module in $modulesToRemove) {
+            # Check if the module is installed for the current user
+            if (Get-Module -Name $module -ListAvailable) {
+                Uninstall-Module -Name $module -Force
+                Write-Host -ForegroundColor DarkGray "[-] Removed module (Current User): $module"
+            } else {
+                # Check if the module is installed for all users
+                if (Get-Module -Name $module -ListAvailable -All) {
+                    Uninstall-Module -Name $module -Force -AllUsers
+                    Write-Host -ForegroundColor DarkGray "[-] Removed module (All Users): $module"
+                } else {
+                    Write-Host -ForegroundColor Yellow "[!] Module '$module' not found. Skipping removal."
+                }
+            }
+        }
+
+        Write-Host -ForegroundColor Green '[+] Build Complete!'
         Write-Warning 'Device will restart in 30 seconds.  Press Ctrl + C to cancel'
         Stop-Transcript
         Start-Sleep -Seconds 30
