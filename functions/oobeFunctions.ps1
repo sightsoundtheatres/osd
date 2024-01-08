@@ -349,8 +349,8 @@ function Step-oobeCreateLocalUser {
                 "UserMayNotChangePassword" = $true
                 "PasswordNeverExpires"  = $NeverExpire
             }
-            New-LocalUser @UserParams
-            Write-Output -ForegroundColor DaryGray "User '$Username' has been created with password: $Password"
+            New-LocalUser @UserParams | Out-Null
+            Write-Output -ForegroundColor DarkGreen "[+] User '$Username' has been created with password: $Password"
             Add-LocalGroupMember -Group "Administrators" -Member $Username
     }
 
