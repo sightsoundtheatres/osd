@@ -88,7 +88,7 @@ function Step-installCiscoRootCert {
 
         if ($certExists) {
             # Do nothing
-            Write-Host -ForegroundColor Green "[+] Cisco Umbrella certificate root installed"
+            Write-Host -ForegroundColor Green "[+] Cisco Umbrella root certificate installed"
         }
         else {
             # Download and install the certificate
@@ -105,6 +105,7 @@ function Step-installCiscoRootCert {
 
             # Delete the downloaded file
             Remove-Item $certFile -Force
+            Write-Host -ForegroundColor Green "[+] Cisco Umbrella root certificate installed"
         }
     }
 
@@ -115,7 +116,7 @@ function Step-oobeInstallModuleAutopilotOOBE {
     if ($env:UserName -eq 'defaultuser0') {
         $Requirement = Import-Module AutopilotOOBE -PassThru -ErrorAction Ignore
 
-        Write-Host -ForegroundColor Green "[+] Creating AutoPilot configuration .json file ..."
+        Write-Host -ForegroundColor Yellow "[-] Creating AutoPilot configuration .json file ..."
            
         $outputPath = "$env:ProgramData\OSDeploy\OSDeploy.AutopilotOOBE.json"
         
@@ -124,10 +125,11 @@ function Step-oobeInstallModuleAutopilotOOBE {
         }
 
         $AutopilotOOBEJson | Out-File -FilePath "$env:ProgramData\OSDeploy\OSDeploy.AutopilotOOBE.json" -Encoding UTF8
+        Write-Host -ForegroundColor Green "[+] AutoPilot configuration .json file Created"
 
         if (-not $Requirement)
         {       
-            Write-Host -ForegroundColor Green "[+] Install-Module AutopilotOOBE"
+            Write-Host -ForegroundColor Yellow "[-] Install-Module AutopilotOOBE"
             Install-Module -Name AutopilotOOBE -Force
             Import-Module AutopilotOOBE -Force
             Start-AutopilotOOBE
@@ -152,17 +154,17 @@ function Step-oobeRegisterAutopilot {
         $result = [System.Windows.Forms.MessageBox]::Show($message, $caption, $options, [System.Windows.Forms.MessageBoxIcon]::Question)
         
         if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
-            Write-Host -ForegroundColor Green "[+] Registering Device in Autopilot using AutopilotOOBE"
+            Write-Host -ForegroundColor Yellow "[-] Registering Device in Autopilot using AutopilotOOBE"
             Step-oobeInstallModuleAutopilotOOBE
         }
         else {
-            Write-Host -ForegroundColor Yellow "[-] Device registration with Autopilot skipped."
+            Write-Host -ForegroundColor Cyan "[-] Device registration with Autopilot skipped."
         }
     }
 
 function Step-oobeRemoveAppxPackage {
     
-        Write-Host -ForegroundColor Green "[+] Removing Appx Packages"
+        Write-Host -ForegroundColor Yellow "[-] Removing Appx Packages"
         foreach ($Item in $Global:oobeCloud.oobeRemoveAppxPackageName) {
             if (Get-Command Get-AppxProvisionedPackage) {
                 Get-AppxProvisionedPackage -Online | Where-Object {$_.DisplayName -Match $Item} | ForEach-Object {
@@ -195,7 +197,7 @@ function Step-oobeRemoveAppxPackage {
 function Step-oobeUpdateDrivers {
     [CmdletBinding()]
     param ()    
-        Write-Host -ForegroundColor Green "[+] Updating Windows Drivers"
+        Write-Host -ForegroundColor Yellow "[-] Updating Windows Drivers"
         if (!(Get-Module PSWindowsUpdate -ListAvailable -ErrorAction Ignore)) {
             try {
                 Install-Module PSWindowsUpdate -Force
@@ -213,7 +215,7 @@ function Step-oobeUpdateDrivers {
 function Step-oobeUpdateWindows {
     [CmdletBinding()]
     param ()    
-        Write-Host -ForegroundColor Green "[+] Running Windows Update"
+        Write-Host -ForegroundColor Yellow "[-] Running Windows Update"
         if (!(Get-Module PSWindowsUpdate -ListAvailable)) {
             try {
                 Install-Module PSWindowsUpdate -Force
@@ -246,7 +248,7 @@ function Step-RestartConfirmation {
     if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
         Restart-Computer -Force
     } else {
-        Write-Host -ForegroundColor Yellow "[+] Continuing script execution..."
+        Write-Host -ForegroundColor Cyan "[-] Continuing script execution..."
     }
   }
 
@@ -255,9 +257,9 @@ function Step-oobeSetUserRegSettings {
     param ()
     
     # Load Default User Profile hive (ntuser.dat)
-    Write-host -ForegroundColor Green "[+] Setting default users registry settings ..."
+    Write-host -ForegroundColor Yellow "[-] Setting default users registry settings ..."
     $DefaultUserProfilePath = "$env:SystemDrive\Users\Default\NTUSER.DAT"
-    REG LOAD "HKU\Default" $DefaultUserProfilePath
+    REG LOAD "HKU\Default" $DefaultUserProfilePath | Out-Null
 
     # Changes to Default User Registry
 
@@ -285,14 +287,14 @@ function Step-oobeSetUserRegSettings {
     REG ADD "HKU\Default\Software\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsSpotlightFeatures" /t REG_DWORD /d 1 /f | Out-Null
 
     Write-Host -ForegroundColor DarkGray "[+] Unloading the default user registry hive"
-    REG UNLOAD "HKU\Default"
+    REG UNLOAD "HKU\Default" | Out-Null
     }
 
 function Step-oobeSetDeviceRegSettings {
     [CmdletBinding()]
     param ()
     
-    Write-host -ForegroundColor Green "[+] Setting default machine registry settings ..."
+    Write-host -ForegroundColor Yellow "[-] Setting default machine registry settings ..."
 
     Write-host -ForegroundColor DarkGray "[+] Disable IPv6 on all adapters"
 
@@ -329,7 +331,7 @@ function Step-oobeCreateLocalUser {
     [CmdletBinding()]
     param ()
     
-        Write-Host -ForegroundColor Green "[+] Creating local user - ssLocalAdmin"
+        Write-Host -ForegroundColor Yellow "[-] Creating local user - ssLocalAdmin"
         # Generate a random password of 16 characters
         function Generate-RandomPassword {
             $validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:,.<>?/"
@@ -356,7 +358,7 @@ function Step-windowsWallpaper {
     [CmdletBinding()]
     param ()
     
-        Write-Host -ForegroundColor Green "[+] Replacing default wallpaper and lockscreen images..."
+        Write-Host -ForegroundColor Yellow "[-] Replacing default wallpaper and lockscreen images..."
         # Download the script
         Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/set-WindowsDesktopWallpaper.ps1 -OutFile C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1
         # Execute the script
