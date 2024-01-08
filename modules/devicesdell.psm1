@@ -198,7 +198,7 @@ function osdcloud-DCUAutoUpdate {
     <#
     Enables DCU Auto Update
     #>
-    $DCUServiceName = 'DellClientManagement'
+    $DCUServiceName = 'Dell Client Management Service'
 
     # Check if the DCU CLI executable exists
     if (Test-Path -Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe') {
@@ -213,7 +213,7 @@ function osdcloud-DCUAutoUpdate {
     }
 
     # Check if the Dell Client Management Service is running
-    $DCUService = Get-Service -Name $DCUServiceName -ErrorAction SilentlyContinue
+    $DCUService = Get-Service -DisplayName $DCUServiceName -ErrorAction SilentlyContinue
 
     if ($DCUService -ne $null -and $DCUService.Status -eq 'Running') {
         Write-Host -ForegroundColor Yellow "[-] Stopping Dell Client Management Service..."
