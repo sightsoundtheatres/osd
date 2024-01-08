@@ -200,11 +200,9 @@ function osdcloud-DCUAutoUpdate {
     #>
     if (Test-path -Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe'){
         $ProcessPath = 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe'
-    }
-    if (Test-path -Path 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe'){
+    } if (Test-path -Path 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe'){
         $ProcessPath = 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe'
-    }
-    else {
+    } else {
         throw "No DCU Installed"
     }
     $ProcessArgs = "/configure -scheduleAuto -scheduleAction=DownloadInstallAndNotify"
