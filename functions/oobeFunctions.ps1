@@ -392,37 +392,6 @@ function Step-oobeRestartComputer {
         Remove-Item -LiteralPath "c:\osdcloud\*" -Exclude "logs" -Force -Recurse
         Remove-Item -LiteralPath "c:\Drivers" -Force -Recurse
 
-        $modulesToRemove = @(
-            "Az.Accounts",
-            "Az.Resources",
-            "Az.Storage",
-            "Microsoft.Graph.Authentication",
-            "Microsoft.Graph.Groups",
-            "Microsoft.Graph.Intune",
-            "NTFSSecurity",
-            "OSD",
-            "Pester",
-            "PSWindowsUpdate",
-            "WindowsAutoPilotIntune"
-        )
-
-        foreach ($module in $modulesToRemove) {
-            # Check if the module is installed for the current user
-            Write-Host -ForegroundColor Yellow "[-] Removing downloaded PowerShell modules"
-            if (Get-Module -Name $module -ListAvailable) {
-                Uninstall-Module -Name $module -Force -ErrorAction Continue
-                Write-Host -ForegroundColor DarkGray "[-] Removed module (Current User): $module"
-            } else {
-                # Check if the module is installed for all users
-                if (Get-Module -Name $module -ListAvailable -All) {
-                    Uninstall-Module -Name $module -Force -AllUsers -ErrorAction Continue
-                    Write-Host -ForegroundColor DarkGray "[-] Removed module (All Users): $module"
-                } else {
-                    Write-Host -ForegroundColor Yellow "[!] Module '$module' not found. Skipping removal."
-                }
-            }
-        }
-
         Write-Host -ForegroundColor Green '[+] Build Complete!'
         Write-Warning 'Device will restart in 30 seconds.  Press Ctrl + C to cancel'
         Stop-Transcript
