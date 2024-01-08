@@ -198,20 +198,18 @@ function osdcloud-DCUAutoUpdate {
     <#
     Enables DCU Auto Update
     #>
-    $ProcessArgs = "/configure -scheduleAuto -scheduleAction=DownloadInstallAndNotify"    
-
-    if (Test-Path -Path "C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe") {
-        $ProcessPath = "C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe"
+    if (Test-Path -Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe') {
+        $ProcessPath = 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe'
         Write-Host -ForegroundColor Green "[+] Dell Command Update installed"
-        Start-Process -FilePath $ProcessPath -ArgumentList $ProcessArgs -Wait -PassThru -NoNewWindow
-    } elseif (Test-Path -Path "C:\Program Files\Dell\CommandUpdate\dcu-cli.exe") {
-        $ProcessPath = "C:\Program Files\Dell\CommandUpdate\dcu-cli.exe"
+    } elseif (Test-Path -Path 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe') {
+        $ProcessPath = 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe'
         Write-Host -ForegroundColor Green "[+] Dell Command Update installed"
-        Start-Process -FilePath $ProcessPath -ArgumentList $ProcessArgs -Wait -PassThru -NoNewWindow
     } else {
         Write-Host -ForegroundColor Cyan "[-] System not = Dell - DCU not supported"
     }
     
+    $ProcessArgs = "/configure -scheduleAuto -scheduleAction=DownloadInstallAndNotify"
+    $DCU = Start-Process -FilePath $ProcessPath -ArgumentList $ProcessArgs -Wait -PassThru -NoNewWindow
     $DCUReturn = $DCUReturnTablet | Where-Object {$_.ReturnCode -eq $DCU.ExitCode}
 
     Write-Host "DCU Finished with Code: $($DCU.ExitCode): $($DCUReturn.Description)"
