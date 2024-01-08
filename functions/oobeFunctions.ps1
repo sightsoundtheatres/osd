@@ -387,7 +387,6 @@ function Step-windowsWallpaper {
 function Step-oobeRestartComputer {
     [CmdletBinding()]
     param ()
-    if (($env:UserName -eq 'defaultuser0') -and ($Global:oobeCloud.oobeRestartComputer -eq $true)) {
         Write-Host -ForegroundColor Cyan 'Build Complete!'
         Write-Host -ForegroundColor Cyan 'Cleaning up... Removing c:\OSDCloud and c:\Drivers directory'
         # Remove-Item -LiteralPath "c:\osdcloud" -Force -Recurse
@@ -397,7 +396,7 @@ function Step-oobeRestartComputer {
         Start-Sleep -Seconds 30
         Restart-Computer
     }
-}
+
 
 function Step-oobeDellDCU {
     [CmdletBinding()]
