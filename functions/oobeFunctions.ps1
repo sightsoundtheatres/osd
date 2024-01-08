@@ -49,10 +49,6 @@ $AutopilotOOBEJson = @'
 }
 '@
 
-#=================================================
-#   oobeFunctions
-#=================================================
-
 $Global:oobeCloud = @{
     oobeRemoveAppxPackageName = 'Microsoft.BingNews',
                                 'Microsoft.BingWeather',
@@ -76,6 +72,9 @@ $Global:oobeCloud = @{
                                 'MicrosoftTeams'    
 }
 
+#=================================================
+#   oobeFunctions
+#=================================================
 
 function Step-installCiscoRootCert {
     
