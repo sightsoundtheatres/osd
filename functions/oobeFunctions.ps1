@@ -408,14 +408,14 @@ function Step-oobeRestartComputer {
 
         foreach ($module in $modulesToRemove) {
             # Check if the module is installed for the current user
-            Write-Host -ForegroundColor Yellow "[-] Removing downloaded powershell modules"
+            Write-Host -ForegroundColor Yellow "[-] Removing downloaded PowerShell modules"
             if (Get-Module -Name $module -ListAvailable) {
-                Uninstall-Module -Name $module -Force
+                Uninstall-Module -Name $module -Force -ErrorAction Continue
                 Write-Host -ForegroundColor DarkGray "[-] Removed module (Current User): $module"
             } else {
                 # Check if the module is installed for all users
                 if (Get-Module -Name $module -ListAvailable -All) {
-                    Uninstall-Module -Name $module -Force -AllUsers
+                    Uninstall-Module -Name $module -Force -AllUsers -ErrorAction Continue
                     Write-Host -ForegroundColor DarkGray "[-] Removed module (All Users): $module"
                 } else {
                     Write-Host -ForegroundColor Yellow "[!] Module '$module' not found. Skipping removal."
