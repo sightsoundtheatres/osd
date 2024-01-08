@@ -333,7 +333,12 @@ function Step-oobeCreateLocalUser {
     [CmdletBinding()]
     param ()
     
-        Write-Host -ForegroundColor Yellow "[-] Creating local user - ssLocalAdmin"
+    $Username = "ssLocalAdmin"
+
+    # Check if the user already exists
+    if (-not (Get-LocalUser -Name $Username -ErrorAction SilentlyContinue)) {
+        Write-Host -ForegroundColor Yellow "[-] Creating local user - $Username"
+    
         # Generate a random password of 16 characters
         function Generate-RandomPassword {
             $validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:,.<>?/"
@@ -342,18 +347,27 @@ function Step-oobeCreateLocalUser {
             $password = 1..$passwordLength | ForEach-Object { $validCharacters[$random.Next(0, $validCharacters.Length)] }
             return $password -join ''
         }
-            $Username = "ssLocalAdmin"
-            $Password = Generate-RandomPassword
-            $NeverExpire = $true
-            $UserParams = @{
-                "Name"                  = $Username
-                "Password"              = (ConvertTo-SecureString -AsPlainText $Password -Force)
-                "UserMayNotChangePassword" = $true
-                "PasswordNeverExpires"  = $NeverExpire
-            }
-            New-LocalUser @UserParams | Out-Null
-            Write-Output -ForegroundColor DarkGreen "[+] User '$Username' has been created with password: $Password"
-            Add-LocalGroupMember -Group "Administrators" -Member $Username
+    
+        $Password = Generate-RandomPassword
+        $NeverExpire = $true
+        $UserParams = @{
+            "Name"                  = $Username
+            "Password"              = (ConvertTo-SecureString -AsPlainText $Password -Force)
+            "UserMayNotChangePassword" = $true
+            "PasswordNeverExpires"  = $NeverExpire
+        }
+    
+        # Create the user
+        New-LocalUser @UserParams | Out-Null
+    
+        Write-Output -ForegroundColor DarkGreen "[+] User '$Username' has been created with password: $Password"
+    
+        # Add the user to the Administrators group
+        Add-LocalGroupMember -Group "Administrators" -Member $Username
+    } else {
+        Write-Host -ForegroundColor Green "[+] User '$Username' already exists."
+    }
+    
     }
 
 function Step-windowsWallpaper {
