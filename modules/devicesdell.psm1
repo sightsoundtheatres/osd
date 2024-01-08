@@ -1,18 +1,3 @@
-<#
-.SYNOPSIS
-    OSDCloud Cloud Module for functions.osdcloud.com
-.DESCRIPTION
-    OSDCloud Cloud Module for functions.osdcloud.com
-.NOTES
-    This module is designed to work in WinPE or Full
-    This module is for Dell Devices and leveraged HP Tools
-.LINK
-    https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/modules/devicesdell.psm1
-.EXAMPLE
-    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/modules/devicesdell.psm1')
-#>
-#=================================================
-#region Functions
 
 
 #Function to Install DCU from Dell's website.
