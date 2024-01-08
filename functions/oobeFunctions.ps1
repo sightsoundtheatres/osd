@@ -420,7 +420,8 @@ if (Test-Path -Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe') {
         Write-Host -ForegroundColor Yellow "[-] System = Dell - Installing Dell Command Update" 
         Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/OSD/master/modules/devicesdell.psm1')       
         osdcloud-InstallDCU
-        osdcloud-RunDCU
+        osdcloud-DCUAutoUpdate
+        osdcloud-RunDCU        
         Write-Host -ForegroundColor Green "[+] Dell Command Update installed successfully"
         $ProcessPath = 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe'
     } else {
