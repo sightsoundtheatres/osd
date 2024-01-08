@@ -388,8 +388,10 @@ function Step-oobeRestartComputer {
         # Removing downloaded content
         Write-Host -ForegroundColor Yellow '[-] Cleaning up... Removing c:\OSDCloud and c:\Drivers directory'
         # Get-ChildItem -Path "C:\osdcloud\*" | Where-Object { $_.Name -ne "Logs" } | ForEach-Object { Remove-Item $_.FullName -Force -Recurse }
-        Remove-Item -LiteralPath "c:\osdcloud" -Force -Recurse
-        Remove-Item -LiteralPath "c:\Drivers" -Force -Recurse
+        if (Test-Path "C:\osdcloud" -PathType Container) { Remove-Item -LiteralPath "C:\osdcloud" -Force -Recurse }
+        if (Test-Path "C:\Drivers" -PathType Container) { Remove-Item -LiteralPath "C:\osdcloud" -Force -Recurse }
+        if (Test-Path "C:\Dell" -PathType Container) { Remove-Item -LiteralPath "C:\osdcloud" -Force -Recurse }
+        if (Test-Path "C:\Temp" -PathType Container) { Remove-Item -LiteralPath "C:\osdcloud" -Force -Recurse }
 
         Write-Host -ForegroundColor Green '[+] Build Complete!'
         Write-Warning 'Device will restart in 30 seconds.  Press Ctrl + C to cancel'
@@ -397,7 +399,6 @@ function Step-oobeRestartComputer {
         Start-Sleep -Seconds 30
         Restart-Computer
     }
-
 
 function Step-oobeDellDCU {
     [CmdletBinding()]
