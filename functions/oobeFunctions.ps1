@@ -358,7 +358,7 @@ function Step-oobeCreateLocalUser {
         # Create the user
         New-LocalUser @UserParams | Out-Null
     
-        Write-Output -ForegroundColor DarkGray "[+] User '$Username' has been created with password: $Password"
+        Write-Host -ForegroundColor DarkGray "[+] User '$Username' has been created with password: $Password"
     
         # Add the user to the Administrators group
         Add-LocalGroupMember -Group "Administrators" -Member $Username
