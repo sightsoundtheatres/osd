@@ -101,17 +101,7 @@ if ($WindowsPhase -eq 'OOBE') {
     #Load everything needed to run AutoPilot and Azure KeyVault
     osdcloud-StartOOBE -DateTime -InstallWinGet -WinGetUpgrade -WinGetPwsh
     Step-installCiscoRootCert
-
-    #Test / Install Dell DCU if supported
-    if ($DellEnterprise -eq $true) {
-        Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/sightsoundtheatres/OSD/master/modules/devicesdell.psm1')
-        Write-Host -ForegroundColor Yellow "[-] System = Dell - Installing Dell Dell Command Update"
-        osdcloud-InstallDCU
-        osdcloud-RunDCU
-    } else {
-        Write-Host -ForegroundColor Cyan "[-] System is not = Dell - Dell DCU not supported"
-    }
-
+    Step-oobeDellDCU
     Step-oobeUpdateDrivers
     Step-oobeUpdateWindows
     Step-RestartConfirmation

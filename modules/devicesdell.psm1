@@ -172,11 +172,9 @@ function osdcloud-RunDCU {
     $LogFile = "$LogFolder\DCU.log"
     if (Test-path -Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe'){
         $ProcessPath = 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe'
-    }
-    elseif (Test-path -Path 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe'){
+    } elseif (Test-path -Path 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe'){
         $ProcessPath = 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe'
-    }
-    else {
+    } else {
         throw "No DCU Installed"
     }
 
