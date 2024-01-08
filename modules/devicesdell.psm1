@@ -226,6 +226,8 @@ function osdcloud-DCUAutoUpdate {
     $DCUReturn = $DCUReturnTablet | Where-Object {$_.ReturnCode -eq $DCU.ExitCode}
 
     Write-Host "DCU Finished with Code: $($DCU.ExitCode): $($DCUReturn.Description)"
+    Write-Host -ForegroundColor Yellow "[-] Starting Dell Client Management Service..."
+    Stop-Service -Name $DCUServiceName
 }
 
 
