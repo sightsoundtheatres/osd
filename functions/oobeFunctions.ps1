@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.1.7.1'
+$ScriptVersion = '24.1.9.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {

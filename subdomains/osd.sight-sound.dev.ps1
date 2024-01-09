@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 24.1.8.2
+.VERSION 24.1.9.1
 .GUID 9670c013-d1b1-4f5d-9bd0-0fa185b9f203
 .AUTHOR David Segura @SeguraOSD
 .COMPANYNAME osdcloud.com
@@ -24,7 +24,7 @@ powershell iex (irm sandbox.osdcloud.com)
 .DESCRIPTION
     PowerShell Script which supports the OSDCloud environment
 .NOTES
-    Version 24.1.8.2
+    Version 24.1.9.1
 .LINK
     https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/osd.osdcloud.com.ps1
 .EXAMPLE
@@ -33,7 +33,7 @@ powershell iex (irm sandbox.osdcloud.com)
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '24.1.8.2'
+$ScriptVersion = '24.1.9.1'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
