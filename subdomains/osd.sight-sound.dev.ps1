@@ -108,7 +108,7 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-oobeRemoveAppxPackage
     Step-oobeSetUserRegSettings
     Step-oobeSetDeviceRegSettings
-    Step-windowsWallpaper
+    Step-desktopWallpaper
     Step-oobeCreateLocalUser
     Step-oobeSetDateTime
     Step-oobeRegisterAutopilot    

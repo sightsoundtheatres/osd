@@ -368,25 +368,27 @@ function Step-oobeCreateLocalUser {
     
     }
 
-function Step-windowsWallpaper {
+function Step-desktopWallpaper {
     [CmdletBinding()]
-    param ()
-    
-        Write-Host -ForegroundColor Yellow "[-] Replacing default wallpaper and lockscreen images..."
+    param ()    
+    $scriptPath = "C:\OSDCloud\Scripts\set-desktopWallpaper.ps1"
+    if (Test-Path $scriptPath) {
+        Write-Host -ForegroundColor Green "[+] Replacing default wallpaper and lockscreen images"        
+    } else {        
+        Write-Host -ForegroundColor Yellow "[-] Replacing default wallpaper and lockscreen images"
         # Download the script
-        Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/set-WindowsDesktopWallpaper.ps1 -OutFile C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/desktopWallpaper.ps1 -OutFile $scriptPath
         # Execute the script
-        & C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1 -ErrorAction SilentlyContinue
-        # Remove script
-        Remove-Item -Path C:\OSDCloud\Scripts\set-WindowsDesktopWallpaper.ps1
-    }
+        & $scriptPath -ErrorAction SilentlyContinue
+    }        
+}
 
 
 function Step-oobeRestartComputer {
     [CmdletBinding()]
     param ()        
         # Removing downloaded content
-        Write-Host -ForegroundColor Yellow "[-] Cleaning up... Removing temperary directories"
+        Write-Host -ForegroundColor Yellow "[!] Cleaning up... Removing temperary directories"
         # Get-ChildItem -Path "C:\osdcloud\*" | Where-Object { $_.Name -ne "Logs" } | ForEach-Object { Remove-Item $_.FullName -Force -Recurse }
         if (Test-Path "C:\osdcloud" -PathType Container) { Remove-Item "C:\osdcloud" -Force -Recurse }
         if (Test-Path "C:\Drivers" -PathType Container) { Remove-Item "C:\Drivers" -Force -Recurse }
@@ -424,7 +426,7 @@ if (Test-Path -Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe') {
         Write-Host -ForegroundColor Green "[+] Dell Command Update installed successfully"
         $ProcessPath = 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe'
     } else {
-        Write-Host -ForegroundColor Cyan "[-] System not = Dell - DCU not supported"
+        Write-Host -ForegroundColor Cyan "[!] DCU not supported"
     }
 }
 }
