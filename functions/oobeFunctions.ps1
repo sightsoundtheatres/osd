@@ -157,7 +157,7 @@ function Step-oobeRegisterAutopilot {
             Step-oobeInstallModuleAutopilotOOBE
         }
         else {
-            Write-Host -ForegroundColor Cyan "[-] Device registration with Autopilot skipped."
+            Write-Host -ForegroundColor Cyan "[!] Device registration with Autopilot skipped."
             return
         }
     }
@@ -248,7 +248,7 @@ function Step-RestartConfirmation {
     if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
         Restart-Computer -Force
     } else {
-        Write-Host -ForegroundColor Cyan "[-] Continuing script execution..."
+        Write-Host -ForegroundColor Cyan "[!] Continuing script execution..."
     }
   }
 
