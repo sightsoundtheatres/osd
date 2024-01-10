@@ -1,8 +1,9 @@
 <#PSScriptInfo
-.VERSION 24.1.9.1
+.VERSION 24.1.9.2
 .GUID 9670c013-d1b1-4f5d-9bd0-0fa185b9f203
 .AUTHOR David Segura @SeguraOSD
-.COMPANYNAME osdcloud.com
+.AUTHOR Matthew Miles 
+.COMPANYNAME osdcloud.com 
 .COPYRIGHT (c) 2023 David Segura osdcloud.com. All rights reserved.
 .TAGS OSDeploy OSDCloud WinPE OOBE Windows AutoPilot
 .LICENSEURI 
@@ -15,7 +16,7 @@
 Script should be executed in a Command Prompt using the following command
 powershell Invoke-Expression -Command (Invoke-RestMethod -Uri osd.sight-sound.dev)
 This is abbreviated as
-powershell iex (irm sandbox.osdcloud.com)
+powershell iex (irm osd.sight-sound.dev)
 #>
 #Requires -RunAsAdministrator
 <#
@@ -24,16 +25,16 @@ powershell iex (irm sandbox.osdcloud.com)
 .DESCRIPTION
     PowerShell Script which supports the OSDCloud environment
 .NOTES
-    Version 24.1.9.1
+    Version 24.1.9.2
 .LINK
-    https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/osd.osdcloud.com.ps1
+    https://raw.githubusercontent.com/sightsoundtheatres/osd/main/subdomains/osd.sight-sound.dev.ps1
 .EXAMPLE
     powershell iex (irm osd.sight-sound.dev)
 #>
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '24.1.9.1'
+$ScriptVersion = '24.1.9.2'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
