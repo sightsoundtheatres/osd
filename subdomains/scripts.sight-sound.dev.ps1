@@ -82,8 +82,8 @@ if ($Repository) {
     }
 
     # Set Scripts Path
-    $ScriptFilesRoot = "$DestinationPath\scripts"
-    $ScriptFiles = Get-ChildItem -Path $ScriptFilesRoot -Directory | Select-Object -First 1 -ExpandProperty FullName
+    $ScriptFilesRoot = "$DestinationPath\scripts" | Select-Object -First 1 -ExpandProperty FullName
+    $ScriptFiles = Get-ChildItem -Path $ScriptFilesRoot  
     if (Test-Path $ScriptFiles) {
         Write-Host -ForegroundColor Green "[+] Repo $Repo is set to $ScriptFiles"
     }
