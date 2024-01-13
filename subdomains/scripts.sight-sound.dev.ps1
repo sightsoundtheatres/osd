@@ -9,9 +9,6 @@
 .EXAMPLE
     iex (irm scripts.sight-sound.dev)
 
-.EXAMPLE
-    iex (irm scripts.sight-sound.dev)
-
 .NOTES
     Author: Matthew Miles
     Modified: 2024-01-13
