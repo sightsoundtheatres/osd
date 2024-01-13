@@ -1,2 +1,1 @@
-# osd
 Cloud Scripts
