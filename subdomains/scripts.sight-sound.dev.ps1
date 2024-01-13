@@ -14,7 +14,7 @@
 
 .NOTES
     Author: Matthew Miles
-    Modified: 2024-01-12
+    Modified: 2024-01-13
 #>
 [CmdletBinding()]
 param(
@@ -25,7 +25,7 @@ param(
 $ProgressPreference = 'SilentlyContinue'
 
 $ScriptName = 'scripts.sight-sound.dev'
-$ScriptVersion = '24.1.12.1'
+$ScriptVersion = '24.1.13.1'
 Write-Host -ForegroundColor Cyan "[i] $ScriptName version $ScriptVersion"
 
 $ExecutionPolicy = Get-ExecutionPolicy
