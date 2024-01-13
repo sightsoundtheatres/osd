@@ -10,8 +10,10 @@
     iex (irm scripts.sight-sound.dev)
 
 .NOTES
-    Author: Matthew Miles
+    Edits / Modifications: Matthew Miles
     Modified: 2024-01-13
+    Orginal Auther: David Segura
+    Orginal Code Link: https://github.com/OSDeploy/OSDCloudScriptsGUI/tree/main
 #>
 [CmdletBinding()]
 param(
