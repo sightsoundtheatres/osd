@@ -39,8 +39,7 @@ $Repository = Invoke-RestMethod -Uri "https://api.github.com/repos/$Owner/$Repo"
 
 if ($Repository) {
     Write-Host -ForegroundColor Green "[+] GitHub Repository $Owner/$Repo found"
-}
-else {
+} else {
     Write-Host -ForegroundColor Red "[!] GitHub Repository $Owner/$Repo not found"
     Break
 }
@@ -63,8 +62,7 @@ else {
 
     if (Test-Path $OutFile) {
         Write-Host -ForegroundColor Green "[+] Repo $Repo downloaded to $OutFile"
-    }
-    else {
+    } else {
         Write-Host -ForegroundColor Red "[!] Repo $Repo could not be downloaded"
         Break
     }
@@ -78,16 +76,13 @@ else {
     Expand-Archive -Path $OutFile -DestinationPath $DestinationPath -Force
     if (Test-Path $DestinationPath) {
         Write-Host -ForegroundColor Green "[+] Repo $Repo expanded to $DestinationPath"
-    }
-    else {
+    } else {
         Write-Host -ForegroundColor Red "[!] Repo $Repo could not be expanded to $DestinationPath"
         Break
     }
 
     # Set Scripts Path
-    $ScriptFiles = Get-ChildItem -Path $DestinationPaths -Directory | Select-Object -First 1 -ExpandProperty FullName
-    #$ScriptFiles = "$ScriptFilesRoot\scripts"
-
+    $ScriptFiles = Get-ChildItem -Path $DestinationPath -Directory | Select-Object -First 1 -ExpandProperty FullName
     if (Test-Path $ScriptFiles) {
         Write-Host -ForegroundColor Green "[+] Repo $Repo is set to $ScriptFiles"
     }
