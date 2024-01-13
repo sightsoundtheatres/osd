@@ -25,8 +25,8 @@ param(
 # Set ProgressPreference to SilentlyContinue
 $ProgressPreference = 'SilentlyContinue'
 
-$ScriptName = 'scripts.sight-sound.dev'
-$ScriptVersion = '24.1.12.1'
+$ScriptName = 'scripts.osdcloud.com'
+$ScriptVersion = '23.9.28.1'
 Write-Host -ForegroundColor Cyan "[i] $ScriptName version $ScriptVersion"
 
 $ExecutionPolicy = Get-ExecutionPolicy
@@ -40,7 +40,8 @@ $Repository = Invoke-RestMethod -Uri "https://api.github.com/repos/$Owner/$Repo"
 
 if ($Repository) {
     Write-Host -ForegroundColor Green "[+] GitHub Repository $Owner/$Repo found"
-} else {
+}
+else {
     Write-Host -ForegroundColor Red "[!] GitHub Repository $Owner/$Repo not found"
     Break
 }
@@ -63,7 +64,8 @@ if ($Repository) {
 
     if (Test-Path $OutFile) {
         Write-Host -ForegroundColor Green "[+] Repo $Repo downloaded to $OutFile"
-    } else {
+    }
+    else {
         Write-Host -ForegroundColor Red "[!] Repo $Repo could not be downloaded"
         Break
     }
@@ -77,7 +79,8 @@ if ($Repository) {
     Expand-Archive -Path $OutFile -DestinationPath $DestinationPath -Force
     if (Test-Path $DestinationPath) {
         Write-Host -ForegroundColor Green "[+] Repo $Repo expanded to $DestinationPath"
-    } else {
+    }
+    else {
         Write-Host -ForegroundColor Red "[!] Repo $Repo could not be expanded to $DestinationPath"
         Break
     }
@@ -86,7 +89,8 @@ if ($Repository) {
     $ScriptFiles = Get-ChildItem -Path $DestinationPath -Directory | Select-Object -First 1 -ExpandProperty FullName
     if (Test-Path $ScriptFiles) {
         Write-Host -ForegroundColor Green "[+] Repo $Repo is set to $ScriptFiles"
-    } else {
+    }
+    else {
         Write-Host -ForegroundColor Red "[!] Repo $Repo could not be created at $ScriptFiles"
         Break
     }
@@ -110,7 +114,8 @@ if ($Repository) {
 
     if (Test-Path $GUIOutFile) {
         Write-Host -ForegroundColor Green "[+] OSDCloudScriptsGUI downloaded to $GUIOutFile"
-    } else {
+    }
+    else {
         Write-Host -ForegroundColor Red "[!] OSDCloudScriptsGUI could not be downloaded"
         Break
     }
@@ -124,7 +129,8 @@ if ($Repository) {
     Expand-Archive -Path $GUIOutFile -DestinationPath $DestinationPath -Force
     if (Test-Path $DestinationPath) {
         Write-Host -ForegroundColor Green "[+] OSDCloudScriptsGUI expanded to $DestinationPath"
-    } else {
+    }
+    else {
         Write-Host -ForegroundColor Red "[!] OSDCloudScriptsGUI could not be expanded to $DestinationPath"
         Break
     }
@@ -148,23 +154,28 @@ if ($Repository) {
         Copy-Item -Path $SourceModuleRoot -Destination $ModulePath -Recurse -Force -ErrorAction SilentlyContinue
         if (Test-Path $ModulePath) {
             Write-Host -ForegroundColor Green "[+] OSDCloudScriptsGUI Module copied to $ModulePath"
-        } else {
+        }
+        else {
             Write-Host -ForegroundColor Red "[!] OSDCloudScriptsGUI Module could not be copied to $ModulePath"
             Break
-        } try {
+        }
+        try {
             Import-Module $ModulePath -Force -ErrorAction Stop
             Write-Host -ForegroundColor Green "[+] Import-Module $ModulePath -Force"
-        } catch {
+        }
+        catch {
             Write-Host -ForegroundColor Red "[!] Import-Module $ModulePath -Force"
             Write-Error $_.Exception.Message
             Break
         }
-    } else {
+    }
+    else {
         $ModulePath = "$env:TEMP\OSDCloudScriptsGUI\OSDCloudScriptsGUI-main\OSDCloudScriptsGUI.psm1"
         try {
             Import-Module $ModulePath -Force -ErrorAction Stop
             Write-Host -ForegroundColor Green "[+] Import-Module $ModulePath -Force"
-        } catch {
+        }
+        catch {
             Write-Host -ForegroundColor Red "[!] Import-Module $ModulePath -Force"
             Write-Error $_.Exception.Message
             Break
