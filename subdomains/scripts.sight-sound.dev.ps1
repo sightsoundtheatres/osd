@@ -85,7 +85,7 @@ else {
     }
 
     # Set Scripts Path
-    $ScriptFilesRoot = Get-ChildItem -Path "$DestinationPaths" -Directory | Select-Object -First 1 -ExpandProperty FullName
+    $ScriptFilesRoot = Get-ChildItem -Path $DestinationPaths -Directory | Select-Object -First 1 -ExpandProperty FullName
     $ScriptFiles = "$ScriptFilesRoot\scripts"
 
     if (Test-Path $ScriptFiles) {
