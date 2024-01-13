@@ -4,29 +4,28 @@
     Configure the OSDCloudScriptsGUI PowerShell Module and start the OSDCloudScriptsGUI
 
 .EXAMPLE
-    Invoke-Expression (Invoke-WebRequest -Uri https://scripts.osdcloud.com)
+    Invoke-Expression (Invoke-WebRequest -Uri https://scripts.sight-sound.dev)
 
 .EXAMPLE
-    iex (irm scripts.osdcloud.com)
+    iex (irm scripts.sight-sound.dev)
 
 .EXAMPLE
-    iex (irm scripts.osdcloud.com)
-    iex "& { $(irm scripts.osdcloud.com) } -Owner OSDeploy -Repo OSDCloudScripts"
+    iex (irm scripts.sight-sound.dev)
 
 .NOTES
-    Author: David Segura
-    Modified: 2023-09-28
+    Author: Matthew Miles
+    Modified: 2024-01-12
 #>
 [CmdletBinding()]
 param(
-    [System.String] $Owner = 'OSDeploy',
-    [System.String] $Repo = 'OSDCloudScripts'
+    [System.String] $Owner = 'sightsoundtheatres',
+    [System.String] $Repo = 'osd'
 )
 # Set ProgressPreference to SilentlyContinue
 $ProgressPreference = 'SilentlyContinue'
 
-$ScriptName = 'scripts.osdcloud.com'
-$ScriptVersion = '23.9.28.1'
+$ScriptName = 'scripts.sight-sound.dev'
+$ScriptVersion = '24.1.12.1'
 Write-Host -ForegroundColor Cyan "[i] $ScriptName version $ScriptVersion"
 
 $ExecutionPolicy = Get-ExecutionPolicy
@@ -86,7 +85,7 @@ else {
     }
 
     # Set Scripts Path
-    $ScriptFiles = Get-ChildItem -Path "$DestinationPath\Autopilot" -Directory | Select-Object -First 1 -ExpandProperty FullName
+    $ScriptFiles = Get-ChildItem -Path "$DestinationPath\scripts" -Directory | Select-Object -First 1 -ExpandProperty FullName
     #$ScriptFiles = "$ScriptFilesRoot\Alpha"
 
     if (Test-Path $ScriptFiles) {
