@@ -1,5 +1,4 @@
 <#PSScriptInfo
-.VERSION 24.1.9.2
 .GUID 9670c013-d1b1-4f5d-9bd0-0fa185b9f203
 .AUTHOR David Segura @SeguraOSD
 .AUTHOR Matthew Miles 
@@ -24,8 +23,6 @@ powershell iex (irm osd.sight-sound.dev)
     PowerShell Script which supports the OSDCloud environment
 .DESCRIPTION
     PowerShell Script which supports the OSDCloud environment
-.NOTES
-    Version 24.1.9.2
 .LINK
     https://raw.githubusercontent.com/sightsoundtheatres/osd/main/subdomains/osd.sight-sound.dev.ps1
 .EXAMPLE
@@ -34,7 +31,7 @@ powershell iex (irm osd.sight-sound.dev)
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '24.1.9.2'
+$ScriptVersion = '24.1.25.1'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
@@ -102,6 +99,7 @@ if ($WindowsPhase -eq 'OOBE') {
     #Load everything needed to setup a new computer and register to AutoPilot
     osdcloud-StartOOBE -InstallWinGet -WinGetUpgrade -WinGetPwsh
     Step-installCiscoRootCert
+    Step-InstallM365Apps
     Step-oobeDellDCU
     Step-oobeUpdateDrivers
     Step-oobeUpdateWindows
