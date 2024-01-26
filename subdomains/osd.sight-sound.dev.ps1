@@ -31,7 +31,7 @@ powershell iex (irm osd.sight-sound.dev)
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '24.1.26.2'
+$ScriptVersion = '24.1.26.3'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
@@ -101,8 +101,9 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-installCiscoRootCert
     Step-InstallM365Apps
     Step-oobeDellDCU
-    Step-oobeUpdateDrivers
-    Step-oobeUpdateWindows
+    Step-oobeUpdateOS
+    #Step-oobeUpdateDrivers
+    #Step-oobeUpdateWindows
     Step-RestartConfirmation
     Step-oobeRemoveAppxPackage
     Step-oobeSetUserRegSettings

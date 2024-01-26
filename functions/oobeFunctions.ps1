@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.1.26.2'
+$ScriptVersion = '24.1.26.3'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -511,5 +511,14 @@ function Step-oobeRemoveModules {
 
     }
 
-
+    function Step-oobeUpdateOS {
+        [CmdletBinding()]
+        param ()    
+        $scriptPath = "C:\OSDCloud\Scripts\UpdateOS.ps1"
+            Write-Host -ForegroundColor Green "[+] Updating Windows OS"   
+            # Download the script
+            Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/UpdateOS.ps1 -OutFile $scriptPath
+            # Execute the script
+            & $scriptPath -ErrorAction SilentlyContinue              
+    }
 
