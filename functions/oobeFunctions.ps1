@@ -515,7 +515,7 @@ function Step-oobeRemoveModules {
         [CmdletBinding()]
         param ()    
         $scriptPath = "C:\OSDCloud\Scripts\UpdateOS.ps1"
-            Write-Host -ForegroundColor Green "[+] Updating Windows OS"   
+            Write-Host -ForegroundColor Yellow "[!] Updating Windows OS"   
             # Download the script
             Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/UpdateOS.ps1 -OutFile $scriptPath
             # Execute the script
