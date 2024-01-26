@@ -402,12 +402,14 @@ function Step-InstallM365Apps {
 
     if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {            
         Write-Host -ForegroundColor Yellow "[-] Installing M365 Applications"
-        winget install microsoft.office --exact --accept-source-agreements --accept-package-agreements --override "/configure https://raw.githubusercontent.com/sightsoundtheatres/osd/main/supportFiles/MicrosoftOffice/configuration.xml"
+        #$configFile = "C:\OSDCloud\configuration.xml"
+        #Invoke-RestMethod -Uri "https://raw.githubusercontent.com/sightsoundtheatres/osd/main/supportFiles/MicrosoftOffice/configuration.xml" -Outfile $configFile
+        #winget install microsoft.office --override "/configure $configFile" --accept-source-agreements --accept-package-agreements 
                 
         # Download the script
-        #Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/InstallM365Apps.ps1 -OutFile $scriptPath
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/InstallM365Apps.ps1 -OutFile $scriptPath
         # Execute the script
-        #& $scriptPath -XMLURL "https://ssintunedata.blob.core.windows.net/m365/configuration.xml" -ErrorAction SilentlyContinue
+        & $scriptPath -XMLURL "https://raw.githubusercontent.com/sightsoundtheatres/osd/main/supportFiles/MicrosoftOffice/configuration.xml" -ErrorAction SilentlyContinue
     }
     else {
         Write-Host -ForegroundColor Cyan "[!] Installation of M365 office applications skipped."
