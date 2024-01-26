@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.1.25.1'
+$ScriptVersion = '24.1.26.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -389,6 +389,11 @@ function Step-InstallM365Apps {
         Write-Host -ForegroundColor Green "[+] M365 Applications Installed"        
         return
     } 
+    $skyppedPath = "c:\osdcloud\scripts\m365appinstallskipped.txt"
+    if (test-path $skyppedPath) {
+        Write-Host -ForegroundColor Cyan "[!] Installation of M365 office applications skipped."
+        return
+    }
     # Display a pop-up asking for user confirmation
     $caption = "Install M365 Apps?"
     $message = "Would you like to install the M365 Office Applications?"
@@ -397,13 +402,16 @@ function Step-InstallM365Apps {
 
     if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {            
         Write-Host -ForegroundColor Yellow "[-] Installing M365 Applications"
+        winget install microsoft.office --exact --accept-source-agreements --accept-package-agreements --override "/configure https://raw.githubusercontent.com/sightsoundtheatres/osd/main/supportFiles/MicrosoftOffice/configuration.xml"
+                
         # Download the script
-        Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/InstallM365Apps.ps1 -OutFile $scriptPath
+        #Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/InstallM365Apps.ps1 -OutFile $scriptPath
         # Execute the script
-        & $scriptPath -XMLURL "https://ssintunedata.blob.core.windows.net/m365/configuration.xml" -ErrorAction SilentlyContinue
+        #& $scriptPath -XMLURL "https://ssintunedata.blob.core.windows.net/m365/configuration.xml" -ErrorAction SilentlyContinue
     }
     else {
         Write-Host -ForegroundColor Cyan "[!] Installation of M365 office applications skipped."
+        New-Item -ItemType File -Path $skyppedPath | Out-Null
         return
     }
 }
