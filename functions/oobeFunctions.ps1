@@ -500,6 +500,7 @@ function Step-oobeRemoveModules {
                 $modulePath = "C:\Program Files\WindowsPowerShell\Modules\$module"
 
                 if (Test-Path $modulePath) {
+                    Uninstall-Module $module -Force
                     Remove-Item $modulePath -Recurse -Force -ErrorAction SilentlyContinue
                     Write-Host -ForegroundColor DarkGray "[-] Removed module '$module' for user with SID '$userSID'"
                 }
