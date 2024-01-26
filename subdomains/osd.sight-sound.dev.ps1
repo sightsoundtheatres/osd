@@ -103,7 +103,6 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-oobeDellDCU
     Start-WindowsUpdate #from OSDCloud
     Start-WindowsUpdateDriver # from OSDCloud
-    #Step-oobeUpdateOS
     #Step-oobeUpdateDrivers
     #Step-oobeUpdateWindows
     Step-RestartConfirmation
@@ -112,10 +111,9 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-oobeSetDeviceRegSettings
     Step-desktopWallpaper
     Step-oobeCreateLocalUser
-    Set-TimeZoneFromIP
+    Set-TimeZoneFromIP | Out-Null
     Step-oobeSetDateTime
-    Step-oobeRegisterAutopilot  
-    Step-oobeRemoveModules  
+    Step-oobeRegisterAutopilot 
     Step-oobeRestartComputer
 
     $null = Stop-Transcript -ErrorAction Ignore
