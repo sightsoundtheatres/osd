@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.1.9.1'
+$ScriptVersion = '24.1.25.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -384,29 +384,29 @@ function Step-InstallM365Apps {
         [System.String]
         $Command
     )    
-        # Display a pop-up asking for user confirmation
-        $caption = "Install M365 Apps?"
-        $message = "Would you like to install the M365 Office Applications?"
-        $options = [System.Windows.Forms.MessageBoxButtons]::YesNo
-        $result = [System.Windows.Forms.MessageBox]::Show($message, $caption, $options, [System.Windows.Forms.MessageBoxIcon]::Question)
+    $scriptPath = "C:\OSDCloud\Scripts\InstallM365Apps.ps1"
+    if (Test-Path $scriptPath) {
+        Write-Host -ForegroundColor Green "[+] M365 Applications Installed"        
+        return
+    } 
+    # Display a pop-up asking for user confirmation
+    $caption = "Install M365 Apps?"
+    $message = "Would you like to install the M365 Office Applications?"
+    $options = [System.Windows.Forms.MessageBoxButtons]::YesNo
+    $result = [System.Windows.Forms.MessageBox]::Show($message, $caption, $options, [System.Windows.Forms.MessageBoxIcon]::Question)
 
-        if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {            
-            $scriptPath = "C:\OSDCloud\Scripts\InstallM365Apps.ps1"
-                if (Test-Path $scriptPath) {
-                    Write-Host -ForegroundColor Green "[+] M365 Applications Installed"        
-                } else {        
-                    Write-Host -ForegroundColor Yellow "[-] Installing M365 Applications"
-                    # Download the script
-                    Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/InstallM365Apps.ps1 -OutFile $scriptPath
-                    # Execute the script
-                    & $scriptPath -XMLURL "https://ssintunedata.blob.core.windows.net/m365/configuration.xml" -ErrorAction SilentlyContinue
-                }      
-        }
-        else {
-            Write-Host -ForegroundColor Cyan "[!] Installation of M365 office applications skipped."
-            return
-        }
+    if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {            
+        Write-Host -ForegroundColor Yellow "[-] Installing M365 Applications"
+        # Download the script
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/InstallM365Apps.ps1 -OutFile $scriptPath
+        # Execute the script
+        & $scriptPath -XMLURL "https://ssintunedata.blob.core.windows.net/m365/configuration.xml" -ErrorAction SilentlyContinue
     }
+    else {
+        Write-Host -ForegroundColor Cyan "[!] Installation of M365 office applications skipped."
+        return
+    }
+}
 
 function Step-oobeRestartComputer {
     [CmdletBinding()]
