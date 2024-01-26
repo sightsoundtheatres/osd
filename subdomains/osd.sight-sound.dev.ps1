@@ -31,7 +31,7 @@ powershell iex (irm osd.sight-sound.dev)
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '24.1.26.1'
+$ScriptVersion = '24.1.26.2'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
@@ -110,7 +110,8 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-desktopWallpaper
     Step-oobeCreateLocalUser
     Step-oobeSetDateTime
-    Step-oobeRegisterAutopilot    
+    Step-oobeRegisterAutopilot  
+    Step-oobeRemoveModules  
     Step-oobeRestartComputer
 
     $null = Stop-Transcript -ErrorAction Ignore

@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.1.26.1'
+$ScriptVersion = '24.1.26.2'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -69,7 +69,8 @@ $Global:oobeCloud = @{
                                 'Microsoft.ZuneVideo',
                                 'Clipchamp.Clipchamp',
                                 'Microsoft.YourPhone',
-                                'MicrosoftTeams'    
+                                'MicrosoftTeams',
+                                'MicrosoftCorporationII.QuickAssist' 
 }
 
 #=================================================
@@ -475,6 +476,39 @@ function Step-oobeSetDateTime {
         if ($ProcessId) {
             Wait-Process $ProcessId
         }
+    }
+
+function Step-oobeRemoveModules {
+    [CmdletBinding()]
+    param ()        
+        # Removing downloaded content
+        $modules = @("Az.Accounts",
+                     "Az.Resources",
+                     "Az.Storage",
+                     "NTFSSecurity",
+                     "OSD",
+                     "Pester",
+                     "PSWindowsUpdate",
+                     "WindowsAutoPilotIntune"
+)
+        $allUsers = Get-LocalUser | Where-Object {$_.Enabled -eq $true}
+
+        foreach ($user in $allUsers) {
+            $userSID = $user.SID.Value
+
+            foreach ($module in $modules) {
+                $modulePath = "C:\Program Files\WindowsPowerShell\Modules\$module"
+
+                if (Test-Path $modulePath) {
+                    Remove-Item $modulePath -Recurse -Force -ErrorAction SilentlyContinue
+                    Write-Host -ForegroundColor DarkGray "[-] Removed module '$module' for user with SID '$userSID'"
+                }
+                else {
+                    Write-Host -ForegroundColor DarkGray "[-] Module '$module' not found for user with SID '$userSID'"
+                }
+            }
+        }
+
     }
 
 
