@@ -234,16 +234,63 @@ function Step-oobeUpdateWindows {
     function Step-RestartConfirmation {
         [CmdletBinding()]
         param ()
-           
+          
         $file = "C:\OSDCloud\Scripts\WURanOnce.txt"
         if (!(Test-Path $file)) {
             $caption = "Restart Computer?"
             Add-Type -AssemblyName System.Windows.Forms
             $message = "Were Windows Updates ran that would require a restart?  If so please click YES to restart now and then start this script over.  Otherwise, please click NO to continue"
             $options = [System.Windows.Forms.MessageBoxButtons]::YesNo
-            $result = [System.Windows.Forms.MessageBox]::Show($message, $caption, $options, [System.Windows.Forms.MessageBoxIcon]::Question)
-    
-            if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
+            $timer = New-Object System.Windows.Forms.Timer
+            $timer.Interval = 1000 * 30 # 30 seconds
+            $timer.Enabled = $true
+            $timer.add_Tick({
+                $timer.Stop()
+                $form.DialogResult = [System.Windows.Forms.DialogResult]::Yes
+                $form.Close()
+            })
+            $form = New-Object System.Windows.Forms.Form
+            $form.Text = $caption
+            $form.Width = 400
+            $form.Height = 200
+            $form.StartPosition = "CenterScreen"
+            
+            $textBox = New-Object System.Windows.Forms.TextBox
+            $textBox.Multiline = $true
+            $textBox.Text = $message
+            $textBox.ScrollBars = "Vertical"
+            $textBox.Location = New-Object System.Drawing.Point(10, 20)
+            $textBox.Size = New-Object System.Drawing.Size(360, 60)
+            $textBox.ReadOnly = $true
+            $form.Controls.Add($textBox)
+            
+            $yesButton = New-Object System.Windows.Forms.Button
+            $yesButton.Location = New-Object System.Drawing.Point(50, 100)
+            $yesButton.Size = New-Object System.Drawing.Size(75, 23)
+            $yesButton.Text = "Yes (30s)"
+            $yesButton.DialogResult = [System.Windows.Forms.DialogResult]::Yes
+            $yesButton.Add_Click({
+                $form.DialogResult = [System.Windows.Forms.DialogResult]::Yes
+                $form.Close()
+            })
+            $form.Controls.Add($yesButton)
+            
+            $noButton = New-Object System.Windows.Forms.Button
+            $noButton.Location = New-Object System.Drawing.Point(150, 100)
+            $noButton.Size = New-Object System.Drawing.Size(75, 23)
+            $noButton.Text = "No"
+            $noButton.DialogResult = [System.Windows.Forms.DialogResult]::No
+            $noButton.Add_Click({
+                $form.DialogResult = [System.Windows.Forms.DialogResult]::No
+                $form.Close()
+            })
+            $form.Controls.Add($noButton)
+            
+            $form.Topmost = $true
+            $form.Add_Shown({$timer.Start(); $yesButton.Focus()})
+            $form.ShowDialog()
+            
+            if ($form.DialogResult -eq [System.Windows.Forms.DialogResult]::Yes) {
                 New-Item -ItemType File -Path $file -Force | Out-Null
                 Restart-Computer -Force
             } else {
@@ -253,6 +300,7 @@ function Step-oobeUpdateWindows {
             Write-Host -ForegroundColor Green "[+] WU reboot not required"
         }
     }
+    
 
 function Step-oobeSetUserRegSettings {
     [CmdletBinding()]
