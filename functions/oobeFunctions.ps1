@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.1.27.1'
+$ScriptVersion = '24.1.27.2'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -231,22 +231,29 @@ function Step-oobeUpdateWindows {
         }
     }
 
-function Step-RestartConfirmation {
-    [CmdletBinding()]
-    param ()
-      
-    Add-Type -AssemblyName System.Windows.Forms
-    $caption = "Restart Computer?"
-    $message = "Were Windows Updates ran that would require a restart?  If so please click YES to restart now and then start this script over.  Otherwise, please click NO to continue"
-    $options = [System.Windows.Forms.MessageBoxButtons]::YesNo
-    $result = [System.Windows.Forms.MessageBox]::Show($message, $caption, $options, [System.Windows.Forms.MessageBoxIcon]::Question)
-
-    if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
-        Restart-Computer -Force
-    } else {
-        Write-Host -ForegroundColor Cyan "[!] Continuing script execution..."
+    function Step-RestartConfirmation {
+        [CmdletBinding()]
+        param ()
+           
+        $file = "C:\OSDCloud\Scripts\WURanOnce.txt"
+        if (!(Test-Path $file)) {
+            $caption = "Restart Computer?"
+            Add-Type -AssemblyName System.Windows.Forms
+            $message = "Were Windows Updates ran that would require a restart?  If so please click YES to restart now and then start this script over.  Otherwise, please click NO to continue"
+            $options = [System.Windows.Forms.MessageBoxButtons]::YesNo
+            $result = [System.Windows.Forms.MessageBox]::Show($message, $caption, $options, [System.Windows.Forms.MessageBoxIcon]::Question)
+    
+            if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
+                New-Item -ItemType File -Path $file -Force | Out-Null
+                Write-host "Restart Computer"
+                #Restart-Computer -Force
+            } else {
+                Write-Host -ForegroundColor Yellow "[!] WU reboot not requested"
+            }
+        } else {
+            Write-Host -ForegroundColor Green "[+] WU reboot not required"
+        }
     }
-  }
 
 function Step-oobeSetUserRegSettings {
     [CmdletBinding()]
