@@ -111,7 +111,7 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-oobeSetDeviceRegSettings
     Step-desktopWallpaper
     Step-oobeCreateLocalUser
-    Set-TimeZoneFromIP | Out-Null
+    Set-TimeZoneFromIP #from OSDCloud
     Step-oobeSetDateTime
     Step-oobeRegisterAutopilot 
     Step-oobeRestartComputer

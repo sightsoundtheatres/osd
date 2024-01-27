@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.1.26.3'
+$ScriptVersion = '24.1.27.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -469,11 +469,18 @@ if (Test-Path -Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe') {
 function Step-oobeSetDateTime {
     [CmdletBinding()]
     param ()    
-        Write-Host -ForegroundColor Yellow 'Verify the Date and Time is set properly including the Time Zone'
-        Write-Host -ForegroundColor Yellow 'If this is not configured properly, Certificates and Autopilot may fail'
-        Start-Process 'ms-settings:dateandtime' | Out-Null
-        $ProcessId = (Get-Process -Name 'SystemSettings').Id
-        if ($ProcessId) {
-            Wait-Process $ProcessId
-        }
+        # Syncing time
+        Write-Host -ForegroundColor Green "[+] Syncking system time"
+        w32tm /resync | Out-Null
+        
+        $getTime = Get-Date -Format "dddd, MMMM dd, yyyy hh:mm:ss tt zzz"
+        Write-Host -ForegroundColor Yellow "[!] $getTime"
+
+        #Write-Host -ForegroundColor Yellow 'Verify the Date and Time is set properly including the Time Zone'
+        #Write-Host -ForegroundColor Yellow 'If this is not configured properly, Certificates and Autopilot may fail'
+        #Start-Process 'ms-settings:dateandtime' | Out-Null
+        #$ProcessId = (Get-Process -Name 'SystemSettings').Id
+        #if ($ProcessId) {
+        #    Wait-Process $ProcessId
+        #}
     }
