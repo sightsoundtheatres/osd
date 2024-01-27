@@ -30,6 +30,7 @@ $AutopilotOOBEJson = @'
     "AddToGroupOptions": [
                               "Autopilot_Devices-GeneralUsers",
                               "Autopilot_Devices-Box_CC",
+                              "AutoPilot_Devices-Retail",
                               "Autopilot_Devices-CenterStageKiosk",
                               "Autopilot_Devices-SharedDevice_IT"
                          ],
