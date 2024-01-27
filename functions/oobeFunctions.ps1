@@ -245,8 +245,7 @@ function Step-oobeUpdateWindows {
     
             if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
                 New-Item -ItemType File -Path $file -Force | Out-Null
-                Write-host "Restart Computer"
-                #Restart-Computer -Force
+                Restart-Computer -Force
             } else {
                 Write-Host -ForegroundColor Yellow "[!] WU reboot not requested"
             }
