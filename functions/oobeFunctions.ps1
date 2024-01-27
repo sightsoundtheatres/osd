@@ -474,7 +474,7 @@ function Step-oobeSetDateTime {
         w32tm /resync | Out-Null
         
         $getTime = Get-Date -Format "dddd, MMMM dd, yyyy hh:mm:ss tt zzz"
-        Write-Host -ForegroundColor Yellow "[!] Current time - $getTime"
+        Write-Host -ForegroundColor Yellow "[!] Current time - "$getTime
 
         #Write-Host -ForegroundColor Yellow 'Verify the Date and Time is set properly including the Time Zone'
         #Write-Host -ForegroundColor Yellow 'If this is not configured properly, Certificates and Autopilot may fail'
