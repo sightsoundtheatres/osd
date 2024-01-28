@@ -98,6 +98,7 @@ if ($WindowsPhase -eq 'AuditMode') {
 if ($WindowsPhase -eq 'OOBE') {
     #Load everything needed to setup a new computer and register to AutoPilot
     osdcloud-StartOOBE -InstallWinGet -WinGetUpgrade 
+    Step-oobeHotFix
     Step-installCiscoRootCert
     Step-InstallM365Apps
     Step-oobeDellDCU

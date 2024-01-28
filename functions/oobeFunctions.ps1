@@ -544,10 +544,7 @@ function Step-oobeSetDateTime {
         [CmdletBinding()]
         param ()   
            #Download Hotfix for OOBE
-           Invoke-WebRequest -Uri "https://catalog.s.download.windowsupdate.com/c/msdownload/update/software/crup/2023/11/windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" -OutFile "C:\OSDCloud\windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" 
-
-           Expand-Archive -Path "C:\OSDCloud\windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" -DestinationPath "C:\Users\YourUserName\Downloads\KB5033055"
-
-           Start-Process -FilePath "C:\OSDCloud\KB5033055\Windows11.0-KB5033055-x64.msu" -ArgumentList "/quiet /norestart"
-
+           Invoke-WebRequest -Uri "https://catalog.s.download.windowsupdate.com/c/msdownload/update/software/crup/2023/11/windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" -OutFile "C:\OSDCloud\windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" | Out-Null
+           Start-Process -FilePath "C:\OSDCloud\windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" -ArgumentList "/quiet /norestart"
+           Write-Host -ForegroundColor Green "[+] OOBE HotFix KB85033055 installed successfully"
         }
