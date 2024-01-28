@@ -545,15 +545,15 @@ function Step-oobeSetDateTime {
         param ()   
         # Check if KB5033055 is installed
         if (Get-HotFix -ID KB5033055 -ErrorAction SilentlyContinue) {
-            Write-Host -ForegroundColor Green "[+] KB5033055 is already installed."
+            Write-Host -ForegroundColor Green "[+] OOBE HOtFix KB5033055 installed."
         }
         else {
             # Download Hotfix for OOBE
-            Write-Host -ForegroundColor Yellow "[!] Installing OOBE HotFix KB5033055"
+            Write-Host -ForegroundColor Yellow "[-] Installing OOBE HotFix KB5033055"
             Invoke-WebRequest -Uri "https://catalog.s.download.windowsupdate.com/c/msdownload/update/software/crup/2023/11/windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" -OutFile "C:\OSDCloud\windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" | Out-Null
             # Install the update
             Start-Process -FilePath "C:\OSDCloud\windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" -ArgumentList "/quiet /norestart"
-            Write-Host -ForegroundColor Green "[+] KB5033055 installed successfully."
+            Write-Host -ForegroundColor Green "[+] OOBE HotFix KB5033055 installed successfully."
         }
     }
     
