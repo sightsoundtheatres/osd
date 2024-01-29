@@ -31,7 +31,7 @@ powershell iex (irm osd.sight-sound.dev)
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '24.1.28.1'
+$ScriptVersion = '24.1.28.2'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
@@ -104,8 +104,6 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-oobeDellDCU
     Start-WindowsUpdate #from OSDCloud
     Start-WindowsUpdateDriver # from OSDCloud
-    #Step-oobeUpdateDrivers
-    #Step-oobeUpdateWindows
     Step-RestartConfirmation
     Step-oobeRemoveAppxPackage
     Step-oobeSetUserRegSettings
