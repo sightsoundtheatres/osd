@@ -1,7 +1,7 @@
 <#PSScriptInfo
 .GUID 9670c013-d1b1-4f5d-9bd0-0fa185b9f203
 .AUTHOR David Segura @SeguraOSD
-.AUTHOR Matthew Miles 
+.EDITS Matthew Miles 
 .COMPANYNAME osdcloud.com 
 .COPYRIGHT (c) 2023 David Segura osdcloud.com. All rights reserved.
 .TAGS OSDeploy OSDCloud WinPE OOBE Windows AutoPilot
