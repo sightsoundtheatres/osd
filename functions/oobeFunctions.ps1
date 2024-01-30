@@ -40,8 +40,9 @@ $AutopilotOOBEJson = @'
                 "IsPresent": true
               },
     "Hidden": [
+                "AssignedUser",
                 "PostAction",
-                "Assign",
+                "Assign",                
                 "Docs"
               ],    
     "PostAction": "Quit",
