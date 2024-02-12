@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.1.28.1'
+$ScriptVersion = '24.2.12.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -194,6 +194,25 @@ function Step-oobeRemoveAppxPackage {
             }
         }
     }
+function Step-oobeRemoveAppxPackageAllUsers {
+
+    Write-Host -ForegroundColor Yellow "[-] Removing Appx Packages"
+    foreach ($Item in $Global:oobeCloud.oobeRemoveAppxPackageName) {
+        if (Get-Command Get-AppxProvisionedPackage) {
+            Get-AppxProvisionedPackage -Online | Where-Object {$_.DisplayName -Match $Item} | ForEach-Object {
+                Write-Host -ForegroundColor DarkGray $_.DisplayName
+                Try
+                {
+                    $null = Remove-AppxProvisionedPackage -Online -AllUsers -PackageName $_.PackageName
+                }
+                Catch
+                {
+                    Write-Warning "AllUsers Appx Provisioned Package $($_.PackageName) did not remove successfully"
+                }
+            }
+        }
+    }
+}
 
 function Step-oobeUpdateDrivers {
     [CmdletBinding()]
