@@ -24,7 +24,7 @@ param(
 $ProgressPreference = 'SilentlyContinue'
 
 $ScriptName = 'scripts.sight-sound.dev'
-$ScriptVersion = '24.1.13.1'
+$ScriptVersion = '24.2.13.1'
 Write-Host -ForegroundColor Cyan "[i] $ScriptName version $ScriptVersion"
 
 $ExecutionPolicy = Get-ExecutionPolicy
