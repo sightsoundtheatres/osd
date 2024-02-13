@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.2.12.2'
+$ScriptVersion = '24.2.13.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -108,6 +108,38 @@ function Step-installCiscoRootCert {
             # Delete the downloaded file
             Remove-Item $certFile -Force
             Write-Host -ForegroundColor Green "[+] Cisco Umbrella root certificate installed"
+        }
+    }
+
+    function Step-installST-CACert {
+    
+        # Define the certificate URL and file
+        $certUrl = "https://ssintunedata.blob.core.windows.net/cert/24-st-ca.cer"
+        $certFile = "C:\OSDCloud\Temp\24-ST-CA.cer"
+
+        # Check if the certificate is already installed by the issuer name
+        $certExists = Get-ChildItem -Path 'Cert:\LocalMachine\Root\' | Where-Object {$_.Issuer -like "*ST-CA*"}
+
+        if ($certExists) {
+            # Do nothing
+            Write-Host -ForegroundColor Green "[+] ST-CA root certificate installed"
+        }
+        else {
+            # Download and install the certificate
+            Write-Host -ForegroundColor Yellow "[-] Installing ST-CA root certificate"
+            Invoke-WebRequest -Uri $certUrl -OutFile $certFile
+
+            # Load the certificate and add it to the root store
+            $Cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+            $Cert.Import($certFile)
+            $Store = New-Object System.Security.Cryptography.X509Certificates.X509Store("Root", "LocalMachine")
+            $Store.Open("ReadWrite")
+            $Store.Add($Cert)
+            $Store.Close()
+
+            # Delete the downloaded file
+            Remove-Item $certFile -Force
+            Write-Host -ForegroundColor Green "[+] ST-CA root certificate installed"
         }
     }
 
