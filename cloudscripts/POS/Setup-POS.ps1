@@ -209,4 +209,4 @@ Set-ItemProperty -Path $registryPath -Name "DisableFileSyncNGSC" -Value 1
 
 Write-Warning 'Device will restart in 30 seconds.  Press Ctrl + C to cancel'
         Start-Sleep -Seconds 30
-        Restart-Computer
+        Restart-Computer -Force
