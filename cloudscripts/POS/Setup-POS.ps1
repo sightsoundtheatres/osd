@@ -1,4 +1,5 @@
 # Install necessary WinGet Packages 
+########################################################
 
 $apps = "Microsoft.DotNet.DesktopRuntime.6",
         "Microsoft.DotNet.SDK.8"
@@ -7,6 +8,9 @@ foreach ($app in $apps) {
     winget install --id $app --accept-package-agreements --accept-source-agreements -e
 }
 
+
+# Set necessary reg keys
+########################################################
 
 # Function to create registry key if it doesn't exist
 function Create-RegistryKeyIfNotExists {
@@ -74,13 +78,17 @@ Create-RegistryPropertyIfNotExists "HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFra
 
 
 # Restart the explorer process to reload the registry
+########################################################
+
 # Get the process ID of the Process Explorer
 $processId = (Get-Process -Name explorer).Id
 # Stop the process using the process ID
 Stop-Process -Id $processId -Force
 
 
+
 #Download and install the StoreCommerce app 
+########################################################
 
 $url = "https://ssintunedata.blob.core.windows.net/d365/StoreCommerce.Installer.exe"
 $outputDir = "C:\temp"
@@ -96,9 +104,54 @@ Invoke-WebRequest -Uri $url -OutFile $outputFile
 
 # Run the installer with the provided arguments
 cd $outputDir
-.\StoreCommerce.Installer.exe install --useremoteappcontent --usecommonapplicationdata --retailserverurl "https://sst-uatpos.sandbox.operations.dynamics.com"
+.\StoreCommerce.Installer.exe install --useremoteappcontent --usecommonapplicationdata --retailserverurl "https://sst-uatret.sandbox.operations.dynamics.com"
 
 
+
+#Download and install the Epson OPOS ADK 
+########################################################
+
+$url = "https://ssintunedata.blob.core.windows.net/d365/EPSON_OPOS_ADK_V3.00ER20.exe"
+$outputDir = "C:\temp"
+$outputFile = Join-Path $outputDir "EPSON_OPOS_ADK_V3.00ER20.exe"
+
+# Check if the output directory exists and create it if necessary
+if (!(Test-Path $outputDir)) {
+    New-Item -ItemType Directory -Path $outputDir | Out-Null
+}
+
+# Download the file
+Invoke-WebRequest -Uri $url -OutFile $outputFile
+
+# Run the installer with the provided arguments
+cd $outputDir
+.\EPSON_OPOS_ADK_V3.00ER20.exe /q DisplayInternalUI=”no”
+
+
+
+#Download and install the Epson OPOS CCOs 
+########################################################
+
+$url = "https://ssintunedata.blob.core.windows.net/d365/OPOS_CCOs_1.14.001.msi"
+$outputDir = "C:\temp"
+$outputFile = Join-Path $outputDir "OPOS_CCOs_1.14.001.msi"
+
+# Check if the output directory exists and create it if necessary
+if (!(Test-Path $outputDir)) {
+    New-Item -ItemType Directory -Path $outputDir | Out-Null
+}
+
+# Download the file
+Invoke-WebRequest -Uri $url -OutFile $outputFile
+
+# Run the installer with the provided arguments
+cd $outputDir
+msiexec /I "OPOS_CCOs_1.14.001.msi" /quiet
+
+
+
+# Setup local POSUser account
+########################################################
 
 # Define the username and password
 $username = "POSUser"
@@ -134,7 +187,10 @@ foreach ($prop in $regProps.GetEnumerator()) {
 Write-Host "Auto-login configured."
 
 
+
 # Disable OneDrive for all users
+########################################################
+
 # Define the path of the OneDrive group policy registry key
 $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive"
 
