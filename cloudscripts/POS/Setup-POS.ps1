@@ -201,3 +201,12 @@ if (!(Test-Path $registryPath)) {
 
 # Set the value of the "DisableFileSyncNGSC" registry entry to 1 to disable OneDrive
 Set-ItemProperty -Path $registryPath -Name "DisableFileSyncNGSC" -Value 1
+
+
+
+# Restart computer
+########################################################
+
+Write-Warning 'Device will restart in 30 seconds.  Press Ctrl + C to cancel'
+        Start-Sleep -Seconds 30
+        Restart-Computer
