@@ -100,6 +100,7 @@ if ($WindowsPhase -eq 'OOBE') {
     osdcloud-StartOOBE -InstallWinGet -WinGetUpgrade 
     Step-oobeHotFix #fix for Autopilot failing
     Step-installCiscoRootCert
+    Step-installSTCACert
     Step-InstallM365Apps
     Step-oobeDellDCU
     Start-WindowsUpdate #from OSDCloud

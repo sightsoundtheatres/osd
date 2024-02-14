@@ -111,7 +111,7 @@ function Step-installCiscoRootCert {
         }
     }
 
-    function Step-installST-CACert {
+    function Step-installSTCACert {
     
         # Define the certificate URL and file
         $certUrl = "https://ssintunedata.blob.core.windows.net/cert/24-st-ca.cer"
