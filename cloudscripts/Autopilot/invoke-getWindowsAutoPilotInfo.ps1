@@ -1,5 +1,5 @@
 # Install the get-windowsautopilotcommunity.ps1 script
-install-script get-windowsautopilotinfocommunity.ps1 -Force
+install-script get-windowsautopilotinfocommunity -Force
 
 # Define the options for the GroupTag parameter
 $GroupTagOptions = @("Development", "Enterprise")
