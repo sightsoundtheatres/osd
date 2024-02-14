@@ -102,7 +102,7 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-installCiscoRootCert
     Step-installSTCACert
     Step-InstallM365Apps
-    Step-oobeDellDCU
+    #Step-oobeDellDCU
     Start-WindowsUpdate #from OSDCloud
     Start-WindowsUpdateDriver # from OSDCloud
     Step-RestartConfirmation
