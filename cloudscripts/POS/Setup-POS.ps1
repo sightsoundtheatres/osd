@@ -204,6 +204,12 @@ Set-ItemProperty -Path $registryPath -Name "DisableFileSyncNGSC" -Value 1
 
 
 
+# Set power settings
+########################################################
+powercfg /change monitor-timeout-ac 20; powercfg /change standby-timeout-ac 0
+
+
+
 # Restart computer
 ########################################################
 
