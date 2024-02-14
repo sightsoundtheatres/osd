@@ -14,14 +14,18 @@ $GroupTag = $GroupTagOptions[$GroupTagChoice - 1]
 
 # Prompt the user to enter a value for the AssignedComputerName parameter
 do {
-    $AssignedComputerName = Read-Host "Enter the AssignedComputerName (15 characters or less)"
+    $AssignedComputerName = Read-Host "Enter the AssignedComputerName ex XXWIN-EID-XXXX (15 characters or less)"
     if ($AssignedComputerName.Length -gt 15) {
         Write-Warning "AssignedComputerName must be 15 characters or less"
     }
 } while ($AssignedComputerName.Length -gt 15)
 
 # Define the options for the AddToGroup parameter
-$AddToGroupOptions = @("Group 1", "Group 2", "Group 3", "Group 4", "Group 5")
+$AddToGroupOptions = @( "Autopilot_Devices-GeneralUsers",
+                        "Autopilot_Devices-Box_CC",
+                        "AutoPilot_Devices-Retail",
+                        "Autopilot_Devices-CenterStageKiosk",
+                        "Autopilot_Devices-SharedDevice_IT")
 
 # Display the menu for the AddToGroup parameter
 Write-Host "Select an AddToGroup option:"
