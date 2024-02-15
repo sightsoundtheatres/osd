@@ -210,6 +210,24 @@ powercfg /change monitor-timeout-ac 20; powercfg /change standby-timeout-ac 0
 
 
 
+# Create install notes .txt file in c:\temp
+########################################################
+
+# Set the URL and destination path
+$URL = "https://ssintunedata.blob.core.windows.net/d365/POS_install_notes.txt"
+$Destination = "C:\temp\POS_install_notes.txt"
+
+# Check if C:\temp directory exists, if not create it
+if (!(Test-Path -Path "C:\temp")) {
+    New-Item -ItemType Directory -Path "C:\temp"
+}
+
+# Download the file
+Invoke-WebRequest -Uri $URL -OutFile $Destination
+write-host "Install notes .txt file saved in c:\temp"
+
+
+
 # Restart computer
 ########################################################
 
