@@ -70,7 +70,7 @@ Create-RegistryKeyIfNotExists "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityPr
 Create-RegistryPropertyIfNotExists "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server" "Enabled" 1 "DWord"
 Create-RegistryPropertyIfNotExists "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server" "DisabledByDefault" 0 "DWord"
 
-# Create SchUseStrongCrypto value 
+# Create SchUseStrongCrypto registry keys if they don't exist 
 Create-RegistryPropertyIfNotExists "HKLM:\SOFTWARE\Microsoft\.NETFramework\v2.0.50727" "SchUseStrongCrypto" 1 "DWord"
 Create-RegistryPropertyIfNotExists "HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319" "SchUseStrongCrypto" 1 "DWord"
 Create-RegistryPropertyIfNotExists "HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v2.0.50727" "SchUseStrongCrypto" 1 "DWord"
