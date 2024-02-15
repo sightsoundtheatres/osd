@@ -232,8 +232,8 @@ function Step-oobeRegisterAutopilot {
         
         if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
             Write-Host -ForegroundColor Yellow "[-] Registering Device in Autopilot using AutopilotOOBE"
-            #Step-oobeInstallModuleAutopilotOOBE
-            Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity
+            Step-oobeInstallModuleAutopilotOOBE
+            #Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity
         }
         else {
             Write-Host -ForegroundColor Cyan "[!] Device registration with Autopilot skipped."
