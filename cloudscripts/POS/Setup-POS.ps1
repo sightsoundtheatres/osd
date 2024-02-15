@@ -104,7 +104,7 @@ Invoke-WebRequest -Uri $url -OutFile $outputFile
 
 # Run the installer with the provided arguments
 cd $outputDir
-.\StoreCommerce.Installer.exe install --useremoteappcontent --usecommonapplicationdata --retailserverurl "https://sst-uatret.sandbox.operations.dynamics.com"
+.\StoreCommerce.Installer.exe install --useremoteappcontent --retailserverurl "https://sst-prodret.operations.dynamics.com/Commerce"
 
 
 
@@ -167,9 +167,9 @@ if (Get-LocalUser -Name $username -ErrorAction SilentlyContinue) {
 }
 
 # Add user to local group RetailChannelUsers
-$group = "RetailChannelUsers"
-Add-LocalGroupMember -Group $group -Member $username
-Write-Host "User $username added to group $group."
+# $group = "RetailChannelUsers"
+# Add-LocalGroupMember -Group $group -Member $username
+# Write-Host "User $username added to group $group."
 
 # Set autologin registry keys
 $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
