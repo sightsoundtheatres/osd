@@ -216,7 +216,7 @@ function Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity {
         $AddToGroup = $AddToGroupOptions[$AddToGroupChoice - 1]
 
         # Call the get-windowsautopilotinfo.ps1 script with the specified parameters
-        get-windowsautopilotinfocommunity.ps1 -GroupTag $GroupTag -AssignedComputerName $AssignedComputerName -AddToGroup $AddToGroup -online
+        get-windowsautopilotinfocommunity.ps1 -Assign -GroupTag $GroupTag -AssignedComputerName $AssignedComputerName -AddToGroup $AddToGroup -online
 }
 function Step-oobeRegisterAutopilot {
     [CmdletBinding()]

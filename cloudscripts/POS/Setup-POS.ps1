@@ -70,7 +70,7 @@ Create-RegistryKeyIfNotExists "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityPr
 Create-RegistryPropertyIfNotExists "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server" "Enabled" 1 "DWord"
 Create-RegistryPropertyIfNotExists "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server" "DisabledByDefault" 0 "DWord"
 
-# Create SchUseStrongCrypto value 
+# Create SchUseStrongCrypto registry keys if they don't exist 
 Create-RegistryPropertyIfNotExists "HKLM:\SOFTWARE\Microsoft\.NETFramework\v2.0.50727" "SchUseStrongCrypto" 1 "DWord"
 Create-RegistryPropertyIfNotExists "HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319" "SchUseStrongCrypto" 1 "DWord"
 Create-RegistryPropertyIfNotExists "HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v2.0.50727" "SchUseStrongCrypto" 1 "DWord"
@@ -104,7 +104,7 @@ Invoke-WebRequest -Uri $url -OutFile $outputFile
 
 # Run the installer with the provided arguments
 cd $outputDir
-.\StoreCommerce.Installer.exe install --useremoteappcontent --usecommonapplicationdata --retailserverurl "https://sst-uatret.sandbox.operations.dynamics.com"
+.\StoreCommerce.Installer.exe install --useremoteappcontent --retailserverurl "https://sst-prodret.operations.dynamics.com/Commerce"
 
 
 
@@ -167,9 +167,9 @@ if (Get-LocalUser -Name $username -ErrorAction SilentlyContinue) {
 }
 
 # Add user to local group RetailChannelUsers
-$group = "RetailChannelUsers"
-Add-LocalGroupMember -Group $group -Member $username
-Write-Host "User $username added to group $group."
+# $group = "RetailChannelUsers"
+# Add-LocalGroupMember -Group $group -Member $username
+# Write-Host "User $username added to group $group."
 
 # Set autologin registry keys
 $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
@@ -207,6 +207,24 @@ Set-ItemProperty -Path $registryPath -Name "DisableFileSyncNGSC" -Value 1
 # Set power settings
 ########################################################
 powercfg /change monitor-timeout-ac 20; powercfg /change standby-timeout-ac 0
+
+
+
+# Create install notes .txt file in c:\temp
+########################################################
+
+# Set the URL and destination path
+$URL = "https://ssintunedata.blob.core.windows.net/d365/POS_install_notes.txt"
+$Destination = "C:\temp\POS_install_notes.txt"
+
+# Check if C:\temp directory exists, if not create it
+if (!(Test-Path -Path "C:\temp")) {
+    New-Item -ItemType Directory -Path "C:\temp"
+}
+
+# Download the file
+Invoke-WebRequest -Uri $URL -OutFile $Destination
+write-host "Install notes .txt file saved in c:\temp"
 
 
 
