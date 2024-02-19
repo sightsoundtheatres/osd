@@ -163,7 +163,7 @@ if (Get-LocalUser -Name $username -ErrorAction SilentlyContinue) {
 } else {
     # Create the user account
     New-LocalUser -Name $username -Password $password -PasswordNeverExpires
-    Write-Host "User $username created with password set to never expire."
+    Write-Host -ForegroundColor Green "[+] User $username created with password set to never expire."
 }
 
 # Add user to local group RetailChannelUsers
@@ -184,7 +184,7 @@ foreach ($prop in $regProps.GetEnumerator()) {
     Set-ItemProperty -Path $regPath -Name $prop.Key -Value $prop.Value
 }
 
-Write-Host "Auto-login configured."
+Write-Host -ForegroundColor Green "[+] Auto-login configured."
 
 
 
@@ -201,6 +201,7 @@ if (!(Test-Path $registryPath)) {
 
 # Set the value of the "DisableFileSyncNGSC" registry entry to 1 to disable OneDrive
 Set-ItemProperty -Path $registryPath -Name "DisableFileSyncNGSC" -Value 1
+Write-Host -ForegroundColor Green "[+] OneDrive disabled for all users"
 
 
 
@@ -224,8 +225,18 @@ if (!(Test-Path -Path "C:\temp")) {
 
 # Download the file
 Invoke-WebRequest -Uri $URL -OutFile $Destination
-write-host "Install notes .txt file saved in c:\temp"
+Write-Host -ForegroundColor Cyan "[!] Install notes .txt file saved in c:\temp"
 
+
+
+# Create shutdown schedule
+########################################################
+
+$Action = New-ScheduledTaskAction -Execute 'shutdown.exe' -Argument '/s /f /t 0'
+$DaysOfWeek = [System.DayOfWeek]::Sunday, [System.DayOfWeek]::Monday, [System.DayOfWeek]::Tuesday, [System.DayOfWeek]::Thursday, [System.DayOfWeek]::Friday, [System.DayOfWeek]::Saturday
+$Trigger = New-ScheduledTaskTrigger -DaysOfWeek $DaysOfWeek -At 12:00am
+Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName "Shutdown" -Description "Shutdown computer every night at midnight, except for Wednesday night"
+Write-Host -ForegroundColor Green "[+] Shutdown scheduled task created"
 
 
 # Restart computer
