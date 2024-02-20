@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.2.13.1'
+$ScriptVersion = '24.2.20.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -621,19 +621,19 @@ function Step-oobeSetDateTime {
     [CmdletBinding()]
     param ()    
         # Syncing time
-        Write-Host -ForegroundColor Green "[+] Syncing system time"
-        w32tm /resync | Out-Null
+        #Write-Host -ForegroundColor Green "[+] Syncing system time"
+        #w32tm /resync | Out-Null
         
-        $getTime = Get-Date -Format "dddd, MMMM dd, yyyy hh:mm:ss tt zzz"
-        Write-Host -ForegroundColor Yellow "[!] Current time - "$getTime
+        #$getTime = Get-Date -Format "dddd, MMMM dd, yyyy hh:mm:ss tt zzz"
+        #Write-Host -ForegroundColor Yellow "[!] Current time - "$getTime
 
-        #Write-Host -ForegroundColor Yellow 'Verify the Date and Time is set properly including the Time Zone'
-        #Write-Host -ForegroundColor Yellow 'If this is not configured properly, Certificates and Autopilot may fail'
-        #Start-Process 'ms-settings:dateandtime' | Out-Null
-        #$ProcessId = (Get-Process -Name 'SystemSettings').Id
-        #if ($ProcessId) {
-        #    Wait-Process $ProcessId
-        #}
+        Write-Host -ForegroundColor Yellow 'Verify the Date and Time is set properly including the Time Zone'
+        Write-Host -ForegroundColor Yellow 'If this is not configured properly, Certificates and Autopilot may fail'
+        Start-Process 'ms-settings:dateandtime' | Out-Null
+        $ProcessId = (Get-Process -Name 'SystemSettings').Id
+        if ($ProcessId) {
+            Wait-Process $ProcessId
+        }
     }
 
     function Step-oobeHotFix {
