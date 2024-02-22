@@ -1,10 +1,10 @@
 <#
-This script creates a new scheduled task action to execute the shutdown.exe command with the arguments /s /f /t 0 
-to shut down the computer immediately. The trigger for the task is set to run at midnight on every day of the week 
-except for Wednesday. The task is then registered with the name "Shutdown"
+This script creates a new scheduled task action to execute the shutdown.exe 
+The trigger for the task is set to run at midnight on every day of the week except for Wednesday. 
+The task is then registered with the name "AutoShutdown"
 #>
 
-$Action = New-ScheduledTaskAction -Execute 'shutdown.exe' -Argument '/s /f /t 0'
-$DaysOfWeek = [System.DayOfWeek]::Sunday, [System.DayOfWeek]::Monday, [System.DayOfWeek]::Tuesday, [System.DayOfWeek]::Thursday, [System.DayOfWeek]::Friday, [System.DayOfWeek]::Saturday
-$Trigger = New-ScheduledTaskTrigger -DaysOfWeek $DaysOfWeek -At 12:00am
-Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName "Shutdown" -Description "Shutdown computer every night at midnight, except for Wednesday night"
+$Trigger= New-ScheduledTaskTrigger -At 12:00am -DaysOfWeek Monday,Tuesday,Thursday,Friday,Saturday -Weekly # every day except Wednesday (updates) and Sunday (not on)
+$User= "NT AUTHORITY\SYSTEM" # Specify the account to run the script
+$Action= New-ScheduledTaskAction -Execute "C:\Windows\System32\shutdown.exe" -Argument "-s -t 100 -f" # Specify what program to run and with its parameters
+Register-ScheduledTask -TaskName "AutoShutdown" -Trigger $Trigger -User $User -Action $Action -RunLevel Highest # Specify the name of the task
