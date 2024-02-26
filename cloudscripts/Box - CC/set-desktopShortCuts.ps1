@@ -27,7 +27,8 @@ $iconUrls = @(
     "https://ssintunedata.blob.core.windows.net/box-cc/ShowTix_DEV.ico",
     "https://ssintunedata.blob.core.windows.net/box-cc/ShowTix_QA.ico",
     "https://ssintunedata.blob.core.windows.net/box-cc/ShowTix.ico",
-    "https://ssintunedata.blob.core.windows.net/box-cc/Ticket.ico"
+    "https://ssintunedata.blob.core.windows.net/box-cc/Ticket.ico",
+    "https://ssintunedata.blob.core.windows.net/box-cc/agentSetup_Talkdesk.bat"
 )
 
 # Download each .ico file to the specified folder
