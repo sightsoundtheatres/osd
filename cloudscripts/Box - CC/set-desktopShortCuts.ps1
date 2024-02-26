@@ -27,7 +27,6 @@ $iconUrls = @(
     "https://ssintunedata.blob.core.windows.net/box-cc/ShowTix_DEV.ico",
     "https://ssintunedata.blob.core.windows.net/box-cc/ShowTix_QA.ico",
     "https://ssintunedata.blob.core.windows.net/box-cc/ShowTix.ico",
-    "https://ssintunedata.blob.core.windows.net/box-cc/Ticket.ico",
     "https://ssintunedata.blob.core.windows.net/box-cc/agentSetup_Talkdesk.bat"
 )
 
@@ -44,16 +43,6 @@ $sAllUsersProfile = $shell.SpecialFolders("AllUsersDesktop")
 
 # Create shortcuts for each link
 $shortcuts = @(
-    @{
-        TargetPath = "https://showtix.sight-sound.com/ShowTixSS/"
-        Description = "ShowTix"
-        IconFile = "$iconFolder\Ticket.ico"
-    },
-    @{
-        TargetPath = "https://qa.bibleonstage.net/ShowTixSS/"
-        Description = "QA ShowTix"
-        IconFile = "$iconFolder\Ticket.ico"
-    },
     @{
         TargetPath = "https://sightsoundtheatres.sharepoint.com/teams/ContactCenter/"
         Description = "Contact Center SharePoint"
