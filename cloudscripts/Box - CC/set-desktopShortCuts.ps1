@@ -47,12 +47,12 @@ $shortcuts = @(
     @{
         TargetPath = "https://showtix.sight-sound.com/ShowTixSS/"
         Description = "ShowTix"
-        IconFile = "$iconFolder\ShowTix.ico"
+        IconFile = "$iconFolder\Ticket.ico"
     },
     @{
         TargetPath = "https://qa.bibleonstage.net/ShowTixSS/"
         Description = "QA ShowTix"
-        IconFile = "$iconFolder\ShowTix_QA.ico"
+        IconFile = "$iconFolder\Ticket.ico"
     },
     @{
         TargetPath = "https://sightsoundtheatres.sharepoint.com/teams/ContactCenter/"
