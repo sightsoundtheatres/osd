@@ -1,3 +1,12 @@
+# Set the Microsoft Teams directory path
+$teamsDir = "C:\Program Files\WindowsApps\MSTeams_*"
+
+# Check if the Microsoft Teams directory exists
+if (Test-Path $teamsDir) {
+    # If it exists, exit the script
+    Exit
+}
+
 # Set the download URLs
 $teamsbootstrapperURL = "https://go.microsoft.com/fwlink/?linkid=2243204&clcid=0x409"
 $MSTeamsx64URL = "https://go.microsoft.com/fwlink/?linkid=2196106"
