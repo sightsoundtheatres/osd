@@ -14,9 +14,6 @@ if (!(Test-Path $destinationDir)) {
 $teamsbootstrapperPath = Join-Path $destinationDir "teamsbootstrapper.exe"
 $MSTeamsx64Path = Join-Path $destinationDir "MSTeams-x64.msix"
 
-# Download the files
-Invoke-WebRequest -Uri $teamsbootstrapperURL -OutFile $teamsbootstrapperPath
-Invoke-WebRequest -Uri $MSTeamsx64URL -OutFile $MSTeamsx64Path
-
-#Install 
-& "c:\windows\sightsound\teamsbootstrapper.exe" -p -o "c:\windows\sightsound\MSTeams-x64.msix"
+# Download the files using curl
+curl $teamsbootstrapperURL -o $teamsbootstrapperPath
+curl $MSTeamsx64URL -o $MSTeamsx64Path
