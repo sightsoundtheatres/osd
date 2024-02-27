@@ -4,6 +4,7 @@ $teamsDir = "C:\Program Files\WindowsApps\MSTeams_*"
 # Check if the Microsoft Teams directory exists
 if (Test-Path $teamsDir) {
     # If it exists, exit the script
+    Write-Host -ForegroundColor Green "[+] New Microsoft Teams already installed"
     Exit
 }
 
