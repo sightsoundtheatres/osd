@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.2.28.3'
+$ScriptVersion = '24.2.28.4'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -109,39 +109,6 @@ function Step-installCiscoRootCert {
             Write-Host -ForegroundColor Green "[+] ST-CA root certificate installed"
         }
     }
-
-
-function Step-oobeInstallModuleAutopilotOOBE {
-    [CmdletBinding()]
-    param ()
-    if ($env:UserName -eq 'defaultuser0') {
-        $Requirement = Import-Module AutopilotOOBE -PassThru -ErrorAction Ignore
-
-        Write-Host -ForegroundColor Yellow "[-] Creating AutoPilot configuration .json file ..."
-           
-        $outputPath = "$env:ProgramData\OSDeploy\OSDeploy.AutopilotOOBE.json"
-        
-        if (-not (Test-Path (Split-Path $outputPath))) {
-            New-Item -Path (Split-Path $outputPath) -ItemType Directory -Force | Out-Null
-        }
-
-        $AutopilotOOBEJson | Out-File -FilePath "$env:ProgramData\OSDeploy\OSDeploy.AutopilotOOBE.json" -Encoding UTF8
-        Write-Host -ForegroundColor Green "[+] AutoPilot configuration .json file Created"
-
-        if (-not $Requirement)
-        {       
-            Write-Host -ForegroundColor Yellow "[-] Install-Module AutopilotOOBE"
-            Install-Module -Name AutopilotOOBE -Force
-            Import-Module AutopilotOOBE -Force
-            Start-AutopilotOOBE
-        }
-        else {
-            Import-Module AutopilotOOBE -Force
-            Start-AutopilotOOBE
-        }
-    }
-}
-
 function Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity {
     [CmdletBinding()]
     param ()
@@ -198,8 +165,7 @@ function Step-oobeRegisterAutopilot {
         $result = [System.Windows.Forms.MessageBox]::Show($message, $caption, $options, [System.Windows.Forms.MessageBoxIcon]::Question)
         
         if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
-            Write-Host -ForegroundColor Yellow "[-] Registering Device in Autopilot using AutopilotOOBE"
-            #Step-oobeInstallModuleAutopilotOOBE
+            Write-Host -ForegroundColor Yellow "[-] Registering Device in Autopilot using get-WindowsAutoPilotInfoCommunity"
             Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity
         }
         else {
@@ -522,10 +488,6 @@ function Step-InstallM365Apps {
 
     if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {            
         Write-Host -ForegroundColor Yellow "[-] Installing M365 Applications"
-        #$configFile = "C:\OSDCloud\configuration.xml"
-        #Invoke-RestMethod -Uri "https://raw.githubusercontent.com/sightsoundtheatres/osd/main/supportFiles/MicrosoftOffice/configuration.xml" -Outfile $configFile
-        #winget install microsoft.office --override "/configure $configFile" --accept-source-agreements --accept-package-agreements 
-                
         # Download the script
         Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/InstallM365Apps.ps1 -OutFile $scriptPath
         # Execute the script
@@ -553,7 +515,6 @@ function Step-oobeRestartComputer {
         Start-Sleep -Seconds 30
         Restart-Computer
     }
-
 function Step-oobeDellDCU {
     [CmdletBinding()]
     param ()
@@ -583,7 +544,6 @@ if (Test-Path -Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe') {
     }
 }
 }
-
 function Step-oobeSetDateTime {
     [CmdletBinding()]
     param ()    
