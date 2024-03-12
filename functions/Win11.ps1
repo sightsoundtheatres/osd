@@ -1,9 +1,8 @@
 #to Run, boot OSDCloudUSB, at the PS Prompt: iex (irm win11.garytown.com)
-$ScriptName = 'win11.sight-sound.dev'
-$ScriptVersion = '24.03.12.01'
+$ScriptName = '[+] SS Windows 11 Pro Deployment'
+$ScriptVersion = '24.03.12.2'
 Write-Host -ForegroundColor Green "$ScriptName $ScriptVersion"
 #iex (irm functions.garytown.com) #Add custom functions used in Script Hosting in GitHub
-#iex (irm functions.osdcloud.com) #Add custom fucntions from OSDCloud
 
 #Variables to define the Windows OS / Edition etc to be applied during OSDCloud
 $Product = (Get-MyComputerProduct)
@@ -42,7 +41,7 @@ Write-Output $Global:MyOSDCloud
 Write-Host -ForegroundColor Green  "[+] Starting OSDCloud" 
 
 # Ask the user if they want to install the latest version of Windows 11
-$response = Read-Host "Would you Install the latest version of Windows 11 on this computer? (Y/N)"
+$response = Read-Host "Would you Install the latest version of Windows 11 on this computer? (Y/N)" -ForegroundColor Cyan
 switch ($response.ToLower()) {
     {'y', 'yes' -contains $_} {
         write-host -ForegroundColor DarkGray "Start-OSDCloud -OSName $OSName -OSEdition $OSEdition -OSActivation $OSActivation -OSLanguage $OSLanguage"
