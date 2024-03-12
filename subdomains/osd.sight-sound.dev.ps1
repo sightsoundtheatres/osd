@@ -138,7 +138,7 @@ if ($WindowsPhase -eq 'OOBE') {
     #Start-WindowsUpdate #from OSDCloud
     #Start-WindowsUpdateDriver # from OSDCloud
     #Step-RestartConfirmation
-    #Set-TimeZoneFromIP #from OSDCloud
+    Set-TimeZoneFromIP #from OSDCloud
     Step-oobeSetDateTime
     Step-oobeRegisterAutopilot 
     Step-oobeRemoveAppxPackageAllUsers
