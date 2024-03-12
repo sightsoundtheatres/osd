@@ -5,16 +5,6 @@ Write-Host -ForegroundColor Green "$ScriptName $ScriptVersion"
 #iex (irm functions.garytown.com) #Add custom functions used in Script Hosting in GitHub
 #iex (irm functions.osdcloud.com) #Add custom fucntions from OSDCloud
 
-<# Offline Driver Details
-If you extract Driver Packs to your Flash Drive, you can DISM them in while in WinPE and it will make the process much faster, plus ensure driver support for first Boot
-Extract to: OSDCLoudUSB:\OSDCloud\DriverPacks\DISM\$ComputerManufacturer\$ComputerProduct
-Use OSD Module to determine Vars
-$ComputerProduct = (Get-MyComputerProduct)
-$ComputerManufacturer = (Get-MyComputerManufacturer -Brief)
-#>
-
-# Install Cisco Umbrella Root Cert
-
 #Variables to define the Windows OS / Edition etc to be applied during OSDCloud
 $Product = (Get-MyComputerProduct)
 $OSVersion = 'Windows 11' #Used to Determine Driver Pack
@@ -23,7 +13,6 @@ $OSName = 'Windows 11 23H2 x64'
 $OSEdition = 'Pro'
 $OSActivation = 'Retail'
 $OSLanguage = 'en-us'
-
 
 #Set OSDCloud Vars
 $Global:MyOSDCloud = [ordered]@{
@@ -39,9 +28,6 @@ $Global:MyOSDCloud = [ordered]@{
     SyncMSUpCatDriverUSB = [bool]$false
 }
 
-#Testing MS Update Catalog Driver Sync
-#$Global:MyOSDCloud.DriverPackName = 'Microsoft Update Catalog'
-
 #Used to Determine Driver Pack
 $DriverPack = Get-OSDCloudDriverPack -Product $Product -OSVersion $OSVersion -OSReleaseID $OSReleaseID
 
@@ -49,47 +35,24 @@ if ($DriverPack){
     $Global:MyOSDCloud.DriverPackName = $DriverPack.Name
 }
 
-<#If Drivers are expanded on the USB Drive, disable installing a Driver Pack
-if (Test-DISMFromOSDCloudUSB -eq $true){
-    Write-Host "Found Driver Pack Extracted on Cloud USB Flash Drive, disabling Driver Download via OSDCloud" -ForegroundColor Green
-    if ($Global:MyOSDCloud.SyncMSUpCatDriverUSB -eq $true){
-        write-host "Setting DriverPackName to 'Microsoft Update Catalog'"
-        $Global:MyOSDCloud.DriverPackName = 'Microsoft Update Catalog'
-    }
-    else {
-        write-host "Setting DriverPackName to 'None'"
-        $Global:MyOSDCloud.DriverPackName = "None"
-    }
-}
-#>
-
-
-
 #write variables to console
 Write-Output $Global:MyOSDCloud
 
-#Update Files in Module that have been updated since last PowerShell Gallery Build (Testing Only)
-$ModulePath = (Get-ChildItem -Path "$($Env:ProgramFiles)\WindowsPowerShell\Modules\osd" | Where-Object {$_.Attributes -match "Directory"} | select -Last 1).fullname
-import-module "$ModulePath\OSD.psd1" -Force
-
 #Launch OSDCloud
-Write-Host "Starting OSDCloud" -ForegroundColor Green
-write-host "Start-OSDCloud -OSName $OSName -OSEdition $OSEdition -OSActivation $OSActivation -OSLanguage $OSLanguage"
+Write-Host -ForegroundColor Green  "[+] Starting OSDCloud" 
 
-Start-OSDCloud -OSName $OSName -OSEdition $OSEdition -OSActivation $OSActivation -OSLanguage $OSLanguage
-
-write-host "OSDCloud Process Complete" -ForegroundColor Green
-
-<#
-if (Test-DISMFromOSDCloudUSB){
-    Start-DISMFromOSDCloudUSB
+# Ask the user if they want to install the latest version of Windows 11
+$response = Read-Host "Would you Install the latest version of Windows 11 on this computer? (Y/N)"
+switch ($response.ToLower()) {
+    {'y', 'yes' -contains $_} {
+        write-host -ForegroundColor DarkGray "Start-OSDCloud -OSName $OSName -OSEdition $OSEdition -OSActivation $OSActivation -OSLanguage $OSLanguage"
+        Start-OSDCloud -OSName $OSName -OSEdition $OSEdition -OSActivation $OSActivation -OSLanguage $OSLanguage        
+        write-host -ForegroundColor Green "[+] OSDCloud Process Complete"
+    }
+    {'n', 'no' -contains $_} {
+        Write-host -ForegroundColor Yellow "[!] Installation cancelled."
+    }
+    default {
+        Write-Host -ForegroundColor Yellow "[!] Invalid input. Please enter Y or N."
+    }
 }
-#>
-
-#Used in Testing "Beta Gary Modules which I've updated on the USB Stick"
-#$OfflineModulePath = (Get-ChildItem -Path "C:\Program Files\WindowsPowerShell\Modules\osd" | Where-Object {$_.Attributes -match "Directory"} | select -Last 1).fullname
-#write-output "Updating $OfflineModulePath using $ModulePath"
-#copy-item "$ModulePath\*" "$OfflineModulePath"  -Force -Recurse
-
-#Restart
-#restart-computer
