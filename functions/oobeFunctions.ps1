@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.2.20.1'
+$ScriptVersion = '24.2.28.4'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -17,39 +17,6 @@ else {
 
 Write-Host -ForegroundColor Green "[+] $ScriptName $ScriptVersion ($WindowsPhase Phase)"
 #endregion
-
-
-$AutopilotOOBEJson = @'
-{
-    "GroupTag": "",
-    "GroupTagOptions":  [
-                            "Development",
-                            "Enterprise"
-                        ],   
-    "AddToGroup": "",
-    "AddToGroupOptions": [
-                              "Autopilot_Devices-GeneralUsers",
-                              "Autopilot_Devices-Box_CC",
-                              "AutoPilot_Devices-Retail",
-                              "Autopilot_Devices-CenterStageKiosk",
-                              "Autopilot_Devices-SharedDevice_IT"
-                         ],
-    "AssignedComputerName": "",                     
-    "AssignedComputerNameExample": "XXWIN-EID-XXXX",
-    "Assign": {
-                "IsPresent": true
-              },
-    "Hidden": [
-                "AssignedUser",
-                "PostAction",
-                "Assign",                
-                "Docs"
-              ],    
-    "PostAction": "Quit",
-    "Run": "WindowsSettings",
-    "Title": "Sight & Sound Autopilot Registration"
-}
-'@
 
 $Global:oobeCloud = @{
     oobeRemoveAppxPackageName = 'Microsoft.BingNews',
@@ -142,39 +109,6 @@ function Step-installCiscoRootCert {
             Write-Host -ForegroundColor Green "[+] ST-CA root certificate installed"
         }
     }
-
-
-function Step-oobeInstallModuleAutopilotOOBE {
-    [CmdletBinding()]
-    param ()
-    if ($env:UserName -eq 'defaultuser0') {
-        $Requirement = Import-Module AutopilotOOBE -PassThru -ErrorAction Ignore
-
-        Write-Host -ForegroundColor Yellow "[-] Creating AutoPilot configuration .json file ..."
-           
-        $outputPath = "$env:ProgramData\OSDeploy\OSDeploy.AutopilotOOBE.json"
-        
-        if (-not (Test-Path (Split-Path $outputPath))) {
-            New-Item -Path (Split-Path $outputPath) -ItemType Directory -Force | Out-Null
-        }
-
-        $AutopilotOOBEJson | Out-File -FilePath "$env:ProgramData\OSDeploy\OSDeploy.AutopilotOOBE.json" -Encoding UTF8
-        Write-Host -ForegroundColor Green "[+] AutoPilot configuration .json file Created"
-
-        if (-not $Requirement)
-        {       
-            Write-Host -ForegroundColor Yellow "[-] Install-Module AutopilotOOBE"
-            Install-Module -Name AutopilotOOBE -Force
-            Import-Module AutopilotOOBE -Force
-            Start-AutopilotOOBE
-        }
-        else {
-            Import-Module AutopilotOOBE -Force
-            Start-AutopilotOOBE
-        }
-    }
-}
-
 function Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity {
     [CmdletBinding()]
     param ()
@@ -231,8 +165,7 @@ function Step-oobeRegisterAutopilot {
         $result = [System.Windows.Forms.MessageBox]::Show($message, $caption, $options, [System.Windows.Forms.MessageBoxIcon]::Question)
         
         if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
-            Write-Host -ForegroundColor Yellow "[-] Registering Device in Autopilot using AutopilotOOBE"
-            #Step-oobeInstallModuleAutopilotOOBE
+            Write-Host -ForegroundColor Yellow "[-] Registering Device in Autopilot using get-WindowsAutoPilotInfoCommunity"
             Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity
         }
         else {
@@ -555,10 +488,6 @@ function Step-InstallM365Apps {
 
     if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {            
         Write-Host -ForegroundColor Yellow "[-] Installing M365 Applications"
-        #$configFile = "C:\OSDCloud\configuration.xml"
-        #Invoke-RestMethod -Uri "https://raw.githubusercontent.com/sightsoundtheatres/osd/main/supportFiles/MicrosoftOffice/configuration.xml" -Outfile $configFile
-        #winget install microsoft.office --override "/configure $configFile" --accept-source-agreements --accept-package-agreements 
-                
         # Download the script
         Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/InstallM365Apps.ps1 -OutFile $scriptPath
         # Execute the script
@@ -586,7 +515,6 @@ function Step-oobeRestartComputer {
         Start-Sleep -Seconds 30
         Restart-Computer
     }
-
 function Step-oobeDellDCU {
     [CmdletBinding()]
     param ()
@@ -616,7 +544,6 @@ if (Test-Path -Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe') {
     }
 }
 }
-
 function Step-oobeSetDateTime {
     [CmdletBinding()]
     param ()    
@@ -636,20 +563,79 @@ function Step-oobeSetDateTime {
         }
     }
 
-    function Step-oobeHotFix {
-        [CmdletBinding()]
-        param ()   
-        # Check if KB5033055 is installed
-        if (Get-HotFix -ID KB5033055 -ErrorAction SilentlyContinue) {
-            Write-Host -ForegroundColor Green "[+] OOBE HOtFix KB5033055 installed."
-        }
-        else {
-            # Download Hotfix for OOBE
-            Write-Host -ForegroundColor Yellow "[-] Installing OOBE HotFix KB5033055"
-            Invoke-WebRequest -Uri "https://catalog.s.download.windowsupdate.com/c/msdownload/update/software/crup/2023/11/windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" -OutFile "C:\OSDCloud\windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" | Out-Null
-            # Install the update
-            Start-Process -FilePath "C:\OSDCloud\windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" -ArgumentList "/quiet /norestart"
-            Write-Host -ForegroundColor Green "[+] OOBE HotFix KB5033055 installed successfully."
+function Step-oobeHotFix {
+    [CmdletBinding()]
+    param ()   
+    # Check if KB5033055 is installed
+    if (Get-HotFix -ID KB5033055 -ErrorAction SilentlyContinue) {
+        Write-Host -ForegroundColor Green "[+] OOBE HOtFix KB5033055 installed."
+    }
+    else {
+        # Download Hotfix for OOBE
+        Write-Host -ForegroundColor Yellow "[-] Installing OOBE HotFix KB5033055"
+        Invoke-WebRequest -Uri "https://catalog.s.download.windowsupdate.com/c/msdownload/update/software/crup/2023/11/windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" -OutFile "C:\OSDCloud\windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" | Out-Null
+        # Install the update
+        Start-Process -FilePath "C:\OSDCloud\windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" -ArgumentList "/quiet /norestart"
+        Write-Host -ForegroundColor Green "[+] OOBE HotFix KB5033055 installed successfully."
+    }
+}
+
+function step-InstallWinGet {
+    [CmdletBinding()]
+    param ()
+
+    if (Get-Command 'WinGet' -ErrorAction SilentlyContinue) {
+        Write-Host -ForegroundColor Green '[+] WinGet is installed'
+    }
+    else {
+        if (Get-AppxPackage -Name 'Microsoft.DesktopAppInstaller' -ErrorAction SilentlyContinue) {
+            Write-Host -ForegroundColor Yellow '[-] Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe'
+            try {
+                Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe -ErrorAction Stop
+            }
+            catch {
+                Write-Host -ForegroundColor Red '[!] Could not install Microsoft.DesktopAppInstaller AppxPackage'
+                Break
+            }
         }
     }
+
+    if (Get-AppxPackage -Name 'Microsoft.DesktopAppInstaller' -ErrorAction SilentlyContinue | Where-Object { $_.Version -ge '1.21.2701.0' }) {
+        Write-Host -ForegroundColor Green '[+] WinGet is current'
+    }
+    else {
+        if (Get-Command 'WinGet' -ErrorAction SilentlyContinue) {
+            $WingetVersion = & winget.exe --version
+            [string]$WingetVersion = $WingetVersion -replace '[a-zA-Z\-]'
+
+            Write-Host -ForegroundColor Yellow "[-] WinGet $WingetVersion requires an update"
+        }
+        else {
+            Write-Host -ForegroundColor Yellow '[-] Installing WinGet'
+        }
+
+        $progressPreference = 'silentlyContinue'
+        Write-Host -ForegroundColor Yellow '[-] Downloading Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle'
+        Invoke-WebRequest -Uri https://aka.ms/getwinget -OutFile Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
+
+        Write-Host -ForegroundColor Yellow '[-] Downloading Microsoft.VCLibs.x64.14.00.Desktop.appx'
+        Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile Microsoft.VCLibs.x64.14.00.Desktop.appx
+    
+        Write-Host -ForegroundColor Yellow '[-] Downloading Microsoft.UI.Xaml.2.8.x64.appx'
+        Invoke-WebRequest -Uri https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.x64.appx -OutFile Microsoft.UI.Xaml.2.8.x64.appx
+
+        Write-Host -ForegroundColor Yellow '[-] Installing WinGet and its dependencies'
+        Add-AppxPackage Microsoft.VCLibs.x64.14.00.Desktop.appx
+        Add-AppxPackage Microsoft.UI.Xaml.2.8.x64.appx
+        Add-AppxPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
+    }
+}
+function step-WinGetUpdate {
+    [CmdletBinding()]
+    param ()
+
+    Write-Host -ForegroundColor Green "[+] winget upgrade --all --accept-source-agreements --accept-package-agreements"
+    winget upgrade --all --accept-source-agreements --accept-package-agreements
+
+}
     

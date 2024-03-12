@@ -31,7 +31,7 @@ powershell iex (irm osd.sight-sound.dev)
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '24.2.20.1'
+$ScriptVersion = '24.2.28.4'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
@@ -98,10 +98,12 @@ if ($WindowsPhase -eq 'AuditMode') {
 if ($WindowsPhase -eq 'OOBE') {
     #Load everything needed to setup a new computer and register to AutoPilot
     Step-installCiscoRootCert
-    osdcloud-StartOOBE -InstallWinGet -WinGetUpgrade 
-    Step-oobeHotFix #fix for Autopilot failing
-    Step-installSTCACert
+    step-InstallWinGet
+    step-WinGetUpdate    
+    osdcloud-StartOOBE 
     Step-InstallM365Apps
+    Step-oobeHotFix #fix for Autopilot failing
+    Step-installSTCACert    
     #Step-oobeDellDCU
     Start-WindowsUpdate #from OSDCloud
     Start-WindowsUpdateDriver # from OSDCloud
