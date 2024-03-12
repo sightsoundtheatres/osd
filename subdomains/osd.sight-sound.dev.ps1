@@ -135,9 +135,9 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-oobeHotFix #fix for Autopilot failing
     Step-installSTCACert    
     #Step-oobeDellDCU
-    Start-WindowsUpdate #from OSDCloud
-    Start-WindowsUpdateDriver # from OSDCloud
-    Step-RestartConfirmation
+    #Start-WindowsUpdate #from OSDCloud
+    #Start-WindowsUpdateDriver # from OSDCloud
+    #Step-RestartConfirmation
     #Set-TimeZoneFromIP #from OSDCloud
     Step-oobeSetDateTime
     Step-oobeRegisterAutopilot 
