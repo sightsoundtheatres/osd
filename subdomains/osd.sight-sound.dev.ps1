@@ -76,6 +76,36 @@ if ($WindowsPhase -eq 'WinPE') {
     osdcloud-StartWinPE -OSDCloud 
     Write-Host -ForegroundColor Cyan "To start a new PowerShell session, type 'start powershell' and press enter"
     Write-Host -ForegroundColor Cyan "Start-OSDCloud, Start-OSDCloudGUI, or Start-OSDCloudAzure, can be run in the new PowerShell window"
+    
+    # Define the certificate URL and file
+    $certUrl = "https://ssintunedata.blob.core.windows.net/cert/Cisco_Umbrella_Root_CA.cer"
+    $certFile = "X:\OSDCloud\Cisco_Umbrella_Root_CA.cer"
+
+    # Check if the certificate is already installed by the issuer name
+    $certExists = Get-ChildItem -Path 'Cert:\LocalMachine\Root\' | Where-Object {$_.Issuer -like "*Cisco Umbrella*"}
+
+    if ($certExists) {
+        # Do nothing
+        Write-Host -ForegroundColor Green "[+] Cisco Umbrella root certificate installed"
+    }
+    else {
+        # Download and install the certificate
+        Write-Host -ForegroundColor Yellow "[-] Installing Cisco Umbrella root certificate"
+        Invoke-WebRequest -Uri $certUrl -OutFile $certFile
+
+        # Load the certificate and add it to the root store
+        $Cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+        $Cert.Import($certFile)
+        $Store = New-Object System.Security.Cryptography.X509Certificates.X509Store("Root", "LocalMachine")
+        $Store.Open("ReadWrite")
+        $Store.Add($Cert)
+        $Store.Close()
+
+        # Delete the downloaded file
+        Remove-Item $certFile -Force
+        Write-Host -ForegroundColor Green "[+] Cisco Umbrella root certificate installed"
+    }
+
     Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/Win11.ps1)
     
     #Stop the startup Transcript.  OSDCloud will create its own

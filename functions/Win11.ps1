@@ -14,8 +14,6 @@ $ComputerManufacturer = (Get-MyComputerManufacturer -Brief)
 #>
 
 # Install Cisco Umbrella Root Cert
-Step-installCiscoRootCert
-
 
 #Variables to define the Windows OS / Edition etc to be applied during OSDCloud
 $Product = (Get-MyComputerProduct)
