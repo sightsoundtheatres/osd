@@ -72,10 +72,7 @@ Write-Host -ForegroundColor Green "[+] Transport Layer Security (TLS) 1.2"
 
 #region WinPE
 if ($WindowsPhase -eq 'WinPE') {
-    #Process OSDCloud startup and load Azure KeyVault dependencies
-    osdcloud-StartWinPE -OSDCloud 
-    Write-Host -ForegroundColor Cyan "To start a new PowerShell session, type 'start powershell' and press enter"
-    Write-Host -ForegroundColor Cyan "Start-OSDCloud, Start-OSDCloudGUI, or Start-OSDCloudAzure, can be run in the new PowerShell window"
+    #Process OSDCloud startup and load Azure KeyVault dependencies   
     
     # Define the certificate URL and file
     $certUrl = "https://ssintunedata.blob.core.windows.net/cert/Cisco_Umbrella_Root_CA.cer"
@@ -105,6 +102,8 @@ if ($WindowsPhase -eq 'WinPE') {
         Remove-Item $certFile -Force
         Write-Host -ForegroundColor Green "[+] Cisco Umbrella root certificate installed"
     }
+
+    osdcloud-StartWinPE -OSDCloud
 
     Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/Win11.ps1)
     
