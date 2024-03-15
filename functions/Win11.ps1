@@ -41,6 +41,7 @@ Write-Output $Global:MyOSDCloud
 Write-Host -ForegroundColor Green  "[+] Starting OSDCloud" 
 
 # Ask the user if they want to install the latest version of Windows 11
+write-host -ForegroundColor DarkGray "About to run Start-OSDCloud -OSName $OSName -OSEdition $OSEdition -OSActivation $OSActivation -OSLanguage $OSLanguage"
 $response = Read-Host "Would you Install the latest version of Windows 11 on this computer? (Y/N)" 
 switch ($response.ToLower()) {
     {'y', 'yes' -contains $_} {
