@@ -75,8 +75,8 @@ if ($WindowsPhase -eq 'WinPE') {
     #Process OSDCloud startup and load Azure KeyVault dependencies   
     
     # Define the certificate URL and file
-    $certUrl = "https://ssintunedata.blob.core.windows.net/cert/Cisco_Umbrella_Root_CA.cer"
-    $certFile = "X:\OSDCloud\Cisco_Umbrella_Root_CA.cer"
+    #$certUrl = "https://ssintunedata.blob.core.windows.net/cert/Cisco_Umbrella_Root_CA.cer"
+    $certFile = "X:\OSDCloud\Config\Cisco_Umbrella_Root_CA.cer"
 
     # Check if the certificate is already installed by the issuer name
     $certExists = Get-ChildItem -Path 'Cert:\LocalMachine\Root\' | Where-Object {$_.Issuer -like "*Cisco Umbrella*"}
