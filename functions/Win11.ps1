@@ -1,6 +1,6 @@
 #to Run, boot OSDCloudUSB, at the PS Prompt: iex (irm win11.garytown.com)
-$ScriptName = '[+] SS Windows 11 Pro Deployment'
-$ScriptVersion = '24.03.12.2'
+$ScriptName = '[+] Sight & Sound Windows 11 Pro Deployment'
+$ScriptVersion = '24.3.29.1'
 Write-Host -ForegroundColor Green "$ScriptName $ScriptVersion"
 #iex (irm functions.garytown.com) #Add custom functions used in Script Hosting in GitHub
 

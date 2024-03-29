@@ -31,7 +31,7 @@ powershell iex (irm osd.sight-sound.dev)
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '24.3.12.1'
+$ScriptVersion = '24.3.29.1'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
@@ -72,37 +72,7 @@ Write-Host -ForegroundColor Green "[+] Transport Layer Security (TLS) 1.2"
 
 #region WinPE
 if ($WindowsPhase -eq 'WinPE') {
-    #Process OSDCloud startup and load Azure KeyVault dependencies   
     
-    # Define the certificate URL and file
-    #$certUrl = "https://ssintunedata.blob.core.windows.net/cert/Cisco_Umbrella_Root_CA.cer"
-    $certFile = "X:\OSDCloud\Config\Cisco_Umbrella_Root_CA.cer"
-
-    # Check if the certificate is already installed by the issuer name
-    $certExists = Get-ChildItem -Path 'Cert:\LocalMachine\Root\' | Where-Object {$_.Issuer -like "*Cisco Umbrella*"}
-
-    if ($certExists) {
-        # Do nothing
-        Write-Host -ForegroundColor Green "[+] Cisco Umbrella root certificate installed"
-    }
-    else {
-        # Download and install the certificate
-        Write-Host -ForegroundColor Yellow "[-] Installing Cisco Umbrella root certificate"
-        #Invoke-WebRequest -Uri $certUrl -OutFile $certFile
-
-        # Load the certificate and add it to the root store
-        $Cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
-        $Cert.Import($certFile)
-        $Store = New-Object System.Security.Cryptography.X509Certificates.X509Store("Root", "LocalMachine")
-        $Store.Open("ReadWrite")
-        $Store.Add($Cert)
-        $Store.Close()
-
-        # Delete the downloaded file
-        Remove-Item $certFile -Force
-        Write-Host -ForegroundColor Green "[+] Cisco Umbrella root certificate installed"
-    }
-
     osdcloud-StartWinPE -OSDCloud
 
     Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/Win11.ps1)
@@ -133,11 +103,7 @@ if ($WindowsPhase -eq 'OOBE') {
     osdcloud-StartOOBE 
     Step-InstallM365Apps
     Step-oobeHotFix #fix for Autopilot failing
-    Step-installSTCACert    
-    #Step-oobeDellDCU
-    #Start-WindowsUpdate #from OSDCloud
-    #Start-WindowsUpdateDriver # from OSDCloud
-    #Step-RestartConfirmation
+    Step-installSTCACert 
     Set-TimeZoneFromIP #from OSDCloud
     Step-oobeSetDateTime
     Step-oobeRegisterAutopilot 

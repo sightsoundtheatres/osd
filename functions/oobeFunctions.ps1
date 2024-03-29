@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.2.28.4'
+$ScriptVersion = '24.3.29.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -128,7 +128,7 @@ function Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity {
 
         # Prompt the user to enter a value for the AssignedComputerName parameter
         do {
-            $AssignedComputerName = Read-Host "Enter the AssignedComputerName ex XXWIN-EID-XXXX (15 characters or less)"
+            $AssignedComputerName = (Read-Host "Enter the AssignedComputerName ex XXWIN-EID-XXXX (15 characters or less)").ToUpper()
             if ($AssignedComputerName.Length -gt 15) {
                 Write-Warning "AssignedComputerName must be 15 characters or less"
             }
