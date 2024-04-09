@@ -102,7 +102,6 @@ if ($WindowsPhase -eq 'OOBE') {
     step-WinGetUpdate    
     osdcloud-StartOOBE 
     Step-InstallM365Apps
-    Step-desktopWallpaper
     Step-oobeHotFix #fix for Autopilot failing
     Step-installSTCACert 
     Set-TimeZoneFromIP #from OSDCloud
@@ -110,7 +109,8 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-oobeRegisterAutopilot 
     Step-oobeRemoveAppxPackageAllUsers
     Step-oobeSetUserRegSettings
-    Step-oobeSetDeviceRegSettings
+    Step-oobeSetDeviceRegSettings    
+    Step-desktopWallpaper
     Step-oobeCreateLocalUser    
     Step-oobeRestartComputer
 
