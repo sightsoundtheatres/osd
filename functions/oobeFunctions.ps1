@@ -458,7 +458,8 @@ function Step-desktopWallpaper {
     } else {        
         Write-Host -ForegroundColor Yellow "[-] Replacing default wallpaper and lockscreen images"
         # Download the script
-        Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/desktopWallpaper.ps1 -OutFile $scriptPath
+        # Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/desktopWallpaper.ps1 -OutFile $scriptPath
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/set-lockScreen_Wallpaper.ps1 -OutFile $scriptPath
         # Execute the script
         & $scriptPath -ErrorAction SilentlyContinue
     }        
