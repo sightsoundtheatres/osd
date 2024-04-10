@@ -132,6 +132,13 @@ Set-Permission -identity "BUILTIN\Administrators" -type "Allow" -FilesSystemRigh
 $WallPaperURL = "https://ssintunedata.blob.core.windows.net/customization/img0_3840x2160.jpg"
 $LockScreenURL = "https://ssintunedata.blob.core.windows.net/customization/img100.jpg"
 
+# Delete existing files if they exist
+Remove-Item -Path "$WallpaperFolder\img0.jpg" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$LockScreenFolder\img100.jpg" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$LockScreenFolder\img105.jpg" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$Wallpaper4KFolder\img0_1920x1200.jpg" -Force -ErrorAction SilentlyContinue
+
+
 Invoke-WebRequest -UseBasicParsing -Uri $WallPaperURL -OutFile "$WallpaperFolder\img0.jpg"
 Invoke-WebRequest -UseBasicParsing -Uri $LockScreenURL -OutFile "$LockScreenFolder\img100.jpg"
 Invoke-WebRequest -UseBasicParsing -Uri $LockScreenURL -OutFile "$LockScreenFolder\img105.jpg"
