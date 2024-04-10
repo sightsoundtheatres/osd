@@ -28,11 +28,9 @@ function Take-Ownership {
 
         # Set the owner to TrustedInstaller
         icacls $FolderPath /setowner "$($TrustedInstallerPrincipal)" /T /C /Q | Out-Null
-
-        # Write-Host "Ownership of $FolderPath successfully taken by $TrustedInstallerPrincipal"
     }
     catch {
-        # Write-Host "Failed to take ownership of $FolderPath : $_" -ForegroundColor Red
+        # Suppress error output
     }
 }
 
@@ -57,11 +55,9 @@ function Set-FullControlPermissions {
 
         # Set the modified ACL back to the file
         Set-Acl $FilePath $acl | Out-Null
-
-        # Write-Host "Full control permissions set for $Principal on $FilePath"
     }
     catch {
-        # Write-Host "Failed to set permissions on $FilePath : $_" -ForegroundColor Red
+        # Suppress error output
     }
 }
 
@@ -76,11 +72,9 @@ function Delete-Files {
         try {
             # Delete the file
             Remove-Item $FilePath -Force -ErrorAction Stop | Out-Null
-
-            # Write-Host "File $FilePath deleted successfully"
         }
         catch {
-            # Write-Host "Failed to delete $FilePath : $_" -ForegroundColor Red
+            # Suppress error output
         }
     }
 }
@@ -100,12 +94,11 @@ Set-FullControlPermissions -FilePath $FilesToDelete[3] -Principal $Administrator
 # Delete the files
 Delete-Files -FilePaths $FilesToDelete | Out-Null
 
-
 # Download and replace wallpaper and lock screen files
 $WallPaperURL = "https://ssintunedata.blob.core.windows.net/customization/img0_3840x2160.jpg"
 $LockScreenURL = "https://ssintunedata.blob.core.windows.net/customization/img100.jpg"
 
-Invoke-WebRequest -UseBasicParsing -Uri $WallPaperURL -OutFile "$WallpaperFolder\img0.jpg"
-Invoke-WebRequest -UseBasicParsing -Uri $LockScreenURL -OutFile "$LockScreenFolder\img100.jpg"
-Invoke-WebRequest -UseBasicParsing -Uri $LockScreenURL -OutFile "$LockScreenFolder\img105.jpg"
-Invoke-WebRequest -UseBasicParsing -Uri $WallPaperURL -OutFile "$Wallpaper4KFolder\img0_1920x1200.jpg"
+Invoke-WebRequest -UseBasicParsing -Uri $WallPaperURL -OutFile "$WallpaperFolder\img0.jpg" | Out-Null
+Invoke-WebRequest -UseBasicParsing -Uri $LockScreenURL -OutFile "$LockScreenFolder\img100.jpg" | Out-Null
+Invoke-WebRequest -UseBasicParsing -Uri $LockScreenURL -OutFile "$LockScreenFolder\img105.jpg" | Out-Null
+Invoke-WebRequest -UseBasicParsing -Uri $WallPaperURL -OutFile "$Wallpaper4KFolder\img0_1920x1200.jpg" | Out-Null
