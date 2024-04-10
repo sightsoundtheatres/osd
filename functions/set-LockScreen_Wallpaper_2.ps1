@@ -18,7 +18,7 @@ function Take-Ownership {
         }
     }
     catch {
-        Write-Warning "Failed to take ownership of $Path: $_"
+        Write-Warning "Failed to take ownership of: " $Path $_
     }
 }
 
@@ -34,7 +34,7 @@ function Download-And-Replace {
         Invoke-WebRequest -Uri $Url -OutFile $Destination -UseBasicParsing -ErrorAction Stop
     }
     catch {
-        Write-Warning "Failed to download $Url: $_"
+        Write-Warning "Failed to download: " $Url $_
         return
     }
 
@@ -43,7 +43,7 @@ function Download-And-Replace {
         Copy-Item -Path $Destination -Destination $Destination -Force -ErrorAction Stop
     }
     catch {
-        Write-Warning "Failed to replace $Destination: $_"
+        Write-Warning "Failed to replace: " $Destination $_
     }
 }
 
