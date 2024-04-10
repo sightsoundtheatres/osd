@@ -133,10 +133,31 @@ $WallPaperURL = "https://ssintunedata.blob.core.windows.net/customization/img0_3
 $LockScreenURL = "https://ssintunedata.blob.core.windows.net/customization/img100.jpg"
 
 # Delete existing files if they exist
-Remove-Item -Path "$WallpaperFolder\img0.jpg" -Force -ErrorAction SilentlyContinue
-Remove-Item -Path "$LockScreenFolder\img100.jpg" -Force -ErrorAction SilentlyContinue
-Remove-Item -Path "$LockScreenFolder\img105.jpg" -Force -ErrorAction SilentlyContinue
-Remove-Item -Path "$Wallpaper4KFolder\img0_1920x1200.jpg" -Force -ErrorAction SilentlyContinue
+# Paths for existing files
+$ExistingFiles = @(
+    "$WallpaperFolder\img0.jpg",
+    "$LockScreenFolder\img100.jpg",
+    "$LockScreenFolder\img105.jpg",
+    "$Wallpaper4KFolder\img0_1920x1200.jpg"
+)
+
+# Delete existing files if they exist and verify deletion
+$FilesDeleted = $true
+foreach ($File in $ExistingFiles) {
+    if (Test-Path $File) {
+        Remove-Item -Path $File -Force -ErrorAction SilentlyContinue
+        if (Test-Path $File) {
+            Write-Host "Failed to delete $File"
+            $FilesDeleted = $false
+        }
+    }
+}
+
+if ($FilesDeleted) {
+    Write-Host "Existing files successfully deleted"
+} else {
+    Write-Host "Some files could not be deleted"
+}
 
 
 Invoke-WebRequest -UseBasicParsing -Uri $WallPaperURL -OutFile "$WallpaperFolder\img0.jpg"
