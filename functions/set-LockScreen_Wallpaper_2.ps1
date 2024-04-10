@@ -30,22 +30,24 @@ function Download-And-Replace {
     )
 
     try {
-        # Download the file
-        Invoke-WebRequest -Uri $Url -OutFile $Destination -UseBasicParsing -ErrorAction Stop
+        # Download the file to a temporary location
+        $tempFile = Join-Path -Path $env:TEMP -ChildPath (Split-Path -Path $Url -Leaf)
+        Invoke-WebRequest -Uri $Url -OutFile $tempFile -UseBasicParsing -ErrorAction Stop
     }
     catch {
-        Write-Warning "Failed to download $Url" 
+        Write-Warning "Failed to download $Url"
         return
     }
 
     try {
-        # Replace the existing file
-        Copy-Item -Path $Destination -Destination $Destination -Force -ErrorAction Stop
+        # Replace the existing file with the one in the temporary location
+        Copy-Item -Path $tempFile -Destination $Destination -Force -ErrorAction Stop
     }
     catch {
-        Write-Warning "Failed to replace $Destination" 
+        Write-Warning "Failed to replace $Destination"
     }
 }
+
 
 # URLs for wallpaper and lock screen
 $WallPaperURL = "https://ssintunedata.blob.core.windows.net/customization/img0_3840x2160.jpg"
