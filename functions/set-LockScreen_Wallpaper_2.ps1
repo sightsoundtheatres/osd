@@ -29,10 +29,10 @@ function Take-Ownership {
         # Set the owner to TrustedInstaller
         icacls $FolderPath /setowner "$($TrustedInstallerPrincipal)" /T /C /Q | Out-Null
 
-        Write-Host "Ownership of $FolderPath successfully taken by $TrustedInstallerPrincipal"
+        # Write-Host "Ownership of $FolderPath successfully taken by $TrustedInstallerPrincipal"
     }
     catch {
-        Write-Host "Failed to take ownership of $FolderPath : $_" -ForegroundColor Red
+        # Write-Host "Failed to take ownership of $FolderPath : $_" -ForegroundColor Red
     }
 }
 
@@ -56,12 +56,12 @@ function Set-FullControlPermissions {
         $acl.SetAccessRule($rule)
 
         # Set the modified ACL back to the file
-        Set-Acl $FilePath $acl
+        Set-Acl $FilePath $acl | Out-Null
 
-        Write-Host "Full control permissions set for $Principal on $FilePath"
+        # Write-Host "Full control permissions set for $Principal on $FilePath"
     }
     catch {
-        Write-Host "Failed to set permissions on $FilePath : $_" -ForegroundColor Red
+        # Write-Host "Failed to set permissions on $FilePath : $_" -ForegroundColor Red
     }
 }
 
@@ -75,12 +75,12 @@ function Delete-Files {
     foreach ($FilePath in $FilePaths) {
         try {
             # Delete the file
-            Remove-Item $FilePath -Force -ErrorAction Stop
+            Remove-Item $FilePath -Force -ErrorAction Stop | Out-Null
 
-            Write-Host "File $FilePath deleted successfully"
+            # Write-Host "File $FilePath deleted successfully"
         }
         catch {
-            Write-Host "Failed to delete $FilePath : $_" -ForegroundColor Red
+            # Write-Host "Failed to delete $FilePath : $_" -ForegroundColor Red
         }
     }
 }
