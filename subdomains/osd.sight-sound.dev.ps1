@@ -101,6 +101,7 @@ if ($WindowsPhase -eq 'OOBE') {
     step-InstallWinGet
     step-WinGetUpdate    
     osdcloud-StartOOBE 
+    Step-desktopWallpaper
     Step-InstallM365Apps
     Step-oobeHotFix #fix for Autopilot failing
     Step-installSTCACert 
@@ -110,7 +111,7 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-oobeRemoveAppxPackageAllUsers
     Step-oobeSetUserRegSettings
     Step-oobeSetDeviceRegSettings    
-    Step-desktopWallpaper
+    #Step-desktopWallpaper
     Step-oobeCreateLocalUser    
     Step-oobeRestartComputer
 
