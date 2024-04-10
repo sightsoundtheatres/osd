@@ -18,7 +18,7 @@ function Take-Ownership {
         }
     }
     catch {
-        #Write-Warning "Failed to take ownership of: " $Path $_
+        Write-Warning "Failed to take ownership of $Path" 
     }
 }
 
@@ -34,7 +34,7 @@ function Download-And-Replace {
         Invoke-WebRequest -Uri $Url -OutFile $Destination -UseBasicParsing -ErrorAction Stop
     }
     catch {
-        #Write-Warning "Failed to download: " $Url $_
+        Write-Warning "Failed to download $Url" 
         return
     }
 
@@ -43,7 +43,7 @@ function Download-And-Replace {
         Copy-Item -Path $Destination -Destination $Destination -Force -ErrorAction Stop
     }
     catch {
-        #Write-Warning "Failed to replace: " $Destination $_
+        Write-Warning "Failed to replace $Destination" 
     }
 }
 
@@ -64,4 +64,5 @@ Take-Ownership -Path $Wallpaper4KFolder
 # Download and replace wallpaper and lock screen files
 Download-And-Replace -Url $WallPaperURL -Destination "$WallpaperFolder\img0.jpg"
 Download-And-Replace -Url $LockScreenURL -Destination "$LockScreenFolder\img100.jpg"
-Download-And-Replace -Url $WallPaperURL -Destination "$Wallpaper4KFolder\img0_3840x2160.jpg"
+Download-And-Replace -Url $LockScreenURL -Destination "$LockScreenFolder\img105.jpg"
+Download-And-Replace -Url $WallPaperURL -Destination "$Wallpaper4KFolder\img0_1920x1200.jpg.jpg"
