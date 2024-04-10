@@ -98,10 +98,10 @@ if ($WindowsPhase -eq 'AuditMode') {
 if ($WindowsPhase -eq 'OOBE') {
     #Load everything needed to setup a new computer and register to AutoPilot
     Step-installCiscoRootCert
-    Step-desktopWallpaper
     step-InstallWinGet
     step-WinGetUpdate    
     osdcloud-StartOOBE 
+    Step-desktopWallpaper
     Step-InstallM365Apps
     Step-oobeHotFix #fix for Autopilot failing
     Step-installSTCACert 
