@@ -86,19 +86,19 @@ function Delete-Files {
 }
 
 # Take ownership of each folder
-Take-Ownership -FolderPath $WallpaperFolder
-Take-Ownership -FolderPath $LockScreenFolder
-Take-Ownership -FolderPath $Wallpaper4KFolder
+Take-Ownership -FolderPath $WallpaperFolder | Out-Null
+Take-Ownership -FolderPath $LockScreenFolder | Out-Null
+Take-Ownership -FolderPath $Wallpaper4KFolder | Out-Null
 
 # Set full control permissions for administrators group on each file
 $AdministratorsGroup = "BUILTIN\Administrators"
-Set-FullControlPermissions -FilePath $FilesToDelete[0] -Principal $AdministratorsGroup
-Set-FullControlPermissions -FilePath $FilesToDelete[1] -Principal $AdministratorsGroup
-Set-FullControlPermissions -FilePath $FilesToDelete[2] -Principal $AdministratorsGroup
-Set-FullControlPermissions -FilePath $FilesToDelete[3] -Principal $AdministratorsGroup
+Set-FullControlPermissions -FilePath $FilesToDelete[0] -Principal $AdministratorsGroup | Out-Null
+Set-FullControlPermissions -FilePath $FilesToDelete[1] -Principal $AdministratorsGroup | Out-Null
+Set-FullControlPermissions -FilePath $FilesToDelete[2] -Principal $AdministratorsGroup | Out-Null
+Set-FullControlPermissions -FilePath $FilesToDelete[3] -Principal $AdministratorsGroup | Out-Null
 
 # Delete the files
-Delete-Files -FilePaths $FilesToDelete
+Delete-Files -FilePaths $FilesToDelete | Out-Null
 
 
 # Download and replace wallpaper and lock screen files
