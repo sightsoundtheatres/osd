@@ -80,9 +80,9 @@ function Delete-Files {
 }
 
 # Take ownership of each folder
-Take-Ownership -FolderPath $WallpaperFolder | Out-Null
-Take-Ownership -FolderPath $LockScreenFolder | Out-Null
-Take-Ownership -FolderPath $Wallpaper4KFolder | Out-Null
+# Take-Ownership -FolderPath $WallpaperFolder | Out-Null
+# Take-Ownership -FolderPath $LockScreenFolder | Out-Null
+# Take-Ownership -FolderPath $Wallpaper4KFolder | Out-Null
 
 # Set full control permissions for administrators group on each file
 $AdministratorsGroup = "BUILTIN\Administrators"
