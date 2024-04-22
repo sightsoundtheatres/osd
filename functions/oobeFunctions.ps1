@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.3.29.1'
+$ScriptVersion = '24.4.22.2'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -459,7 +459,7 @@ function Step-desktopWallpaper {
         Write-Host -ForegroundColor Yellow "[-] Replacing default wallpaper and lockscreen images"
         # Download the script
         # Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/desktopWallpaper.ps1 -OutFile $scriptPath
-        Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/set-LockScreen_Wallpaper_2.ps1 -OutFile $scriptPath
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/set-LockScreen_Wallpaper.ps1 -OutFile $scriptPath
         # Execute the script
         & $scriptPath -ErrorAction SilentlyContinue
     }        

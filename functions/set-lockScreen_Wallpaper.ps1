@@ -1,185 +1,104 @@
-$ScriptVersion = "24.4.9.1"
+# Define folders
+$WallpaperFolder = "C:\Windows\Web\Wallpaper\Windows"
+$LockScreenFolder = "C:\Windows\Web\Screen"
+$Wallpaper4KFolder = "C:\Windows\Web\4K\Wallpaper\Windows"
 
-function enable-privilege {
-    param(
-        [ValidateSet(
-            "SeAssignPrimaryTokenPrivilege", "SeAuditPrivilege", "SeBackupPrivilege",
-            "SeChangeNotifyPrivilege", "SeCreateGlobalPrivilege", "SeCreatePagefilePrivilege",
-            "SeCreatePermanentPrivilege", "SeCreateSymbolicLinkPrivilege", "SeCreateTokenPrivilege",
-            "SeDebugPrivilege", "SeEnableDelegationPrivilege", "SeImpersonatePrivilege", "SeIncreaseBasePriorityPrivilege",
-            "SeIncreaseQuotaPrivilege", "SeIncreaseWorkingSetPrivilege", "SeLoadDriverPrivilege",
-            "SeLockMemoryPrivilege", "SeMachineAccountPrivilege", "SeManageVolumePrivilege",
-            "SeProfileSingleProcessPrivilege", "SeRelabelPrivilege", "SeRemoteShutdownPrivilege",
-            "SeRestorePrivilege", "SeSecurityPrivilege", "SeShutdownPrivilege", "SeSyncAgentPrivilege",
-            "SeSystemEnvironmentPrivilege", "SeSystemProfilePrivilege", "SeSystemtimePrivilege",
-            "SeTakeOwnershipPrivilege", "SeTcbPrivilege", "SeTimeZonePrivilege", "SeTrustedCredManAccessPrivilege",
-            "SeUndockPrivilege", "SeUnsolicitedInputPrivilege")]
-        $Privilege,
-        $ProcessId = $pid,
-        [Switch] $Disable
+# Define files
+$FilesToDelete = @(
+    "$WallpaperFolder\img0.jpg",
+    "$LockScreenFolder\img100.jpg",
+    "$LockScreenFolder\img105.jpg",
+    "$Wallpaper4KFolder\img0_1920x1200.jpg"
+)
+
+# Define the principals
+$LocalAdministratorsPrincipal = "BUILTIN\Administrators"
+$TrustedInstallerPrincipal = "NT SERVICE\TrustedInstaller"
+
+# Function to take ownership of a folder
+function Take-Ownership {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$FolderPath
     )
 
-    $definition = @'
-    using System;
-    using System.Runtime.InteropServices;
+    try {
+        # Take ownership of the folder
+        takeown /F $FolderPath /A /R /D Y | Out-Null
 
-    public class AdjPriv {
-        [DllImport("advapi32.dll", ExactSpelling = true, SetLastError = true)]
-        internal static extern bool AdjustTokenPrivileges(IntPtr htok, bool disall,
-        ref TokPriv1Luid newst, int len, IntPtr prev, IntPtr relen);
-  
-        [DllImport("advapi32.dll", ExactSpelling = true, SetLastError = true)]
-        internal static extern bool OpenProcessToken(IntPtr h, int acc, ref IntPtr phtok);
-        
-        [DllImport("advapi32.dll", SetLastError = true)]
-        internal static extern bool LookupPrivilegeValue(string host, string name, ref long pluid);
-        
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        internal struct TokPriv1Luid {
-            public int Count;
-            public long Luid;
-            public int Attr;
+        # Set the owner to TrustedInstaller
+        icacls $FolderPath /setowner "$($TrustedInstallerPrincipal)" /T /C /Q | Out-Null
+    }
+    catch {
+        # Suppress error output
+    }
+}
+
+# Function to set full control permissions for administrators group
+function Set-FullControlPermissions {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$FilePath,
+        [parameter(Mandatory = $true)]
+        [string]$Principal
+    )
+
+    try {
+        # Get the current ACL
+        $acl = Get-Acl $FilePath
+
+        # Define the access rule
+        $rule = New-Object System.Security.AccessControl.FileSystemAccessRule($Principal, "FullControl", "Allow")
+
+        # Add the access rule to the ACL
+        $acl.SetAccessRule($rule)
+
+        # Set the modified ACL back to the file
+        Set-Acl $FilePath $acl | Out-Null
+    }
+    catch {
+        # Suppress error output
+    }
+}
+
+# Function to delete files
+function Delete-Files {
+    param (
+        [parameter(Mandatory = $true)]
+        [string[]]$FilePaths
+    )
+
+    foreach ($FilePath in $FilePaths) {
+        try {
+            # Delete the file
+            Remove-Item $FilePath -Force -ErrorAction Stop | Out-Null
         }
-  
-        internal const int SE_PRIVILEGE_ENABLED = 0x00000002;
-        internal const int SE_PRIVILEGE_DISABLED = 0x00000000;
-        internal const int TOKEN_QUERY = 0x00000008;
-        internal const int TOKEN_ADJUST_PRIVILEGES = 0x00000020;
-
-        public static bool EnablePrivilege(long processHandle, string privilege, bool disable) {
-            bool retVal;
-            TokPriv1Luid tp;
-            IntPtr hproc = new IntPtr(processHandle);
-            IntPtr htok = IntPtr.Zero;
-            retVal = OpenProcessToken(hproc, TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, ref htok);
-            tp.Count = 1;
-            tp.Luid = 0;
-            if (disable) {
-                tp.Attr = SE_PRIVILEGE_DISABLED;
-            }
-            else {
-                tp.Attr = SE_PRIVILEGE_ENABLED;
-            }
-            retVal = LookupPrivilegeValue(null, privilege, ref tp.Luid);
-            retVal = AdjustTokenPrivileges(htok, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero);
-            return retVal;
+        catch {
+            # Suppress error output
         }
     }
-'@
-
-    $processHandle = (Get-Process -id $ProcessId).Handle
-    $type = Add-Type $definition -PassThru
-    $type[0]::EnablePrivilege($processHandle, $Privilege, $Disable)
 }
 
-function Set-Owner {
-    Param (
-        [Parameter(Mandatory=$true)][string] $identity,
-        [Parameter(Mandatory=$true)][String] $filepath
-    )
+# Take ownership of each folder
+# Take-Ownership -FolderPath $WallpaperFolder | Out-Null
+# Take-Ownership -FolderPath $LockScreenFolder | Out-Null
+# Take-Ownership -FolderPath $Wallpaper4KFolder | Out-Null
 
-    $file = Get-Item -Path $filepath -Force
-    $acl = $file.GetAccessControl([System.Security.AccessControl.AccessControlSections]::None)
-    $me = [System.Security.Principal.NTAccount]$identity
-    $acl.SetOwner($me)
-    $file.SetAccessControl($acl)
+# Set full control permissions for administrators group on each file
+$AdministratorsGroup = "BUILTIN\Administrators"
+Set-FullControlPermissions -FilePath $FilesToDelete[0] -Principal $AdministratorsGroup | Out-Null
+Set-FullControlPermissions -FilePath $FilesToDelete[1] -Principal $AdministratorsGroup | Out-Null
+Set-FullControlPermissions -FilePath $FilesToDelete[2] -Principal $AdministratorsGroup | Out-Null
+Set-FullControlPermissions -FilePath $FilesToDelete[3] -Principal $AdministratorsGroup | Out-Null
 
-    $acl = $file.GetAccessControl()
-    $rule = New-Object System.Security.AccessControl.FileSystemAccessRule($identity, "FullControl", "Allow")
-    $acl.SetAccessRule($rule)
-    $file.SetAccessControl($acl)
-}
+# Delete the files
+Delete-Files -FilePaths $FilesToDelete | Out-Null
 
-function Set-Permission {
-    Param (
-        [Parameter(Mandatory=$true)][string] $identity,
-        [Parameter(Mandatory=$true)][String] $filepath,
-        [Parameter(Mandatory=$true)][string] $FilesSystemRights,
-        [Parameter(Mandatory=$true)][String] $type
-    )
-
-    $file = Get-Item $filepath -Force
-    $newacl = $file.GetAccessControl([System.Security.AccessControl.AccessControlSections]::None)
-
-    $FilesSystemAccessRuleArgumentList = $identity, $FilesSystemRights, $type
-    $FilesSystemAccessRule = New-Object -TypeName System.Security.AccessControl.FileSystemAccessRule -ArgumentList $FilesSystemAccessRuleArgumentList
-    $NewAcl.SetAccessRule($FilesSystemAccessRule)
-    Set-Acl -Path $file.FullName -AclObject $NewAcl
-}
-
-try {
-    $tsenv = New-Object -ComObject Microsoft.SMS.TSEnvironment
-}
-catch {
-    Write-Output "Not in TS"
-}
-
-if ($tsenv) {
-    $InWinPE = $tsenv.value('_SMSTSInWinPE')
-}
-
-if ($InWinPE -ne "TRUE") {
-    enable-privilege SeTakeOwnershipPrivilege 
-
-    $wallpaperFiles = Get-ChildItem -Path C:\Windows\Web\4K -Recurse | where-object {$_.Extension -eq ".jpg"}
-    $lockScreenFiles = Get-ChildItem -Path C:\Windows\Web\Screen
-
-    $identity = "BUILTIN\Administrators"
-    foreach ($filechild in $wallpaperFiles) {
-        Set-Owner -identity $identity -filepath $filechild.fullname
-    }
-
-    foreach ($filechild in $lockScreenFiles) {
-        Set-Owner -identity $identity -filepath $filechild.fullname
-    }
-
-    $identity = "BUILTIN\Administrators"
-    $FilesSystemRights = "FullControl"
-    $type = "Allow"
-    foreach ($filechild in $wallpaperFiles) {
-        Set-Permission -identity $identity -type $type -FilesSystemRights $FilesSystemRights -filepath $filechild.fullname
-    }
-
-    foreach ($filechild in $lockScreenFiles) {
-        Set-Permission -identity $identity -type $type -FilesSystemRights $FilesSystemRights -filepath $filechild.fullname
-    }
-
-    $identity = "NT AUTHORITY\SYSTEM"
-    $FilesSystemRights = "FullControl"
-    $type = "Allow"
-    foreach ($filechild in $wallpaperFiles) {
-        Set-Permission -identity $identity -type $type -FilesSystemRights $FilesSystemRights -filepath $filechild.fullname
-    }
-
-    foreach ($filechild in $lockScreenFiles) {
-        Set-Permission -identity $identity -type $type -FilesSystemRights $FilesSystemRights -filepath $filechild.fullname
-    }
-
-    foreach ($filechild in $lockScreenFiles) {
-        remove-item -Path $filechild.fullname -Force -Verbose
-        Write-Output "Deleting $($filechild.fullname)"
-    }
-}
-
+# Download and replace wallpaper and lock screen files
 $WallPaperURL = "https://ssintunedata.blob.core.windows.net/customization/img0_3840x2160.jpg"
 $LockScreenURL = "https://ssintunedata.blob.core.windows.net/customization/img100.jpg"
 
-Invoke-WebRequest -UseBasicParsing -Uri $WallPaperURL -OutFile "$env:TEMP\wallpaper.jpg"
-Invoke-WebRequest -UseBasicParsing -Uri $LockScreenURL -OutFile "$env:TEMP\lockscreen.jpg"
-
-if (Test-Path -Path "$env:TEMP\wallpaper.jpg") {
-    Copy-Item "$env:TEMP\wallpaper.jpg" "C:\Windows\Web\Wallpaper\Windows\img0.jpg" -Force -Verbose
-}
-else {
-    Write-Output "Did not find wallpaper.jpg in temp folder - Please confirm URL"
-}
-
-if (Test-Path -Path "$env:TEMP\lockscreen.jpg") {
-    Copy-Item "$env:TEMP\lockscreen.jpg" "C:\Windows\Web\Screen\img100.jpg" -Force -Verbose
-    Copy-Item "$env:TEMP\lockscreen.jpg" "C:\Windows\Web\Screen\img105.jpg" -Force -Verbose
-}
-else {
-    Write-Output "Did not find lockscreen.jpg in temp folder - Please confirm URL"
-}
-
-exit $exitcode
+Invoke-WebRequest -UseBasicParsing -Uri $WallPaperURL -OutFile "$WallpaperFolder\img0.jpg" | Out-Null
+Invoke-WebRequest -UseBasicParsing -Uri $LockScreenURL -OutFile "$LockScreenFolder\img100.jpg" | Out-Null
+Invoke-WebRequest -UseBasicParsing -Uri $LockScreenURL -OutFile "$LockScreenFolder\img105.jpg" | Out-Null
+Invoke-WebRequest -UseBasicParsing -Uri $WallPaperURL -OutFile "$Wallpaper4KFolder\img0_1920x1200.jpg" | Out-Null
