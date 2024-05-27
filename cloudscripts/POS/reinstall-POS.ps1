@@ -2,7 +2,7 @@
 ########################################################
 
 # Get the package information for the Microsoft Store Commerce application
-$package = Get-AppxPackage -Name "Microsoft.StorePurchaseApp"
+$package = Get-AppxPackage -Name "Microsoft.StorePurchaseApp" -AllUsers
 
 # Check if the package is installed
 if ($package) {
@@ -32,4 +32,7 @@ Invoke-WebRequest -Uri $url -OutFile $outputFile
 # Run the installer with the provided arguments
 cd $outputDir
 .\StoreCommerce.Installer.exe install --useremoteappcontent --retailserverurl "https://sst-prodret.operations.dynamics.com/Commerce"
+
+
+
 
