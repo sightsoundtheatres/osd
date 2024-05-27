@@ -1,7 +1,8 @@
-# Uninstall StoreCommerce app
-########################################################
-
-#  Remove app from programs list manually
+############################################
+#                                          # 
+#  Remove app from programs list manually  #
+#                                          #
+############################################
 
 
 # Download and install the StoreCommerce app 
