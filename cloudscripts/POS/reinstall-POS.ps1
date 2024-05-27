@@ -8,7 +8,7 @@ $package = Get-AppxPackage -Name "Microsoft.StorePurchaseApp"
 if ($package) {
     # Uninstall the Microsoft Store Commerce application
     Remove-AppxPackage -Package $package.PackageFullName
-    Write-Output -ForegroundColor Green "[+] Microsoft Store Commerce application has been uninstalled successfully."
+    Write-Output "[+] Microsoft Store Commerce application has been uninstalled successfully." -ForegroundColor Green
 } else {
     Write-Warning "Microsoft Store Commerce application is not installed on this system."
 }
