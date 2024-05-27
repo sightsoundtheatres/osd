@@ -1,16 +1,18 @@
 # Uninstall StoreCommerce app
 ########################################################
 
-# Get the package information for the Microsoft Store Commerce application
-$package = Get-AppxPackage -Name "Microsoft.StorePurchaseApp" -AllUsers
+# Get the package information for the Microsoft Store Commerce application for all users
+$packages = Get-AppxPackage -AllUsers -Name "Microsoft.StorePurchaseApp"
 
-# Check if the package is installed
-if ($package) {
-    # Uninstall the Microsoft Store Commerce application
-    Remove-AppxPackage -Package $package.PackageFullName
-    Write-Output "[+] Microsoft Store Commerce application has been uninstalled successfully." -ForegroundColor Green
+# Check if any packages were found
+if ($packages) {
+    foreach ($package in $packages) {
+        # Uninstall the Microsoft Store Commerce application for all users
+        Remove-AppxPackage -Package $package.PackageFullName -AllUsers
+        Write-Output "Uninstalled: $($package.Name) with PackageFullName: $($package.PackageFullName) for all users."
+    }
 } else {
-    Write-Warning "Microsoft Store Commerce application is not installed on this system."
+    Write-Output "Microsoft Store Commerce application is not installed for any users on this system."
 }
 
 
