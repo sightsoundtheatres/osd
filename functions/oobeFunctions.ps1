@@ -368,7 +368,7 @@ function Step-oobeSetUserRegSettings {
     REG ADD "HKU\Default\Software\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsSpotlightFeatures" /t REG_DWORD /d 1 /f | Out-Null
 
     Write-host -ForegroundColor DarkGray "[-] Stop Start menu from opening on first logon"
-    REG ADD "HKLM\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "StartShownOnUpgrade" /t REG_DWORD /d 1 /f | Out-Null
+    REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "StartShownOnUpgrade" /t REG_DWORD /d 1 /f | Out-Null
 
     # Write-Host -ForegroundColor DarkGray "[-] Unloading the default user registry hive"
     REG UNLOAD "HKU\Default" | Out-Null
