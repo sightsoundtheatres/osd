@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.4.22.2'
+$ScriptVersion = '24.5.29.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -366,6 +366,9 @@ function Step-oobeSetUserRegSettings {
     
     Write-host -ForegroundColor DarkGray "[-] Disable Windows Spotlight on lockscreen"
     REG ADD "HKU\Default\Software\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsSpotlightFeatures" /t REG_DWORD /d 1 /f | Out-Null
+
+    Write-host -ForegroundColor DarkGray "[-] Stop Start menu from opening on first logon"
+    REG ADD "HKLM\TempUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "StartShownOnUpgrade" /t REG_DWORD /d 1 /f | Out-Null
 
     # Write-Host -ForegroundColor DarkGray "[-] Unloading the default user registry hive"
     REG UNLOAD "HKU\Default" | Out-Null
