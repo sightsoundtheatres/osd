@@ -1,42 +1,20 @@
 #!/bin/bash
 
-adminaccountname="sslocaladmin"       # This is the account name of the new admin
+# Define variables
+adminaccountname="ssLocalAdmin"       # This is the account name of the new admin
 adminaccountfullname="SS Local Admin" # This is the full name of the new admin user
+adminpassword="PASSWORD1!"            # This is the password for the new admin user
 certurl="https://ssintunedata.blob.core.windows.net/cert/Cisco_Umbrella_Root_CA.cer" # URL to the root certificate
 
 # Create new local admin account
 echo "Creating new local admin account [$adminaccountname]"
 
-serial=$(system_profiler SPHardwareDataType | awk '/Serial/ {print $4}')
-hash=$(echo -n "$serial" | shasum -a 256 | awk '{print $1}')
-p=$(echo "$hash" | xxd -r -p | head -c 9 | base64)
-
-echo "Adding $adminaccountname to hidden users list"
-sudo defaults write /Library/Preferences/com.apple.loginwindow HiddenUsersList -array-add "$adminaccountname"
-
-if id "$adminaccountname" &>/dev/null; then
-    echo "Deleting existing user $adminaccountname"
-    sudo sysadminctl -deleteUser "$adminaccountname"
-fi
-
-echo "Creating new user $adminaccountname with admin privileges"
-sudo sysadminctl -adminUser "$adminaccountname" -adminPassword "$p" -addUser "$adminaccountname" -fullName "$adminaccountfullname" -password "$p" -admin
-
-# Install root certificate
-echo "Downloading and installing root certificate"
-
-certpath="/tmp/Cisco_Umbrella_Root_CA.cer"
-curl -s -o "$certpath" "$certurl"
-
-if [ -f "$certpath" ]; then
-    sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "$certpath"
-    echo "Root certificate installed successfully."
-else
-    echo "Failed to download the root certificate."
-fi
-
-csrutil enable
-reboot
-
-
-echo "Script execution completed."
+# Use dscl to create the user and set its properties
+sudo dscl . -create /Users/"$adminaccountname"
+sudo dscl . -create /Users/"$adminaccountname" UserShell /bin/bash
+sudo dscl . -create /Users/"$adminaccountname" RealName "$adminaccountfullname"
+sudo dscl . -create /Users/"$adminaccountname" UniqueID 1001
+sudo dscl . -create /Users/"$adminaccountname" PrimaryGroupID 80
+sudo dscl . -create /Users/"$adminaccountname" NFSHomeDirectory /Users/"$adminaccountname"
+sudo dscl . -passwd /Users/"$adminaccountname" "$adminpassword"
+sudo dscl . -append /Groups/admin GroupMembership "$adminaccountname"
