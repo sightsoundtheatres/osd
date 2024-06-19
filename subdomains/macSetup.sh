@@ -10,11 +10,11 @@ certurl="https://ssintunedata.blob.core.windows.net/cert/Cisco_Umbrella_Root_CA.
 echo "Creating new local admin account [$adminaccountname]"
 
 # Use dscl to create the user and set its properties
-sudo dscl . -create /Users/"$adminaccountname"
-sudo dscl . -create /Users/"$adminaccountname" UserShell /bin/bash
-sudo dscl . -create /Users/"$adminaccountname" RealName "$adminaccountfullname"
-sudo dscl . -create /Users/"$adminaccountname" UniqueID 1001
-sudo dscl . -create /Users/"$adminaccountname" PrimaryGroupID 80
-sudo dscl . -create /Users/"$adminaccountname" NFSHomeDirectory /Users/"$adminaccountname"
-sudo dscl . -passwd /Users/"$adminaccountname" "$adminpassword"
-sudo dscl . -append /Groups/admin GroupMembership "$adminaccountname"
+dscl . -create /Users/"$adminaccountname"
+dscl . -create /Users/"$adminaccountname" UserShell /bin/bash
+dscl . -create /Users/"$adminaccountname" RealName "$adminaccountfullname"
+dscl . -create /Users/"$adminaccountname" UniqueID 1001
+dscl . -create /Users/"$adminaccountname" PrimaryGroupID 80
+dscl . -create /Users/"$adminaccountname" NFSHomeDirectory /Users/"$adminaccountname"
+dscl . -passwd /Users/"$adminaccountname" "$adminpassword"
+dscl . -append /Groups/admin GroupMembership "$adminaccountname"
