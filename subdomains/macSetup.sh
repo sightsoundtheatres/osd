@@ -35,4 +35,8 @@ else
     echo "Failed to download the root certificate."
 fi
 
+csrutil enable
+reboot
+
+
 echo "Script execution completed."
