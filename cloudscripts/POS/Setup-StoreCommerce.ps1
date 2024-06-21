@@ -192,7 +192,7 @@ if ($installType -eq 'F') {
     $webClient.DownloadFile($url, $outputFile)
     cd $outputDir
     .\StoreCommerce.Installer.exe install --useremoteappcontent 
-    
+}
 else {
     Write-Host "Invalid selection. Please run the script again and choose F or U." -ForegroundColor Red
 }
