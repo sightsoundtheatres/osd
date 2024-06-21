@@ -99,8 +99,8 @@ if (!(Test-Path $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir | Out-Null
 }
 
-# Download the file
-Invoke-WebRequest -Uri $url -OutFile $outputFile
+# Download the file using Start-BitsTransfer
+Start-BitsTransfer -Source $url -Destination $outputFile -Priority Foreground
 
 # Run the installer with the provided arguments
 cd $outputDir
@@ -120,8 +120,8 @@ if (!(Test-Path $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir | Out-Null
 }
 
-# Download the file
-Invoke-WebRequest -Uri $url -OutFile $outputFile
+# Download the file using Start-BitsTransfer
+Start-BitsTransfer -Source $url -Destination $outputFile -Priority Foreground
 
 # Run the installer with the provided arguments
 cd $outputDir
@@ -141,8 +141,8 @@ if (!(Test-Path $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir | Out-Null
 }
 
-# Download the file
-Invoke-WebRequest -Uri $url -OutFile $outputFile
+# Download the file using Start-BitsTransfer
+Start-BitsTransfer -Source $url -Destination $outputFile -Priority Foreground
 
 # Run the installer with the provided arguments
 cd $outputDir
