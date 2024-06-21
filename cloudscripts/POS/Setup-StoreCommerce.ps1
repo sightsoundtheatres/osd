@@ -170,7 +170,7 @@ if ($installType -eq 'F') {
     Write-Host "Updating Application..." -ForegroundColor Yellow
 
     # Check if the current version has been uninstalled manually
-    $confirmation = Read-Host "You are about to re-install the Store Commerce Application (C to continue)" -ForegroundColor Cyan
+    $confirmation = Read-Host "You are about to re-install the Store Commerce Application (C to continue)" 
     if ($confirmation -ne 'C') {
         Write-Warning "Please press 'C' to continue."
         exit
@@ -191,8 +191,8 @@ if ($installType -eq 'F') {
     $webClient = New-Object System.Net.WebClient
     $webClient.DownloadFile($url, $outputFile)
     cd $outputDir
-    .\StoreCommerce.Installer.exe install --useremoteappcontent --retailserverurl "https://sst-prodret.operations.dynamics.com/Commerce"
-}
+    .\StoreCommerce.Installer.exe install --useremoteappcontent 
+    
 else {
     Write-Host "Invalid selection. Please run the script again and choose F or U." -ForegroundColor Red
 }
