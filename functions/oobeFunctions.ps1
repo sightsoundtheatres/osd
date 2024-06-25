@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.6.25.1'
+$ScriptVersion = '24.6.25.2'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -56,7 +56,7 @@ function Step-installCiscoRootCert {
     # Check if the directory exists, if not, create it
     if (-Not (Test-Path -Path $certDirectory)) {
         Write-Host -ForegroundColor Yellow "[-] Directory $certDirectory does not exist. Creating it..."
-        New-Item -Path $certDirectory -ItemType Directory
+        New-Item -Path $certDirectory -ItemType Directory | Out-Null
     }
 
     # Check if the certificate is already installed by the issuer name
@@ -96,7 +96,7 @@ function Step-installCiscoRootCert {
         # Check if the directory exists, if not, create it
         if (-Not (Test-Path -Path $certDirectory)) {
             Write-Host -ForegroundColor Yellow "[-] Directory $certDirectory does not exist. Creating it..."
-            New-Item -Path $certDirectory -ItemType Directory
+            New-Item -Path $certDirectory -ItemType Directory | Out-Null
         }
 
         # Check if the certificate is already installed by the issuer name
@@ -477,7 +477,7 @@ function Step-oobeCreateLocalUser {
         # Check if the directory exists, if not, create it
         if (-Not (Test-Path -Path $scriptDirectory)) {
             Write-Host -ForegroundColor Yellow "[-] Directory $scriptDirectory does not exist. Creating it..."
-            New-Item -Path $scriptDirectory -ItemType Directory
+            New-Item -Path $scriptDirectory -ItemType Directory | Out-Null
         }
     
         if (Test-Path $scriptPath) {
@@ -506,7 +506,7 @@ function Step-oobeCreateLocalUser {
         # Check if the directory exists, if not, create it
         if (-Not (Test-Path -Path $scriptDirectory)) {
             Write-Host -ForegroundColor Yellow "[-] Directory $scriptDirectory does not exist. Creating it..."
-            New-Item -Path $scriptDirectory -ItemType Directory
+            New-Item -Path $scriptDirectory -ItemType Directory | Out-Null
         }
     
         if (Test-Path $scriptPath) {
