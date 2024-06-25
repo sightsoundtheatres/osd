@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.5.29.1'
+$ScriptVersion = '24.6.25.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -48,41 +48,56 @@ $Global:oobeCloud = @{
 
 function Step-installCiscoRootCert {
     
-        # Define the certificate URL and file
-        $certUrl = "https://ssintunedata.blob.core.windows.net/cert/Cisco_Umbrella_Root_CA.cer"
-        $certFile = "C:\OSDCloud\Temp\Cisco_Umbrella_Root_CA.cer"
+    # Define the certificate URL and file
+    $certUrl = "https://ssintunedata.blob.core.windows.net/cert/Cisco_Umbrella_Root_CA.cer"
+    $certFile = "C:\OSDCloud\Temp\Cisco_Umbrella_Root_CA.cer"
+    $certDirectory = "C:\OSDCloud\Temp"
 
-        # Check if the certificate is already installed by the issuer name
-        $certExists = Get-ChildItem -Path 'Cert:\LocalMachine\Root\' | Where-Object {$_.Issuer -like "*Cisco Umbrella*"}
-
-        if ($certExists) {
-            # Do nothing
-            Write-Host -ForegroundColor Green "[+] Cisco Umbrella root certificate installed"
-        }
-        else {
-            # Download and install the certificate
-            Write-Host -ForegroundColor Yellow "[-] Installing Cisco Umbrella root certificate"
-            Invoke-WebRequest -Uri $certUrl -OutFile $certFile
-
-            # Load the certificate and add it to the root store
-            $Cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
-            $Cert.Import($certFile)
-            $Store = New-Object System.Security.Cryptography.X509Certificates.X509Store("Root", "LocalMachine")
-            $Store.Open("ReadWrite")
-            $Store.Add($Cert)
-            $Store.Close()
-
-            # Delete the downloaded file
-            Remove-Item $certFile -Force
-            Write-Host -ForegroundColor Green "[+] Cisco Umbrella root certificate installed"
-        }
+    # Check if the directory exists, if not, create it
+    if (-Not (Test-Path -Path $certDirectory)) {
+        Write-Host -ForegroundColor Yellow "[-] Directory $certDirectory does not exist. Creating it..."
+        New-Item -Path $certDirectory -ItemType Directory
     }
+
+    # Check if the certificate is already installed by the issuer name
+    $certExists = Get-ChildItem -Path 'Cert:\LocalMachine\Root\' | Where-Object {$_.Issuer -like "*Cisco Umbrella*"}
+
+    if ($certExists) {
+        # Do nothing
+        Write-Host -ForegroundColor Green "[+] Cisco Umbrella root certificate is already installed"
+    }
+    else {
+        # Download and install the certificate
+        Write-Host -ForegroundColor Yellow "[-] Installing Cisco Umbrella root certificate"
+        Invoke-WebRequest -Uri $certUrl -OutFile $certFile
+
+        # Load the certificate and add it to the root store
+        $Cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+        $Cert.Import($certFile)
+        $Store = New-Object System.Security.Cryptography.X509Certificates.X509Store("Root", "LocalMachine")
+        $Store.Open("ReadWrite")
+        $Store.Add($Cert)
+        $Store.Close()
+
+        # Delete the downloaded file
+        Remove-Item $certFile -Force
+        Write-Host -ForegroundColor Green "[+] Cisco Umbrella root certificate installed"
+    }
+}
+
 
     function Step-installSTCACert {
     
         # Define the certificate URL and file
         $certUrl = "https://ssintunedata.blob.core.windows.net/cert/24-st-ca.cer"
         $certFile = "C:\OSDCloud\Temp\24-ST-CA.cer"
+        $certDirectory = "C:\OSDCloud\Temp"
+
+        # Check if the directory exists, if not, create it
+        if (-Not (Test-Path -Path $certDirectory)) {
+            Write-Host -ForegroundColor Yellow "[-] Directory $certDirectory does not exist. Creating it..."
+            New-Item -Path $certDirectory -ItemType Directory
+        }
 
         # Check if the certificate is already installed by the issuer name
         $certExists = Get-ChildItem -Path 'Cert:\LocalMachine\Root\' | Where-Object {$_.Issuer -like "*ST-CA*"}
@@ -452,58 +467,78 @@ function Step-oobeCreateLocalUser {
     
     }
 
-function Step-desktopWallpaper {
-    [CmdletBinding()]
-    param ()    
-    $scriptPath = "C:\OSDCloud\Scripts\set-desktopWallpaper.ps1"
-    if (Test-Path $scriptPath) {
-        Write-Host -ForegroundColor Green "[+] Replacing default wallpaper and lockscreen images"        
-    } else {        
-        Write-Host -ForegroundColor Yellow "[-] Replacing default wallpaper and lockscreen images"
-        # Download the script
-        # Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/desktopWallpaper.ps1 -OutFile $scriptPath
-        Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/set-lockScreen_Wallpaper.ps1 -OutFile $scriptPath
-        # Execute the script
-        & $scriptPath -ErrorAction SilentlyContinue
-    }        
-}
-
-function Step-InstallM365Apps {
-    [CmdletBinding()]
-    param (
-        [System.String]
-        $Command
-    )    
-    $scriptPath = "C:\OSDCloud\Scripts\InstallM365Apps.ps1"
-    if (Test-Path $scriptPath) {
-        Write-Host -ForegroundColor Green "[+] M365 Applications Installed"        
-        return
-    } 
-    $skyppedPath = "c:\osdcloud\scripts\m365appinstallskipped.txt"
-    if (test-path $skyppedPath) {
-        Write-Host -ForegroundColor Cyan "[!] Installation of M365 office applications skipped."
-        return
+    function Step-desktopWallpaper {
+        [CmdletBinding()]
+        param ()
+        
+        $scriptDirectory = "C:\OSDCloud\Scripts"
+        $scriptPath = "C:\OSDCloud\Scripts\set-desktopWallpaper.ps1"
+    
+        # Check if the directory exists, if not, create it
+        if (-Not (Test-Path -Path $scriptDirectory)) {
+            Write-Host -ForegroundColor Yellow "[-] Directory $scriptDirectory does not exist. Creating it..."
+            New-Item -Path $scriptDirectory -ItemType Directory
+        }
+    
+        if (Test-Path $scriptPath) {
+            Write-Host -ForegroundColor Green "[+] Replacing default wallpaper and lockscreen images"
+        } else {
+            Write-Host -ForegroundColor Yellow "[-] Replacing default wallpaper and lockscreen images"
+            # Download the script
+            Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/set-lockScreen_Wallpaper.ps1 -OutFile $scriptPath
+            # Execute the script
+            & $scriptPath -ErrorAction SilentlyContinue
+        }
     }
-    # Display a pop-up asking for user confirmation
-    $caption = "Install M365 Apps?"
-    $message = "Would you like to install the M365 Office Applications?"
-    $options = [System.Windows.Forms.MessageBoxButtons]::YesNo
-    $result = [System.Windows.Forms.MessageBox]::Show($message, $caption, $options, [System.Windows.Forms.MessageBoxIcon]::Question)
+    
 
-    if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {            
-        Write-Host -ForegroundColor Yellow "[-] Installing M365 Applications"
-        # Download the script
-        Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/InstallM365Apps.ps1 -OutFile $scriptPath
-        # Execute the script
-        & $scriptPath -XMLURL "https://raw.githubusercontent.com/sightsoundtheatres/osd/main/supportFiles/MicrosoftOffice/configuration.xml" -ErrorAction SilentlyContinue
+    function Step-InstallM365Apps {
+        [CmdletBinding()]
+        param (
+            [System.String]
+            $Command
+        )
+        
+        $scriptDirectory = "C:\OSDCloud\Scripts"
+        $scriptPath = "C:\OSDCloud\Scripts\InstallM365Apps.ps1"
+        $skippedPath = "c:\osdcloud\scripts\m365appinstallskipped.txt"
+    
+        # Check if the directory exists, if not, create it
+        if (-Not (Test-Path -Path $scriptDirectory)) {
+            Write-Host -ForegroundColor Yellow "[-] Directory $scriptDirectory does not exist. Creating it..."
+            New-Item -Path $scriptDirectory -ItemType Directory
+        }
+    
+        if (Test-Path $scriptPath) {
+            Write-Host -ForegroundColor Green "[+] M365 Applications Installed"
+            return
+        }
+    
+        if (Test-Path $skippedPath) {
+            Write-Host -ForegroundColor Cyan "[!] Installation of M365 office applications skipped."
+            return
+        }
+    
+        # Display a pop-up asking for user confirmation
+        $caption = "Install M365 Apps?"
+        $message = "Would you like to install the M365 Office Applications?"
+        $options = [System.Windows.Forms.MessageBoxButtons]::YesNo
+        $result = [System.Windows.Forms.MessageBox]::Show($message, $caption, $options, [System.Windows.Forms.MessageBoxIcon]::Question)
+    
+        if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
+            Write-Host -ForegroundColor Yellow "[-] Installing M365 Applications"
+            # Download the script
+            Invoke-WebRequest -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/InstallM365Apps.ps1 -OutFile $scriptPath
+            # Execute the script
+            & $scriptPath -XMLURL "https://raw.githubusercontent.com/sightsoundtheatres/osd/main/supportFiles/MicrosoftOffice/configuration.xml" -ErrorAction SilentlyContinue
+        }
+        else {
+            Write-Host -ForegroundColor Cyan "[!] Installation of M365 office applications skipped."
+            New-Item -ItemType File -Path $skippedPath | Out-Null
+            return
+        }
     }
-    else {
-        Write-Host -ForegroundColor Cyan "[!] Installation of M365 office applications skipped."
-        New-Item -ItemType File -Path $skyppedPath | Out-Null
-        return
-    }
-}
-
+    
 function Step-oobeRestartComputer {
     [CmdletBinding()]
     param ()        
