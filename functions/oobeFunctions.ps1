@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.6.25.2'
+$ScriptVersion = '24.8.5.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -154,8 +154,7 @@ function Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity {
                                 "Autopilot_Devices-Box_CC",
                                 "AutoPilot_Devices-Retail",
                                 "Autopilot_Devices-CenterStageKiosk",
-                                "Autopilot_Devices-SharedDevice_IT",
-                                "Autopilot_Devices-GeneralUsers_ARM")
+                                "Autopilot_Devices-SharedDevice_IT")
 
         # Display the menu for the AddToGroup parameter
         Write-Host "Select an AddToGroup option:"
