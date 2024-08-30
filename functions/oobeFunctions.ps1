@@ -394,8 +394,8 @@ function Step-oobeSetUserRegSettings {
     Write-host -ForegroundColor DarkGray "[-] Stop Start menu from opening on first logon"
     REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "StartShownOnUpgrade" /t REG_DWORD /d 1 /f | Out-Null
 
-    Write-Host -ForegroundColor DarkGray "[-] Setting NumLock to on by default at lockscreen"
-    REG ADD "HKU\Default\Control Panel\Keyboard" /v "InitialKeyboardIndicators" /t REG_SZ /d "2" /f | Out-Null
+    #Write-Host -ForegroundColor DarkGray "[-] Setting NumLock to on by default at lockscreen"
+    #REG ADD "HKU\Default\Control Panel\Keyboard" /v "InitialKeyboardIndicators" /t REG_SZ /d "2" /f | Out-Null
 
     # Write-Host -ForegroundColor DarkGray "[-] Unloading the default user registry hive"
     REG UNLOAD "HKU\Default" | Out-Null
