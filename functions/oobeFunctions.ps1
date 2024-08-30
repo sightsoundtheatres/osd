@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.8.5.1'
+$ScriptVersion = '24.8.30.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -124,49 +124,58 @@ function Step-installCiscoRootCert {
             Write-Host -ForegroundColor Green "[+] ST-CA root certificate installed"
         }
     }
-function Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity {
-    [CmdletBinding()]
-    param ()
-        # Install the get-windowsautopilotcommunity.ps1 script
-        install-script get-windowsautopilotinfocommunity -Force
-
-        # Define the options for the GroupTag parameter
-        $GroupTagOptions = @("Development", "Enterprise")
-
-        # Display the menu for the GroupTag parameter
-        Write-Host "Select a GroupTag:"
-        for ($i = 0; $i -lt $GroupTagOptions.Count; $i++) {
-            Write-Host "$($i + 1): $($GroupTagOptions[$i])"
-        }
-        $GroupTagChoice = Read-Host "Enter your choice"
-        $GroupTag = $GroupTagOptions[$GroupTagChoice - 1]
-
-        # Prompt the user to enter a value for the AssignedComputerName parameter
-        do {
-            $AssignedComputerName = (Read-Host "Enter the AssignedComputerName ex XXWIN-EID-XXXX (15 characters or less)").ToUpper()
-            if ($AssignedComputerName.Length -gt 15) {
-                Write-Warning "AssignedComputerName must be 15 characters or less"
+    function Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity {
+        [CmdletBinding()]
+        param ()
+            # Install the get-windowsautopilotinfocommunity script
+            install-script get-windowsautopilotinfocommunity -Force
+    
+            # Define the options for the GroupTag parameter
+            $GroupTagOptions = @("Development", "Enterprise")
+    
+            # Display the menu for the GroupTag parameter
+            Write-Host "Select a GroupTag:" -ForegroundColor Yellow        
+            for ($i = 0; $i -lt $GroupTagOptions.Count; $i++) {
+                Write-Host "[$($i + 1)]" -ForegroundColor White -NoNewline
+                Write-Host " $($GroupTagOptions[$i])" -ForegroundColor DarkCyan
             }
-        } while ($AssignedComputerName.Length -gt 15)
-
-        # Define the options for the AddToGroup parameter
-        $AddToGroupOptions = @( "Autopilot_Devices-GeneralUsers",
-                                "Autopilot_Devices-Box_CC",
-                                "AutoPilot_Devices-Retail",
-                                "Autopilot_Devices-CenterStageKiosk",
-                                "Autopilot_Devices-SharedDevice_IT")
-
-        # Display the menu for the AddToGroup parameter
-        Write-Host "Select an AddToGroup option:"
-        for ($i = 0; $i -lt $AddToGroupOptions.Count; $i++) {
-            Write-Host "$($i + 1): $($AddToGroupOptions[$i])"
-        }
-        $AddToGroupChoice = Read-Host "Enter your choice"
-        $AddToGroup = $AddToGroupOptions[$AddToGroupChoice - 1]
-
-        # Call the get-windowsautopilotinfo.ps1 script with the specified parameters
-        get-windowsautopilotinfocommunity.ps1 -Assign -GroupTag $GroupTag -AssignedComputerName $AssignedComputerName -AddToGroup $AddToGroup -online
-}
+            $GroupTagChoice = Read-Host "Enter your choice"
+            $GroupTag = $GroupTagOptions[$GroupTagChoice - 1]
+    
+            # Prompt the user to enter a value for the AssignedComputerName parameter
+            do {
+                Write-Host "Enter the AssignedComputerName ex XXWIN-EID-XXXX (15 characters or less): " -ForegroundColor Yellow -NoNewline
+                $AssignedComputerName = (Read-Host).ToUpper()
+                if ($AssignedComputerName.Length -gt 15) {
+                    Write-Host "WARNING: AssignedComputerName must be 15 characters or less" -ForegroundColor Yellow
+                }
+            } while ($AssignedComputerName.Length -gt 15)
+    
+            # Define the options for the AddToGroup parameter using the group names directly
+            $AddToGroupOptions = @(
+                "Autopilot_Devices-GeneralUsers",
+                "Autopilot_Devices-Box_CC",
+                "AutoPilot_Devices-Retail",
+                "Autopilot_Devices-CenterStageKiosk",
+                "Autopilot_Devices-SharedDevice_IT"
+            )
+    
+            # Display the menu for the AddToGroup parameter
+            Write-Host "Select an AddToGroup option:" -ForegroundColor Yellow
+            for ($i = 0; $i -lt $AddToGroupOptions.Count; $i++) {
+                Write-Host "[$($i + 1)]" -ForegroundColor White -NoNewline
+                Write-Host " $($AddToGroupOptions[$i])" -ForegroundColor DarkCyan
+            }
+    
+            $AddToGroupChoice = Read-Host "Enter your choice"
+            $AddToGroup = $AddToGroupOptions[$AddToGroupChoice - 1]
+    
+            # Output the selected AddToGroup value for verification
+            Write-Host "Tag: $GroupTag - Computer Name: $AssignedComputerName - Group: $AddToGroup" -ForegroundColor Green
+    
+            # Call the get-windowsautopilotinfo.ps1 script with the specified parameters
+            get-windowsautopilotinfocommunity.ps1 -Assign -GroupTag $GroupTag -AssignedComputerName $AssignedComputerName -AddToGroup $AddToGroup -online
+    }
 function Step-oobeRegisterAutopilot {
     [CmdletBinding()]
     param (
@@ -677,4 +686,3 @@ function step-WinGetUpdate {
     winget upgrade --all --accept-source-agreements --accept-package-agreements
 
 }
-    
