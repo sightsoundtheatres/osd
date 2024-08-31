@@ -394,10 +394,7 @@ function Step-oobeSetUserRegSettings {
     Write-host -ForegroundColor DarkGray "[-] Stop Start menu from opening on first logon"
     REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "StartShownOnUpgrade" /t REG_DWORD /d 1 /f | Out-Null
 
-    #Write-Host -ForegroundColor DarkGray "[-] Setting NumLock to on by default at lockscreen"
-    #REG ADD "HKU\Default\Control Panel\Keyboard" /v "InitialKeyboardIndicators" /t REG_SZ /d "2" /f | Out-Null
-
-    # Write-Host -ForegroundColor DarkGray "[-] Unloading the default user registry hive"
+    Write-Host -ForegroundColor DarkGreen "[+] Unloading the default user registry hive"
     REG UNLOAD "HKU\Default" | Out-Null
     }
 
@@ -445,6 +442,9 @@ function Step-oobeSetDeviceRegSettings {
             New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Force -ErrorAction SilentlyContinue | Out-Null
         }
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Value 0 -Type DWord -ErrorAction SilentlyContinue
+
+    Write-Host -ForegroundColor DarkGray "[-] Setting NumLock to on by default at lockscreen"
+        REG ADD "HKU\.DEFAULT\Control Panel\Keyboard" /v "InitialKeyboardIndicators" /t REG_SZ /d "2" /f | Out-Null
     }
 
 function Step-oobeCreateLocalUser {
