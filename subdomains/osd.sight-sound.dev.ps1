@@ -31,7 +31,7 @@ powershell iex (irm osd.sight-sound.dev)
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '24.9.3.1'
+$ScriptVersion = '24.9.3.2'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
@@ -101,7 +101,7 @@ if ($WindowsPhase -eq 'OOBE') {
     step-InstallWinGet
     step-WinGetUpdate    
     osdcloud-StartOOBE 
-    #Step-desktopWallpaper
+    Step-desktopWallpaper
     Step-InstallM365Apps
     Step-oobeHotFix #fix for Autopilot failing
     Step-installSTCACert 
@@ -110,8 +110,7 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-oobeRegisterAutopilot 
     Step-oobeRemoveAppxPackageAllUsers
     Step-oobeSetUserRegSettings
-    Step-oobeSetDeviceRegSettings    
-    Step-desktopWallpaper
+    Step-oobeSetDeviceRegSettings   
     Step-oobeCreateLocalUser    
     Step-oobeRestartComputer
 
