@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.8.5.1'
+$ScriptVersion = '24.9.2.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -124,49 +124,58 @@ function Step-installCiscoRootCert {
             Write-Host -ForegroundColor Green "[+] ST-CA root certificate installed"
         }
     }
-function Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity {
-    [CmdletBinding()]
-    param ()
-        # Install the get-windowsautopilotcommunity.ps1 script
-        install-script get-windowsautopilotinfocommunity -Force
-
-        # Define the options for the GroupTag parameter
-        $GroupTagOptions = @("Development", "Enterprise")
-
-        # Display the menu for the GroupTag parameter
-        Write-Host "Select a GroupTag:"
-        for ($i = 0; $i -lt $GroupTagOptions.Count; $i++) {
-            Write-Host "$($i + 1): $($GroupTagOptions[$i])"
-        }
-        $GroupTagChoice = Read-Host "Enter your choice"
-        $GroupTag = $GroupTagOptions[$GroupTagChoice - 1]
-
-        # Prompt the user to enter a value for the AssignedComputerName parameter
-        do {
-            $AssignedComputerName = (Read-Host "Enter the AssignedComputerName ex XXWIN-EID-XXXX (15 characters or less)").ToUpper()
-            if ($AssignedComputerName.Length -gt 15) {
-                Write-Warning "AssignedComputerName must be 15 characters or less"
+    function Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity {
+        [CmdletBinding()]
+        param ()
+            # Install the get-windowsautopilotinfocommunity script
+            install-script get-windowsautopilotinfocommunity -Force
+    
+            # Define the options for the GroupTag parameter
+            $GroupTagOptions = @("Development", "Enterprise")
+    
+            # Display the menu for the GroupTag parameter
+            Write-Host "Select a GroupTag:" -ForegroundColor Yellow        
+            for ($i = 0; $i -lt $GroupTagOptions.Count; $i++) {
+                Write-Host "[$($i + 1)]" -ForegroundColor White -NoNewline
+                Write-Host " $($GroupTagOptions[$i])" -ForegroundColor DarkCyan
             }
-        } while ($AssignedComputerName.Length -gt 15)
-
-        # Define the options for the AddToGroup parameter
-        $AddToGroupOptions = @( "Autopilot_Devices-GeneralUsers",
-                                "Autopilot_Devices-Box_CC",
-                                "AutoPilot_Devices-Retail",
-                                "Autopilot_Devices-CenterStageKiosk",
-                                "Autopilot_Devices-SharedDevice_IT")
-
-        # Display the menu for the AddToGroup parameter
-        Write-Host "Select an AddToGroup option:"
-        for ($i = 0; $i -lt $AddToGroupOptions.Count; $i++) {
-            Write-Host "$($i + 1): $($AddToGroupOptions[$i])"
-        }
-        $AddToGroupChoice = Read-Host "Enter your choice"
-        $AddToGroup = $AddToGroupOptions[$AddToGroupChoice - 1]
-
-        # Call the get-windowsautopilotinfo.ps1 script with the specified parameters
-        get-windowsautopilotinfocommunity.ps1 -Assign -GroupTag $GroupTag -AssignedComputerName $AssignedComputerName -AddToGroup $AddToGroup -online
-}
+            $GroupTagChoice = Read-Host "Enter your choice"
+            $GroupTag = $GroupTagOptions[$GroupTagChoice - 1]
+    
+            # Prompt the user to enter a value for the AssignedComputerName parameter
+            do {
+                Write-Host "Enter the AssignedComputerName ex XXWIN-EID-XXXX (15 characters or less): " -ForegroundColor Yellow -NoNewline
+                $AssignedComputerName = (Read-Host).ToUpper()
+                if ($AssignedComputerName.Length -gt 15) {
+                    Write-Host "WARNING: AssignedComputerName must be 15 characters or less" -ForegroundColor Yellow
+                }
+            } while ($AssignedComputerName.Length -gt 15)
+    
+            # Define the options for the AddToGroup parameter using the group names directly
+            $AddToGroupOptions = @(
+                "Autopilot_Devices-GeneralUsers",
+                "Autopilot_Devices-Box_CC",
+                "AutoPilot_Devices-Retail",
+                "Autopilot_Devices-CenterStageKiosk",
+                "Autopilot_Devices-SharedDevice_IT"
+            )
+    
+            # Display the menu for the AddToGroup parameter
+            Write-Host "Select an AddToGroup option:" -ForegroundColor Yellow
+            for ($i = 0; $i -lt $AddToGroupOptions.Count; $i++) {
+                Write-Host "[$($i + 1)]" -ForegroundColor White -NoNewline
+                Write-Host " $($AddToGroupOptions[$i])" -ForegroundColor DarkCyan
+            }
+    
+            $AddToGroupChoice = Read-Host "Enter your choice"
+            $AddToGroup = $AddToGroupOptions[$AddToGroupChoice - 1]
+    
+            # Output the selected AddToGroup value for verification
+            Write-Host "Tag: $GroupTag - Computer Name: $AssignedComputerName - Group: $AddToGroup" -ForegroundColor Green
+    
+            # Call the get-windowsautopilotinfo.ps1 script with the specified parameters
+            get-windowsautopilotinfocommunity.ps1 -Assign -GroupTag $GroupTag -AssignedComputerName $AssignedComputerName -AddToGroup $AddToGroup -online
+    }
 function Step-oobeRegisterAutopilot {
     [CmdletBinding()]
     param (
@@ -377,7 +386,10 @@ function Step-oobeSetUserRegSettings {
     REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "AutoCheckSelect" /t REG_DWORD /d 1 /f | Out-Null
 
     Write-host -ForegroundColor DarkGray "[-] Disable Chat on Taskbar"
-    REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f | Out-Null   
+    REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f | Out-Null  
+    
+    Write-host -ForegroundColor DarkGray "[-] Disable widgets on Taskbar"
+    REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarDa" /t REG_DWORD /d 0 /f | Out-Null   
     
     Write-host -ForegroundColor DarkGray "[-] Disable Windows Spotlight on lockscreen"
     REG ADD "HKU\Default\Software\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsSpotlightFeatures" /t REG_DWORD /d 1 /f | Out-Null
@@ -385,7 +397,7 @@ function Step-oobeSetUserRegSettings {
     Write-host -ForegroundColor DarkGray "[-] Stop Start menu from opening on first logon"
     REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "StartShownOnUpgrade" /t REG_DWORD /d 1 /f | Out-Null
 
-    # Write-Host -ForegroundColor DarkGray "[-] Unloading the default user registry hive"
+    Write-Host -ForegroundColor DarkGreen "[+] Unloading the default user registry hive"
     REG UNLOAD "HKU\Default" | Out-Null
     }
 
@@ -424,6 +436,18 @@ function Step-oobeSetDeviceRegSettings {
             Set-ItemProperty -Path "HKLM:\Software\Microsoft\PolicyManager\current\device\Start" -Name "AllowPinnedFolderFileExplorer_ProviderSet" -Value 1 -Type DWord -ErrorAction SilentlyContinue
             Set-ItemProperty -Path "HKLM:\Software\Microsoft\PolicyManager\current\device\Start" -Name "AllowPinnedFolderSettings" -Value 1 -Type DWord -ErrorAction SilentlyContinue
             Set-ItemProperty -Path "HKLM:\Software\Microsoft\PolicyManager\current\device\Start" -Name "AllowPinnedFolderSettings_ProviderSet" -Value 1 -Type DWord -ErrorAction SilentlyContinue
+
+    Write-Host -ForegroundColor DarkGray "[-] Disabling News and Interests"
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\NewsAndInterests\AllowNewsAndInterests" -Name "value" -Value 0 -Type DWord -ErrorAction SilentlyContinue
+            
+    Write-Host -ForegroundColor DarkGray "[-] Disabling Windows Feeds"
+        if (-Not (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds")) {
+            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Force -ErrorAction SilentlyContinue | Out-Null
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Value 0 -Type DWord -ErrorAction SilentlyContinue
+
+    Write-Host -ForegroundColor DarkGray "[-] Setting NumLock to on by default at lockscreen"
+        REG ADD "HKU\.DEFAULT\Control Panel\Keyboard" /v "InitialKeyboardIndicators" /t REG_SZ /d "2" /f | Out-Null
     }
 
 function Step-oobeCreateLocalUser {
@@ -677,4 +701,3 @@ function step-WinGetUpdate {
     winget upgrade --all --accept-source-agreements --accept-package-agreements
 
 }
-    
