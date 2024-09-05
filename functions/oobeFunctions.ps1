@@ -128,8 +128,8 @@ function Step-installCiscoRootCert {
         [CmdletBinding()]
         param ()
             # Install the get-windowsautopilotinfocommunity script
-            install-script Get-WindowsAutopilotInfoCommunity -Force
-            Install-Script Get-AutopilotDiagnosticsCommunity -force    
+            Install-Script Get-WindowsAutopilotInfoCommunity -Force
+            Install-Script Get-AutopilotDiagnosticsCommunity -Force    
     
             # Define the options for the GroupTag parameter
             $GroupTagOptions = @("Development", "Enterprise")
