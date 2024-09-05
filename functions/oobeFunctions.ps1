@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.9.2.1'
+$ScriptVersion = '24.9.5.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -128,7 +128,8 @@ function Step-installCiscoRootCert {
         [CmdletBinding()]
         param ()
             # Install the get-windowsautopilotinfocommunity script
-            install-script get-windowsautopilotinfocommunity -Force
+            install-script Get-WindowsAutopilotInfoCommunity -Force
+            Install-Script Get-AutopilotDiagnosticsCommunity -force    
     
             # Define the options for the GroupTag parameter
             $GroupTagOptions = @("Development", "Enterprise")
