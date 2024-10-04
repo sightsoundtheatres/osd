@@ -1,14 +1,14 @@
 #to Run, boot OSDCloudUSB, at the PS Prompt: iex (irm win11.garytown.com)
 $ScriptName = '[+] Sight & Sound Windows 11 Pro Deployment'
-$ScriptVersion = '24.3.29.1'
+$ScriptVersion = '24.10.4.1'
 Write-Host -ForegroundColor Green "$ScriptName $ScriptVersion"
 #iex (irm functions.garytown.com) #Add custom functions used in Script Hosting in GitHub
 
 #Variables to define the Windows OS / Edition etc to be applied during OSDCloud
 $Product = (Get-MyComputerProduct)
 $OSVersion = 'Windows 11' #Used to Determine Driver Pack
-$OSReleaseID = '23H2' #Used to Determine Driver Pack
-$OSName = 'Windows 11 23H2 x64'
+$OSReleaseID = '24H2' #Used to Determine Driver Pack
+$OSName = 'Windows 11 24H2 x64'
 $OSEdition = 'Pro'
 $OSActivation = 'Retail'
 $OSLanguage = 'en-us'
@@ -42,7 +42,7 @@ Write-Host -ForegroundColor Green  "[+] Starting OSDCloud"
 
 # Ask the user if they want to install the latest version of Windows 11
 write-host -ForegroundColor DarkGray "About to run Start-OSDCloud -OSName $OSName -OSEdition $OSEdition -OSActivation $OSActivation -OSLanguage $OSLanguage"
-$response = Read-Host "Would you Install the latest version of Windows 11 on this computer? (Y/N)" 
+$response = Read-Host "Would you Install the latest version of Windows 11 v24H2 on this computer? (Y/N)" 
 switch ($response.ToLower()) {
     {'y', 'yes' -contains $_} {
         write-host -ForegroundColor DarkGray "Start-OSDCloud -OSName $OSName -OSEdition $OSEdition -OSActivation $OSActivation -OSLanguage $OSLanguage"
