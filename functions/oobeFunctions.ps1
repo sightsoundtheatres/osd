@@ -386,11 +386,11 @@ function Step-oobeSetUserRegSettings {
     Write-host -ForegroundColor DarkGray "[-] Show item checkboxes"
     REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "AutoCheckSelect" /t REG_DWORD /d 1 /f | Out-Null
 
-    Write-host -ForegroundColor DarkGray "[-] Disable Chat on Taskbar"
-    REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f | Out-Null  
+    #Write-host -ForegroundColor DarkGray "[-] Disable Chat on Taskbar"
+    #REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f | Out-Null  
     
-    Write-host -ForegroundColor DarkGray "[-] Disable widgets on Taskbar"
-    REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarDa" /t REG_DWORD /d 0 /f | Out-Null   
+    #Write-host -ForegroundColor DarkGray "[-] Disable widgets on Taskbar"
+    #REG ADD "HKU\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarDa" /t REG_DWORD /d 0 /f | Out-Null   
     
     Write-host -ForegroundColor DarkGray "[-] Disable Windows Spotlight on lockscreen"
     REG ADD "HKU\Default\Software\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsSpotlightFeatures" /t REG_DWORD /d 1 /f | Out-Null
