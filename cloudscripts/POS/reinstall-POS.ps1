@@ -39,7 +39,7 @@ if (!(Test-Path $outputDir)) {
 }
 
 # Download the file using curl
-Write-host -ForegroundColor -yellow "[!] Downloading StoreCommerce.Installer.exe"
+Write-host -ForegroundColor yellow "[!] Downloading StoreCommerce.Installer.exe"
 curl.exe -o $outputFile $url
 
 # Run the installer with the provided arguments
