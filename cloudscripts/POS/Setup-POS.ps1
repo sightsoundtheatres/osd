@@ -1,3 +1,33 @@
+
+# Clear the screen and display banner
+Clear-Host
+Write-Host "###############################################" -ForegroundColor Cyan
+Write-Host "#   Microsoft Dynamics Store Commerce Setup   #" -ForegroundColor Cyan
+Write-Host "###############################################" -ForegroundColor Cyan
+
+# Check Curl version and install if necessary
+function Install-Curl {
+    [CmdletBinding()]
+    param ()
+    if (-not (Get-Command 'curl.exe' -ErrorAction SilentlyContinue)) {
+        Write-Host -ForegroundColor Yellow "[-] Install Curl for Windows"
+        $Uri = 'https://curl.se/windows/latest.cgi?p=win64-mingw.zip'
+        Invoke-WebRequest -UseBasicParsing -Uri $Uri -OutFile "$env:TEMP\curl.zip"
+    
+        $null = New-Item -Path "$env:TEMP\Curl" -ItemType Directory -Force
+        Expand-Archive -Path "$env:TEMP\curl.zip" -DestinationPath "$env:TEMP\curl"
+    
+        Get-ChildItem "$env:TEMP\curl" -Include 'curl.exe' -Recurse | foreach {Copy-Item $_ -Destination "$env:SystemRoot\System32\curl.exe"}
+    }
+    else {
+        $GetItemCurl = Get-Item -Path "$env:SystemRoot\System32\curl.exe" -ErrorAction SilentlyContinue
+        Write-Host -ForegroundColor Green "[+] Curl $($GetItemCurl.VersionInfo.FileVersion)"
+    }
+}
+
+Install-Curl
+
+
 # Install necessary WinGet Packages 
 ########################################################
 
@@ -81,13 +111,14 @@ Create-RegistryPropertyIfNotExists "HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFra
 ########################################################
 
 # Get the process ID of the Process Explorer
+Write-Host -ForegroundColor Yellow "[!] Restarting explorer process to reload the registry"
 $processId = (Get-Process -Name explorer).Id
 # Stop the process using the process ID
 Stop-Process -Id $processId -Force
 
 
 
-#Download and install the StoreCommerce app 
+# Download and install the StoreCommerce app 
 ########################################################
 
 $url = "https://ssintunedata.blob.core.windows.net/d365/StoreCommerce.Installer.exe"
@@ -99,12 +130,15 @@ if (!(Test-Path $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir | Out-Null
 }
 
-# Download the file using Start-BitsTransfer
-Start-BitsTransfer -Source $url -Destination $outputFile -Priority Foreground
+# Download the file using curl
+Write-host -ForegroundColor yellow "[!] Downloading StoreCommerce.Installer.exe"
+curl.exe -o $outputFile $url
 
 # Run the installer with the provided arguments
 cd $outputDir
 .\StoreCommerce.Installer.exe install --useremoteappcontent --retailserverurl "https://sst-prodret.operations.dynamics.com/Commerce"
+
+Write-Host -ForegroundColor Green "[+] StoreCommerce app installed successfully"
 
 
 
@@ -120,12 +154,15 @@ if (!(Test-Path $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir | Out-Null
 }
 
-# Download the file using Start-BitsTransfer
-Start-BitsTransfer -Source $url -Destination $outputFile -Priority Foreground
+# Download the file using Curl
+Write-host -ForegroundColor yellow "[!] Downloading Epson OPOS ADK"
+curl.exe -o $outputFile $url
 
 # Run the installer with the provided arguments
 cd $outputDir
 .\EPSON_OPOS_ADK_V3.00ER20.exe /q DisplayInternalUI=”no”
+
+Write-Host -ForegroundColor Green "[+] Epson OPOS ADK installed successfully"
 
 
 
@@ -141,12 +178,15 @@ if (!(Test-Path $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir | Out-Null
 }
 
-# Download the file using Start-BitsTransfer
-Start-BitsTransfer -Source $url -Destination $outputFile -Priority Foreground
+# Download the file using Curl
+Write-host -ForegroundColor yellow "[!] Downloading Epson OPOS CCOs"
+curl.exe -o $outputFile $url
 
 # Run the installer with the provided arguments
 cd $outputDir
 msiexec /I "OPOS_CCOs_1.14.001.msi" /quiet
+
+Write-Host -ForegroundColor Green "[+] Epson OPOS CCOs installed successfully"
 
 
 
@@ -159,7 +199,7 @@ $password = ConvertTo-SecureString "Almond1" -AsPlainText -Force
 
 # Check if the user already exists
 if (Get-LocalUser -Name $username -ErrorAction SilentlyContinue) {
-    Write-Host "User $username already exists. Skipping user creation."
+    Write-Warning "User $username already exists. Skipping user creation."
 } else {
     # Create the user account
     New-LocalUser -Name $username -Password $password -PasswordNeverExpires
@@ -184,7 +224,7 @@ foreach ($prop in $regProps.GetEnumerator()) {
     Set-ItemProperty -Path $regPath -Name $prop.Key -Value $prop.Value
 }
 
-Write-Host -ForegroundColor Green "[+] Auto-login configured."
+Write-Host -ForegroundColor Green "[+] Auto-login for .\POSUser configured."
 
 
 
@@ -200,7 +240,7 @@ if (!(Test-Path $registryPath)) {
 }
 
 # Set the value of the "DisableFileSyncNGSC" registry entry to 1 to disable OneDrive
-Set-ItemProperty -Path $registryPath -Name "DisableFileSyncNGSC" -Value 1
+Set-ItemProperty -Path $registryPath -Name "DisableFileSyncNGSC" -Value 1 | Out-Null
 Write-Host -ForegroundColor Green "[+] OneDrive disabled for all users"
 
 
@@ -208,6 +248,7 @@ Write-Host -ForegroundColor Green "[+] OneDrive disabled for all users"
 # Set power settings
 ########################################################
 powercfg /change monitor-timeout-ac 20; powercfg /change standby-timeout-ac 0
+Write-Host -ForegroundColor Green "[+] Powersettings set to monitor timeout 20 minutes and standby timeout 0 minutes"
 
 
 
@@ -227,16 +268,6 @@ if (!(Test-Path -Path "C:\temp")) {
 Invoke-WebRequest -Uri $URL -OutFile $Destination
 Write-Host -ForegroundColor Cyan "[!] Install notes .txt file saved in c:\temp"
 
-
-
-# Create shutdown schedule
-########################################################
-
-#$Action = New-ScheduledTaskAction -Execute 'shutdown.exe' -Argument '/s /f /t 0'
-#$DaysOfWeek = [System.DayOfWeek]::Sunday, [System.DayOfWeek]::Monday, [System.DayOfWeek]::Tuesday, [System.DayOfWeek]::Thursday, [System.DayOfWeek]::Friday, [System.DayOfWeek]::Saturday
-#$Trigger = New-ScheduledTaskTrigger -DaysOfWeek $DaysOfWeek -At 12:00am
-#Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName "Shutdown" -Description "Shutdown computer every night at midnight, except for Wednesday night"
-#Write-Host -ForegroundColor Green "[+] Shutdown scheduled task created"
 
 
 # Restart computer
