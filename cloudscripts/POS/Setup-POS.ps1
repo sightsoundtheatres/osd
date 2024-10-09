@@ -4,6 +4,8 @@ Clear-Host
 Write-Host "###############################################" -ForegroundColor Cyan
 Write-Host "#   Microsoft Dynamics Store Commerce Setup   #" -ForegroundColor Cyan
 Write-Host "###############################################" -ForegroundColor Cyan
+Write-Host ""
+Write-Host ""
 
 # Check Curl version and install if necessary
 function Install-Curl {
