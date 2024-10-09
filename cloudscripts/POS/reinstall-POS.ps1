@@ -25,6 +25,7 @@ function Install-Curl {
     }
 }
 
+Install-Curl
 
 # Download and install the StoreCommerce app 
 ########################################################
