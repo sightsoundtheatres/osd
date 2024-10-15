@@ -103,7 +103,7 @@ if ($WindowsPhase -eq 'OOBE') {
     osdcloud-StartOOBE 
     Step-desktopWallpaper
     Step-InstallM365Apps
-    Step-oobeHotFix #fix for Autopilot failing
+    # Step-oobeHotFix #fix for Autopilot failing
     Step-installSTCACert 
     Set-TimeZoneFromIP #from OSDCloud
     Step-oobeSetDateTime
