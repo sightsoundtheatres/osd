@@ -46,7 +46,7 @@ Write-Host "[!] Downloading VPN MSI..." -ForegroundColor Yellow
 curl.exe -o $vpnMsiPath $vpnMsiUrl
 
 Write-Host "[!} Downloading Umbrella MSI..." -ForegroundColor Yellow
-curl.exe o $umbrellaMsiPath $umbrellaMsiUrl
+curl.exe -o $umbrellaMsiPath $umbrellaMsiUrl
 
 # Install VPN MSI
 Write-Host "[+] Installing Cisco VPN..." -ForegroundColor Yellow
