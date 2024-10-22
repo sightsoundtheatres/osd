@@ -43,10 +43,10 @@ if (-Not (Test-Path -Path $orgInfoPath)) {
 
 # Download files using curl.exe
 Write-Host "[!] Downloading VPN MSI..." -ForegroundColor Yellow
-curl.exe -ArgumentList "$vpnMsiUrl -o `"$vpnMsiPath`"" -Wait
+curl.exe -ArgumentList "$vpnMsiUrl -o `"$vpnMsiPath`""
 
 Write-Host "[!} Downloading Umbrella MSI..." -ForegroundColor Yellow
-curl.exe -ArgumentList "$umbrellaMsiUrl -o `"$umbrellaMsiPath`"" -Wait
+curl.exe -ArgumentList "$umbrellaMsiUrl -o `"$umbrellaMsiPath`""
 
 # Install VPN MSI
 Write-Host "[+] Installing Cisco VPN..." -ForegroundColor Yellow
