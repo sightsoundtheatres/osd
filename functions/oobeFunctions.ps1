@@ -171,7 +171,7 @@ function Step-installCiscoRootCert {
                 "AutoPilot_Devices-Retail",
                 "Autopilot_Devices-CenterStageKiosk",
                 "Autopilot_Devices-SharedDevice_IT",
-                "AutoPilot_Devices_TeamsRooms"
+                "AutoPilot_Devices-TeamsRooms"
             )
     
             # Display the menu for the AddToGroup parameter
