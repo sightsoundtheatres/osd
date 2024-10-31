@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.9.5.1'
+$ScriptVersion = '24.10.31.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -132,7 +132,7 @@ function Step-installCiscoRootCert {
             Install-Script Get-AutopilotDiagnosticsCommunity -Force    
     
             # Define the options for the GroupTag parameter
-            $GroupTagOptions = @("Development", "Enterprise")
+            $GroupTagOptions = @("Development", "Enterprise","MTR-")
     
             # Display the menu for the GroupTag parameter
             Write-Host "Select a GroupTag:" -ForegroundColor Yellow        
@@ -142,6 +142,18 @@ function Step-installCiscoRootCert {
             }
             $GroupTagChoice = Read-Host "Enter your choice"
             $GroupTag = $GroupTagOptions[$GroupTagChoice - 1]
+    
+            # If GroupTag is MTR-, prompt for room name
+            if ($GroupTag -eq "MTR-") {
+                Write-Host "Enter the room name (e.g., BR The Garden): " -ForegroundColor Yellow -NoNewline
+                $RoomName = Read-Host
+    
+                # Remove spaces from the room name
+                $RoomName = $RoomName -replace '\s+', ''
+    
+                # Append the formatted room name to the GroupTag
+                $GroupTag = $GroupTag + $RoomName
+            }
     
             # Prompt the user to enter a value for the AssignedComputerName parameter
             do {
@@ -158,7 +170,8 @@ function Step-installCiscoRootCert {
                 "Autopilot_Devices-Box_CC",
                 "AutoPilot_Devices-Retail",
                 "Autopilot_Devices-CenterStageKiosk",
-                "Autopilot_Devices-SharedDevice_IT"
+                "Autopilot_Devices-SharedDevice_IT",
+                "AutoPilot_Devices_TeamsRooms"
             )
     
             # Display the menu for the AddToGroup parameter
@@ -177,6 +190,7 @@ function Step-installCiscoRootCert {
             # Call the get-windowsautopilotinfo.ps1 script with the specified parameters
             get-windowsautopilotinfocommunity.ps1 -Assign -GroupTag $GroupTag -AssignedComputerName $AssignedComputerName -AddToGroup $AddToGroup -online
     }
+
 function Step-oobeRegisterAutopilot {
     [CmdletBinding()]
     param (
