@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.10.31.1'
+$ScriptVersion = '24.12.6.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -170,7 +170,7 @@ function Step-installCiscoRootCert {
                 "Autopilot_Devices-Box_CC",
                 "AutoPilot_Devices-Retail",
                 "Autopilot_Devices-CenterStageKiosk",
-                "Autopilot_Devices-SharedDevice_IT",
+                "Autopilot_Devices-SharedDevice",
                 "AutoPilot_Devices-TeamsRooms"
             )
     
