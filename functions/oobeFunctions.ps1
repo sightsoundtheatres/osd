@@ -723,8 +723,8 @@ Function step-WinGet {
         [System.String]
         $Command
     )
-    curl.exe -L -o winget.msixbundle https://aka.ms/getwinget
-    Add-AppxPackage winget.msixbundle
-    Remove-Item winget.msixbundle
+    Install-Module -Name Microsoft.WinGet.Client -Force
+    Install-WinGetPackage Microsoft.WinGet.Client -Force
+    winget upgrade --all --accept-source-agreements --accept-package-agreements
     Write-Host -ForegroundColor Green "[+] winget installed"    
 }
