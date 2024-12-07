@@ -723,69 +723,8 @@ Function step-WinGet {
         [System.String]
         $Command
     )
-
-    # Function to check if a package is installed
-    function Is-PackageInstalled {
-        param (
-            [string]$PackageName
-        )
-        try {
-            $installed = Get-WmiObject -Query "SELECT * FROM Win32_Product WHERE Name = '$PackageName'" -ErrorAction SilentlyContinue
-            return $null -ne $installed
-        } catch {
-            Write-Error "Failed to check if package '$PackageName' is installed: $_"
-            return $false
-        }
-    }
-
-    # Install the latest version of the App Installer (dependency for winget)
-    Write-Host -ForegroundColor Green "[+] Installing or updating App Installer..."
-    try {
-        Start-Process -FilePath "ms-windows-store://pdp/?productid=9nblggh4nns1" -Wait
-    } catch {
-        Write-Error "Failed to open the Microsoft Store for App Installer: $_"
-        exit 1
-    }
-
-    # Confirm App Installer is installed
-    Write-Host -ForegroundColor Yellow "[!] Verifying App Installer installation..."
-    if (!(Is-PackageInstalled -PackageName "App Installer")) {
-        Write-Error "App Installer failed to install. Please check the Microsoft Store for issues."
-        exit 1
-    }
-
-    # Verify if winget is installed
-    Write-Host -ForegroundColor Green "[+] Checking for winget installation..."
-    $wingetPath = (Get-Command "winget.exe" -ErrorAction SilentlyContinue)?.Source
-    if ($null -ne $wingetPath) {
-        Write-Host -ForegroundColor Green "[+] winget is already installed at: $wingetPath"
-    } else {
-        Write-Host -ForegroundColor Yellow "[-] Installing winget..."
-        try {
-            Start-Process -FilePath "ms-windows-store://pdp/?productid=9nblggh4nns1" -Wait
-        } catch {
-            Write-Error "Failed to install winget: $_"
-            exit 1
-        }
-    }
-
-    # Verify the installation of winget
-    Write-Host -ForegroundColor Yellow "[!] Verifying winget installation..."
-    $wingetPath = (Get-Command "winget.exe" -ErrorAction SilentlyContinue)?.Source
-    if ($null -ne $wingetPath) {
-        Write-Host -ForegroundColor Green "[+] winget installed successfully at: $wingetPath"
-    } else {
-        Write-Error "winget installation failed. Please check the Microsoft Store or try manually installing."
-        exit 1
-    }
-
-    # Optional: Update winget and installed packages
-    Write-Host -ForegroundColor Yellow "[!] Updating all packages using winget..."
-    try {
-        winget upgrade --all --accept-source-agreements --accept-package-agreements
-    } catch {
-        Write-Error "Failed to update packages using winget: $_"
-    }
-
-    Write-Host -ForegroundColor Green "[+] winget installation and update completed successfully!"
+    Invoke-WebRequest -Uri https://aka.ms/getwinget -OutFile winget.msixbundle
+    Add-AppxPackage winget.msixbundle
+    Remove-Item winget.msixbundle
+    Write-Host -ForegroundColor Green "[+] winget installed"    
 }
