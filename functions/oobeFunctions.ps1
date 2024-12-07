@@ -723,7 +723,7 @@ Function step-WinGet {
         [System.String]
         $Command
     )
-    Invoke-WebRequest -Uri https://aka.ms/getwinget -OutFile winget.msixbundle
+    curl.exe -L -o winget.msixbundle https://aka.ms/getwinget
     Add-AppxPackage winget.msixbundle
     Remove-Item winget.msixbundle
     Write-Host -ForegroundColor Green "[+] winget installed"    
