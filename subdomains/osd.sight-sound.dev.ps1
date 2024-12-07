@@ -100,8 +100,8 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-installCiscoRootCert
     # step-InstallWinGet
     # step-WinGetUpdate 
-    step-WinGet
     osdcloud-StartOOBE 
+    step-WinGet
     Step-desktopWallpaper
     Step-InstallM365Apps
     # Step-oobeHotFix #fix for Autopilot failing
