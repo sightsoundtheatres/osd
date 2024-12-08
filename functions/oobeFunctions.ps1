@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.12.8.4'
+$ScriptVersion = '24.12.8.5'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -84,8 +84,6 @@ function Step-installCiscoRootCert {
         Write-Host -ForegroundColor Green "[+] Cisco Umbrella root certificate installed"
     }
 }
-
-
     function Step-installSTCACert {
     
         # Define the certificate URL and file
@@ -640,97 +638,6 @@ function Step-oobeSetDateTime {
             Wait-Process $ProcessId
         }
     }
-
-function Step-oobeHotFix {
-    [CmdletBinding()]
-    param ()   
-    # Check if KB5033055 is installed
-    if (Get-HotFix -ID KB5033055 -ErrorAction SilentlyContinue) {
-        Write-Host -ForegroundColor Green "[+] OOBE HOtFix KB5033055 installed."
-    }
-    else {
-        # Download Hotfix for OOBE
-        Write-Host -ForegroundColor Yellow "[-] Installing OOBE HotFix KB5033055"
-        Invoke-WebRequest -Uri "https://catalog.s.download.windowsupdate.com/c/msdownload/update/software/crup/2023/11/windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" -OutFile "C:\OSDCloud\windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" | Out-Null
-        # Install the update
-        Start-Process -FilePath "C:\OSDCloud\windows11.0-kb5033055-x64_62a1eebb6c582bc686dea34197bd2c7165ff5fbf.msu" -ArgumentList "/quiet /norestart"
-        Write-Host -ForegroundColor Green "[+] OOBE HotFix KB5033055 installed successfully."
-    }
-}
-
-function step-InstallWinGet {
-    [CmdletBinding()]
-    param ()
-
-    if (Get-Command 'WinGet' -ErrorAction SilentlyContinue) {
-        Write-Host -ForegroundColor Green '[+] WinGet is installed'
-    }
-    else {
-        if (Get-AppxPackage -Name 'Microsoft.DesktopAppInstaller' -ErrorAction SilentlyContinue) {
-            Write-Host -ForegroundColor Yellow '[-] Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe'
-            try {
-                Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe -ErrorAction Stop
-            }
-            catch {
-                Write-Host -ForegroundColor Red '[!] Could not install Microsoft.DesktopAppInstaller AppxPackage'
-                Break
-            }
-        }
-    }
-
-    if (Get-AppxPackage -Name 'Microsoft.DesktopAppInstaller' -ErrorAction SilentlyContinue | Where-Object { $_.Version -ge '1.21.2701.0' }) {
-        Write-Host -ForegroundColor Green '[+] WinGet is current'
-    }
-    else {
-        if (Get-Command 'WinGet' -ErrorAction SilentlyContinue) {
-            $WingetVersion = & winget.exe --version
-            [string]$WingetVersion = $WingetVersion -replace '[a-zA-Z\-]'
-
-            Write-Host -ForegroundColor Yellow "[-] WinGet $WingetVersion requires an update"
-        }
-        else {
-            Write-Host -ForegroundColor Yellow '[-] Installing WinGet'
-        }
-
-        $progressPreference = 'silentlyContinue'
-        Write-Host -ForegroundColor Yellow '[-] Downloading Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle'
-        Invoke-WebRequest -Uri https://aka.ms/getwinget -OutFile Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
-
-        Write-Host -ForegroundColor Yellow '[-] Downloading Microsoft.VCLibs.x64.14.00.Desktop.appx'
-        Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile Microsoft.VCLibs.x64.14.00.Desktop.appx
-    
-        Write-Host -ForegroundColor Yellow '[-] Downloading Microsoft.UI.Xaml.2.8.x64.appx'
-        Invoke-WebRequest -Uri https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.x64.appx -OutFile Microsoft.UI.Xaml.2.8.x64.appx
-
-        Write-Host -ForegroundColor Yellow '[-] Installing WinGet and its dependencies'
-        Add-AppxPackage Microsoft.VCLibs.x64.14.00.Desktop.appx
-        Add-AppxPackage Microsoft.UI.Xaml.2.8.x64.appx
-        Add-AppxPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
-    }
-}
-function step-WinGetUpdate {
-    [CmdletBinding()]
-    param ()
-
-    Write-Host -ForegroundColor Green "[+] winget upgrade --all --accept-source-agreements --accept-package-agreements"
-    winget upgrade --all --accept-source-agreements --accept-package-agreements
-
-}
-
-Function step-WinGet {
-    [CmdletBinding()]
-    param (
-        [System.String]
-        $Command
-    )
-    Write-Host -ForegroundColor Yellow "[-] Installing / Upgrading winget to latest version"
-    Install-Module -Name Microsoft.WinGet.Client -Force
-    Install-WinGetPackage Microsoft.AppInstaller -Force | Out-Null
-    Write-Host -ForegroundColor Green "[+] winget installed"
-    Write-Host -ForegroundColor Yellow "[-] Upgrading winget packages"
-    winget upgrade --all --accept-source-agreements --accept-package-agreements
-    Write-Host -ForegroundColor Green "[+] winget packages upgraded"    
-}
 function step-InstallModuleWinget {
     [CmdletBinding()]
     param ()
