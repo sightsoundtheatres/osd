@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.12.7.5'
+$ScriptVersion = '24.12.8.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -727,6 +727,31 @@ Function step-WinGet {
     Install-Module -Name Microsoft.WinGet.Client -Force
     Install-WinGetPackage Microsoft.AppInstaller -Force | Out-Null
     Write-Host -ForegroundColor Green "[+] winget installed"
+    Write-Host -ForegroundColor Yellow "[-] Upgrading winget packages"
+    winget upgrade --all --accept-source-agreements --accept-package-agreements
+    Write-Host -ForegroundColor Green "[+] winget packages upgraded"    
+}
+function step-InstallModuleWinget {
+    [CmdletBinding()]
+    param ()
+    $InstallModule = $false
+    $PSModuleName = 'Microsoft.WinGet.Client'
+    $InstalledModule = Get-Module -Name $PSModuleName -ListAvailable -ErrorAction Ignore | Sort-Object Version -Descending | Select-Object -First 1
+    $GalleryPSModule = Find-Module -Name $PSModuleName -ErrorAction Ignore -WarningAction Ignore
+    
+    if ($GalleryPSModule) {
+        if (($GalleryPSModule.Version -as [version]) -gt ($InstalledModule.Version -as [version])) {
+            Write-Host -ForegroundColor Yellow "[-] Install-Module $PSModuleName $($GalleryPSModule.Version)"
+            Install-Module $PSModuleName -Scope AllUsers -Force -SkipPublisherCheck -AllowClobber
+            #Import-Module $PSModuleName -Force
+        }
+    }
+    $InstalledModule = Get-Module -Name $PSModuleName -ListAvailable -ErrorAction Ignore | Sort-Object Version -Descending | Select-Object -First 1
+    if ($GalleryPSModule) {
+        if (($InstalledModule.Version -as [version]) -ge ($GalleryPSModule.Version -as [version])) {
+            Write-Host -ForegroundColor Green "[+] $PSModuleName $($GalleryPSModule.Version)"
+        }
+    }
     Write-Host -ForegroundColor Yellow "[-] Upgrading winget packages"
     winget upgrade --all --accept-source-agreements --accept-package-agreements
     Write-Host -ForegroundColor Green "[+] winget packages upgraded"    
