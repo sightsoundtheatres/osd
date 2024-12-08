@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.12.8.1'
+$ScriptVersion = '24.12.8.2'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -743,7 +743,7 @@ function step-InstallModuleWinget {
         if (($GalleryPSModule.Version -as [version]) -gt ($InstalledModule.Version -as [version])) {
             Write-Host -ForegroundColor Yellow "[-] Install-Module $PSModuleName $($GalleryPSModule.Version)"
             Install-Module $PSModuleName -Scope AllUsers -Force -SkipPublisherCheck -AllowClobber
-            #Import-Module $PSModuleName -Force
+            Import-Module $PSModuleName -Force
         }
     }
     $InstalledModule = Get-Module -Name $PSModuleName -ListAvailable -ErrorAction Ignore | Sort-Object Version -Descending | Select-Object -First 1
