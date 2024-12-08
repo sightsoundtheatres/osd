@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.12.8.3'
+$ScriptVersion = '24.12.8.4'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -734,7 +734,7 @@ Function step-WinGet {
 function step-InstallModuleWinget {
     [CmdletBinding()]
     param ()
-    $InstallModule = $true
+    $InstallModule = $false
     $PSModuleName = 'Microsoft.WinGet.Client'
     $InstalledModule = Get-Module -Name $PSModuleName -ListAvailable -ErrorAction Ignore | Sort-Object Version -Descending | Select-Object -First 1
     $GalleryPSModule = Find-Module -Name $PSModuleName -ErrorAction Ignore -WarningAction Ignore
@@ -743,7 +743,8 @@ function step-InstallModuleWinget {
         if (($GalleryPSModule.Version -as [version]) -gt ($InstalledModule.Version -as [version])) {
             Write-Host -ForegroundColor Yellow "[-] Install-Module $PSModuleName $($GalleryPSModule.Version)"
             Install-Module $PSModuleName -Scope AllUsers -Force -SkipPublisherCheck -AllowClobber
-            Import-Module $PSModuleName -Force
+            Install-WinGetPackage Microsoft.AppInstaller -Force | Out-Null
+            #Import-Module $PSModuleName -Force
         }
     }
     $InstalledModule = Get-Module -Name $PSModuleName -ListAvailable -ErrorAction Ignore | Sort-Object Version -Descending | Select-Object -First 1
@@ -751,7 +752,7 @@ function step-InstallModuleWinget {
         if (($InstalledModule.Version -as [version]) -ge ($GalleryPSModule.Version -as [version])) {
             Write-Host -ForegroundColor Green "[+] $PSModuleName $($GalleryPSModule.Version)"
         }
-    }
+    }    
     Write-Host -ForegroundColor Yellow "[-] Upgrading winget packages"
     winget upgrade --all --accept-source-agreements --accept-package-agreements
     Write-Host -ForegroundColor Green "[+] winget packages upgraded"    
