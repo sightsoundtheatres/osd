@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.12.8.5'
+$ScriptVersion = '24.12.8.6'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -664,3 +664,11 @@ function step-InstallModuleWinget {
     winget upgrade --all --accept-source-agreements --accept-package-agreements
     Write-Host -ForegroundColor Green "[+] winget packages upgraded"    
 }
+function step-setTimeZoneFromIP {
+    [CmdletBinding()]
+    param ()
+    Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/sightsoundtheatres/osd/refs/heads/main/functions/set-timeZoneFromIP_new.ps1)
+    Set-TimeZoneFromIP
+}
+
+
