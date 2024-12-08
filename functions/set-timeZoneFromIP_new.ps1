@@ -1483,7 +1483,8 @@ Function Set-TimeZoneFromIP {
             $TimeZoneAPIInfo = $TimeZoneAPI  | ConvertFrom-Json
             $TimeZoneData = $TimeZones | ConvertFrom-Json
             return ($TimeZoneData | Where-Object {
-                $_.utc -contains $TimeZoneAPIInfo.timezone -and $_.isdst -eq $TimeZoneAPIInfo.dst
+                $_.utc -contains $TimeZoneAPIInfo.timezone -and 
+                ($_.isdst -eq $TimeZoneAPIInfo.dst -or $TimeZoneAPIInfo.dst -eq $null)
             }).value
         }
 
