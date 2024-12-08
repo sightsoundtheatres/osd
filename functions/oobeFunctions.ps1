@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '24.12.8.2'
+$ScriptVersion = '24.12.8.3'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -734,7 +734,7 @@ Function step-WinGet {
 function step-InstallModuleWinget {
     [CmdletBinding()]
     param ()
-    $InstallModule = $false
+    $InstallModule = $true
     $PSModuleName = 'Microsoft.WinGet.Client'
     $InstalledModule = Get-Module -Name $PSModuleName -ListAvailable -ErrorAction Ignore | Sort-Object Version -Descending | Select-Object -First 1
     $GalleryPSModule = Find-Module -Name $PSModuleName -ErrorAction Ignore -WarningAction Ignore
