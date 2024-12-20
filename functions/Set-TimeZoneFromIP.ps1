@@ -22,12 +22,8 @@ $WindowsTimeZones = @{
 # Check if the timezone exists in the mapping
 if ($WindowsTimeZones.ContainsKey($TimeZoneAPI)) {
     $WindowsTimeZone = $WindowsTimeZones[$TimeZoneAPI]
+    Set-TimeZone -Id $WindowsTimeZone
+    Write-Host "[+] Time zone has been updated to - $WindowsTimeZone" -ForegroundColor Green 
 } else {
-    Write-Warning "Time zone not found in the mapping. Defaulting to Eastern Standard Time."
-    $WindowsTimeZone = "Eastern Standard Time"
+    Write-Warning "Time zone not found in the mapping. Using the default Windows time zone."
 }
-
-# Set the system time zone
-#Set-TimeZone -Id $WindowsTimeZone
-
-Write-Host "[+] Time zone has been updated to - $WindowsTimeZone" -ForegroundColor Green 
