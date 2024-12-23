@@ -31,7 +31,7 @@ powershell iex (irm osd.sight-sound.dev)
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '24.12.8.8'
+$ScriptVersion = '24.12.23.2'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
@@ -103,8 +103,8 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-desktopWallpaper
     Step-InstallM365Apps
     Step-installSTCACert 
-    Set-TimeZoneFromIP #from OSDCloud
-    #step-setTimeZoneFromIP
+    #Set-TimeZoneFromIP #from OSDCloud
+    step-setTimeZoneFromIP
     Step-oobeSetDateTime
     Step-oobeRegisterAutopilot 
     Step-oobeRemoveAppxPackageAllUsers
