@@ -591,50 +591,50 @@ function Step-oobeRestartComputer {
         Start-Sleep -Seconds 30
         Restart-Computer
     }
-    function Step-oobeDellDCU {
-        [CmdletBinding()]
-        param ()
-    
-        # Check if the system is a Dell
-        $computerSystem = Get-CimInstance -ClassName Win32_ComputerSystem
-        if ($computerSystem.Manufacturer -notmatch "Dell") {
-            Write-Host -ForegroundColor Cyan "[!] This is not a Dell system, your running a" $computerSystem.Manufacturer $computerSystem.Model 
+function Step-oobeDellDCU {
+    [CmdletBinding()]
+    param ()
+
+    # Check if the system is a Dell
+    $computerSystem = Get-CimInstance -ClassName Win32_ComputerSystem
+    if ($computerSystem.Manufacturer -notmatch "Dell") {
+        Write-Host -ForegroundColor Cyan "[!] This is not a Dell system, your running a" $computerSystem.Manufacturer $computerSystem.Model 
+        return
+    } 
+
+    Write-Host -ForegroundColor Yellow "[-] Dell system detected"
+
+        $Manufacturer = (Get-CimInstance -Class:Win32_ComputerSystem).Manufacturer
+        $Model = (Get-CimInstance -Class:Win32_ComputerSystem).Model
+        $SystemSKUNumber = (Get-CimInstance -ClassName Win32_ComputerSystem).SystemSKUNumber
+        
+        write-output "Manufacturer:    $Manufacturer"
+        write-output "Model:           $Model"
+        write-output "SystemSKUNumber: $SystemSKUNumber"
+
+    Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/gwblok/garytown/master/hardware/Dell/CommandUpdate/CMSL/Dell-CMSL.ps1')
+
+    # Dell system confirmed; check if Dell Command Update is already installed.
+    if ((Test-Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe') -or (Test-Path 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe')) {
+        Write-Host -ForegroundColor Green "[+] Dell Command Update is already installed."
+        Invoke-DCU -applyUpdates
+    } else {            
+        # Ensure winget is available.
+        if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+            Write-Error "winget is not available on this system."
             return
-        } 
-
-        Write-Host -ForegroundColor Yellow "[-] Dell system detected"
-
-            $Manufacturer = (Get-CimInstance -Class:Win32_ComputerSystem).Manufacturer
-            $Model = (Get-CimInstance -Class:Win32_ComputerSystem).Model
-            $SystemSKUNumber = (Get-CimInstance -ClassName Win32_ComputerSystem).SystemSKUNumber
-            
-            write-output "Manufacturer:    $Manufacturer"
-            write-output "Model:           $Model"
-            write-output "SystemSKUNumber: $SystemSKUNumber"
-
-        Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/gwblok/garytown/master/hardware/Dell/CommandUpdate/CMSL/Dell-CMSL.ps1')
-    
-        # Dell system confirmed; check if Dell Command Update is already installed.
-        if ((Test-Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe') -or (Test-Path 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe')) {
-            Write-Host -ForegroundColor Green "[+] Dell Command Update is already installed."
-            Invoke-DCU -applyUpdates
-        } else {            
-            # Ensure winget is available.
-            if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-                Write-Error "winget is not available on this system."
-                return
-            }
-
-            Write-Host -ForegroundColor Yellow "[-] Installing Dell Command Update"
-    
-            # Install Dell Command Update via winget with agreement flags.
-            winget install Dell.CommandUpdate --accept-source-agreements --accept-package-agreements
-    
-            Write-Host -ForegroundColor Green "[+] Dell Command Update installed successfully."
-            Write-Host -ForegroundColor Yellow "[-] Applying updates with Dell Command Update."
-            Invoke-DCU -applyUpdates
         }
-    }    
+
+        Write-Host -ForegroundColor Yellow "[-] Installing Dell Command Update"
+
+        # Install Dell Command Update via winget with agreement flags.
+        winget install Dell.CommandUpdate --accept-source-agreements --accept-package-agreements
+
+        Write-Host -ForegroundColor Green "[+] Dell Command Update installed successfully."
+        Write-Host -ForegroundColor Yellow "[-] Applying updates with Dell Command Update."
+        Invoke-DCU -applyUpdates
+    }
+}    
     
 function Step-oobeSetDateTime {
     [CmdletBinding()]
