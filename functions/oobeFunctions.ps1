@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '25.2.1.1'
+$ScriptVersion = '25.2.1.2'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -612,8 +612,7 @@ function Step-oobeRestartComputer {
             write-output "Model:           $Model"
             write-output "SystemSKUNumber: $SystemSKUNumber"
 
-            Write-Host -ForegroundColor Green "[+] Loading Dell Command Update functions"
-            Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/gwblok/garytown/master/hardware/Dell/CommandUpdate/CMSL/Dell-CMSL.ps1')
+        Invoke-Expression (Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/gwblok/garytown/master/hardware/Dell/CommandUpdate/CMSL/Dell-CMSL.ps1')
     
         # Dell system confirmed; check if Dell Command Update is already installed.
         if ((Test-Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe') -or (Test-Path 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe')) {
