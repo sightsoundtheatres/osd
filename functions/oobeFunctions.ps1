@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '25.2.1.2'
+$ScriptVersion = '25.2.2.2'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -46,82 +46,75 @@ $Global:oobeCloud = @{
 #   oobeFunctions
 #=================================================
 
-function Step-installCiscoRootCert {
-    
-    # Define the certificate URL and file
-    $certUrl = "https://ssintunedata.blob.core.windows.net/cert/Cisco_Umbrella_Root_CA.cer"
-    $certFile = "C:\OSDCloud\Temp\Cisco_Umbrella_Root_CA.cer"
+function Step-installCertificates {
+
+    # Define an array of certificates to install
+    $certs = @(
+        @{
+            Name        = "Cisco Umbrella"
+            Url         = "https://ssintunedata.blob.core.windows.net/cert/Cisco_Umbrella_Root_CA.cer"
+            FileName    = "Cisco_Umbrella_Root_CA.cer"
+            IssuerMatch = "*Cisco Umbrella*"
+        },
+        @{
+            Name        = "ST-CA"
+            Url         = "https://ssintunedata.blob.core.windows.net/cert/24-st-ca.cer"
+            FileName    = "24-ST-CA.cer"
+            IssuerMatch = "*ST-CA*"
+        },
+        @{
+            Name        = "SST-ROOT-CA"
+            Url         = "https://ssintunedata.blob.core.windows.net/cert/SST-ROOT-CA.crt"
+            FileName    = "SST-ROOT-CA.crt"
+            IssuerMatch = "*SST-ROOT-CA*"
+        }
+        # To add another certificate, add another hashtable here.
+    )
+
+    # Set the directory where certificates will be temporarily stored
     $certDirectory = "C:\OSDCloud\Temp"
 
-    # Check if the directory exists, if not, create it
-    if (-Not (Test-Path -Path $certDirectory)) {
+    # Ensure the directory exists
+    if (-not (Test-Path -Path $certDirectory)) {
         Write-Host -ForegroundColor Yellow "[-] Directory $certDirectory does not exist. Creating it..."
         New-Item -Path $certDirectory -ItemType Directory | Out-Null
     }
 
-    # Check if the certificate is already installed by the issuer name
-    $certExists = Get-ChildItem -Path 'Cert:\LocalMachine\Root\' | Where-Object {$_.Issuer -like "*Cisco Umbrella*"}
+    # Loop through each certificate definition
+    foreach ($cert in $certs) {
 
-    if ($certExists) {
-        # Do nothing
-        Write-Host -ForegroundColor Green "[+] Cisco Umbrella root certificate is already installed"
-    }
-    else {
-        # Download and install the certificate
-        Write-Host -ForegroundColor Yellow "[-] Installing Cisco Umbrella root certificate"
-        Invoke-WebRequest -Uri $certUrl -OutFile $certFile
-
-        # Load the certificate and add it to the root store
-        $Cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
-        $Cert.Import($certFile)
-        $Store = New-Object System.Security.Cryptography.X509Certificates.X509Store("Root", "LocalMachine")
-        $Store.Open("ReadWrite")
-        $Store.Add($Cert)
-        $Store.Close()
-
-        # Delete the downloaded file
-        Remove-Item $certFile -Force
-        Write-Host -ForegroundColor Green "[+] Cisco Umbrella root certificate installed"
-    }
-}
-    function Step-installSTCACert {
-    
-        # Define the certificate URL and file
-        $certUrl = "https://ssintunedata.blob.core.windows.net/cert/24-st-ca.cer"
-        $certFile = "C:\OSDCloud\Temp\24-ST-CA.cer"
-        $certDirectory = "C:\OSDCloud\Temp"
-
-        # Check if the directory exists, if not, create it
-        if (-Not (Test-Path -Path $certDirectory)) {
-            Write-Host -ForegroundColor Yellow "[-] Directory $certDirectory does not exist. Creating it..."
-            New-Item -Path $certDirectory -ItemType Directory | Out-Null
-        }
-
-        # Check if the certificate is already installed by the issuer name
-        $certExists = Get-ChildItem -Path 'Cert:\LocalMachine\Root\' | Where-Object {$_.Issuer -like "*ST-CA*"}
+        # Check if the certificate is already installed by matching the issuer name
+        $certExists = Get-ChildItem -Path 'Cert:\LocalMachine\Root\' |
+                      Where-Object { $_.Issuer -like $cert.IssuerMatch }
 
         if ($certExists) {
-            # Do nothing
-            Write-Host -ForegroundColor Green "[+] ST-CA root certificate installed"
+            Write-Host -ForegroundColor Green "[+] $($cert.Name) root certificate is already installed"
         }
         else {
-            # Download and install the certificate
-            Write-Host -ForegroundColor Yellow "[-] Installing ST-CA root certificate"
-            Invoke-WebRequest -Uri $certUrl -OutFile $certFile
+            Write-Host -ForegroundColor Yellow "[-] Installing $($cert.Name) root certificate"
 
-            # Load the certificate and add it to the root store
-            $Cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
-            $Cert.Import($certFile)
+            # Define the full file path for the downloaded certificate
+            $certFile = Join-Path -Path $certDirectory -ChildPath $cert.FileName
+
+            # Download the certificate
+            Invoke-WebRequest -Uri $cert.Url -OutFile $certFile
+
+            # Load the certificate from the file
+            $Certificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+            $Certificate.Import($certFile)
+
+            # Open the local machine Root store in ReadWrite mode, add the certificate, then close the store
             $Store = New-Object System.Security.Cryptography.X509Certificates.X509Store("Root", "LocalMachine")
             $Store.Open("ReadWrite")
-            $Store.Add($Cert)
+            $Store.Add($Certificate)
             $Store.Close()
 
-            # Delete the downloaded file
+            # Clean up the downloaded file
             Remove-Item $certFile -Force
-            Write-Host -ForegroundColor Green "[+] ST-CA root certificate installed"
+            Write-Host -ForegroundColor Green "[+] $($cert.Name) root certificate installed"
         }
     }
+}
     function Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity {
         [CmdletBinding()]
         param ()
@@ -261,115 +254,6 @@ function Step-oobeRemoveAppxPackageAllUsers {
         }
     }
 }
-
-function Step-oobeUpdateDrivers {
-    [CmdletBinding()]
-    param ()    
-        Write-Host -ForegroundColor Yellow "[-] Updating Windows Drivers"
-        if (!(Get-Module PSWindowsUpdate -ListAvailable -ErrorAction Ignore)) {
-            try {
-                Install-Module PSWindowsUpdate -Force
-                Import-Module PSWindowsUpdate -Force
-            }
-            catch {
-                Write-Warning 'Unable to install PSWindowsUpdate Driver Updates'
-            }
-        }
-        if (Get-Module PSWindowsUpdate -ListAvailable -ErrorAction Ignore) {
-            Start-Process PowerShell.exe -ArgumentList "-Command Install-WindowsUpdate -UpdateType Driver -AcceptAll -IgnoreReboot" -Wait
-        }
-    }
-
-function Step-oobeUpdateWindows {
-    [CmdletBinding()]
-    param ()    
-        Write-Host -ForegroundColor Yellow "[-] Running Windows Update"
-        if (!(Get-Module PSWindowsUpdate -ListAvailable)) {
-            try {
-                Install-Module PSWindowsUpdate -Force
-                Import-Module PSWindowsUpdate -Force
-            }
-            catch {
-                Write-Warning 'Unable to install PSWindowsUpdate Windows Updates'
-            }
-        }
-        if (Get-Module PSWindowsUpdate -ListAvailable -ErrorAction Ignore) {
-            Add-WUServiceManager -MicrosoftUpdate -Confirm:$false | Out-Null
-            Start-Process PowerShell.exe -ArgumentList "-Command Install-WindowsUpdate -MicrosoftUpdate -AcceptAll -IgnoreReboot -NotTitle 'Preview' -NotKBArticleID 'KB890830','KB5005463','KB4481252'" -Wait
-        }
-    }
-
-    function Step-RestartConfirmation {
-        [CmdletBinding()]
-        param ()
-          
-        $file = "C:\OSDCloud\Scripts\WURanOnce.txt"
-        if (!(Test-Path $file)) {
-            $caption = "Restart Computer?"
-            Add-Type -AssemblyName System.Windows.Forms
-            $message = "Were Windows Updates ran that would require a restart?  If so please click YES to restart now and then start this script over.  Otherwise, please click NO to continue"
-            $options = [System.Windows.Forms.MessageBoxButtons]::YesNo
-            $timer = New-Object System.Windows.Forms.Timer
-            $timer.Interval = 1000 * 30 # 30 seconds
-            $timer.Enabled = $true
-            $timer.add_Tick({
-                $timer.Stop()
-                $form.DialogResult = [System.Windows.Forms.DialogResult]::Yes
-                $form.Close()
-            })
-            $form = New-Object System.Windows.Forms.Form
-            $form.Text = $caption
-            $form.Width = 400
-            $form.Height = 200
-            $form.StartPosition = "CenterScreen"
-            
-            $textBox = New-Object System.Windows.Forms.TextBox
-            $textBox.Multiline = $true
-            $textBox.Text = $message
-            $textBox.ScrollBars = "Vertical"
-            $textBox.Location = New-Object System.Drawing.Point(10, 20)
-            $textBox.Size = New-Object System.Drawing.Size(360, 60)
-            $textBox.ReadOnly = $true
-            $form.Controls.Add($textBox)
-            
-            $yesButton = New-Object System.Windows.Forms.Button
-            $yesButton.Location = New-Object System.Drawing.Point(50, 100)
-            $yesButton.Size = New-Object System.Drawing.Size(75, 23)
-            $yesButton.Text = "Yes (30s)"
-            $yesButton.DialogResult = [System.Windows.Forms.DialogResult]::Yes
-            $yesButton.Add_Click({
-                $form.DialogResult = [System.Windows.Forms.DialogResult]::Yes
-                $form.Close()
-            })
-            $form.Controls.Add($yesButton)
-            
-            $noButton = New-Object System.Windows.Forms.Button
-            $noButton.Location = New-Object System.Drawing.Point(150, 100)
-            $noButton.Size = New-Object System.Drawing.Size(75, 23)
-            $noButton.Text = "No"
-            $noButton.DialogResult = [System.Windows.Forms.DialogResult]::No
-            $noButton.Add_Click({
-                $form.DialogResult = [System.Windows.Forms.DialogResult]::No
-                $form.Close()
-            })
-            $form.Controls.Add($noButton)
-            
-            $form.Topmost = $true
-            $form.Add_Shown({$timer.Start(); $yesButton.Focus()})
-            $form.ShowDialog()
-            
-            if ($form.DialogResult -eq [System.Windows.Forms.DialogResult]::Yes) {
-                New-Item -ItemType File -Path $file -Force | Out-Null
-                Restart-Computer -Force
-            } else {
-                Write-Host -ForegroundColor Yellow "[!] WU reboot not requested"
-            }
-        } else {
-            Write-Host -ForegroundColor Green "[+] WU reboot not required"
-        }
-    }
-    
-
 function Step-oobeSetUserRegSettings {
     [CmdletBinding()]
     param ()
@@ -617,7 +501,7 @@ function Step-oobeDellDCU {
     # Dell system confirmed; check if Dell Command Update is already installed.
     if ((Test-Path 'C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe') -or (Test-Path 'C:\Program Files\Dell\CommandUpdate\dcu-cli.exe')) {
         Write-Host -ForegroundColor Green "[+] Dell Command Update is already installed."
-        Invoke-DCU -applyUpdates
+        Invoke-DCU -applyUpdates -reboot Disable
     } else {            
         # Ensure winget is available.
         if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
@@ -627,25 +511,19 @@ function Step-oobeDellDCU {
 
         Write-Host -ForegroundColor Yellow "[-] Installing Dell Command Update"
 
-        # Install Dell Command Update via winget with agreement flags.
+        # Install Dell Command Update via winget.
         winget install Dell.CommandUpdate --accept-source-agreements --accept-package-agreements
 
         Write-Host -ForegroundColor Green "[+] Dell Command Update installed successfully."
         Write-Host -ForegroundColor Yellow "[-] Applying updates with Dell Command Update."
-        Invoke-DCU -applyUpdates
+        Invoke-DCU -applyUpdates -reboot Disable
+        Write-Host -ForegroundColor Green "[+] Dell Command Update updates applied successfully."
     }
 }    
     
 function Step-oobeSetDateTime {
     [CmdletBinding()]
     param ()    
-        # Syncing time
-        #Write-Host -ForegroundColor Green "[+] Syncing system time"
-        #w32tm /resync | Out-Null
-        
-        #$getTime = Get-Date -Format "dddd, MMMM dd, yyyy hh:mm:ss tt zzz"
-        #Write-Host -ForegroundColor Yellow "[!] Current time - "$getTime
-
         Write-Host -ForegroundColor Yellow 'Verify the Date and Time is set properly including the Time Zone'
         Write-Host -ForegroundColor Yellow 'If this is not configured properly, Certificates and Autopilot may fail'
         Start-Process 'ms-settings:dateandtime' | Out-Null
