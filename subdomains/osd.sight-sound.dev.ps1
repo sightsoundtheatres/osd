@@ -31,7 +31,7 @@ powershell iex (irm osd.sight-sound.dev)
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '25.1.31.1'
+$ScriptVersion = '25.2.1.1'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
@@ -108,7 +108,8 @@ if ($WindowsPhase -eq 'OOBE') {
     Step-oobeRemoveAppxPackageAllUsers
     Step-oobeSetUserRegSettings
     Step-oobeSetDeviceRegSettings   
-    Step-oobeCreateLocalUser    
+    Step-oobeCreateLocalUser   
+    #Step-oobeDellDCU 
     Step-oobeRestartComputer
 
     $null = Stop-Transcript -ErrorAction Ignore
