@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '25.2.7.1'
+$ScriptVersion = '25.3.3.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -119,7 +119,7 @@ function Step-installCertificates {
         [CmdletBinding()]
         param ()
             # Install the get-windowsautopilotinfocommunity script
-            Install-Script Get-WindowsAutopilotInfoCommunity -Force
+            Install-Script Get-WindowsAutopilotInfo -Force
             Install-Script Get-AutopilotDiagnosticsCommunity -Force    
     
             # Define the options for the GroupTag parameter
@@ -179,7 +179,7 @@ function Step-installCertificates {
             Write-Host "Tag: $GroupTag - Computer Name: $AssignedComputerName - Group: $AddToGroup" -ForegroundColor Green
     
             # Call the get-windowsautopilotinfo.ps1 script with the specified parameters
-            get-windowsautopilotinfocommunity.ps1 -Assign -GroupTag $GroupTag -AssignedComputerName $AssignedComputerName -AddToGroup $AddToGroup -online
+            get-windowsautopilotinfo.ps1 -Assign -GroupTag $GroupTag -AssignedComputerName $AssignedComputerName -AddToGroup $AddToGroup -online
     }
 
 function Step-oobeRegisterAutopilot {
