@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '25.3.3.1'
+$ScriptVersion = '25.3.7.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -197,11 +197,162 @@ function Step-oobeRegisterAutopilot {
         if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
             Write-Host -ForegroundColor Yellow "[-] Registering Device in Autopilot using get-WindowsAutoPilotInfoCommunity"
             Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity
+            #Step-oobeAutoPilotAppRegisteration
         }
         else {
             Write-Host -ForegroundColor Cyan "[!] Device registration with Autopilot skipped."
             return
         }
+    }
+    function Step-oobeAutoPilotAppRegisteration {
+        [CmdletBinding()]
+        param ()
+    
+        # Install the get-windowsautopilotinfocommunity script
+        Install-Script Get-WindowsAutopilotInfo -Force
+        Install-Script Get-AutopilotDiagnosticsCommunity -Force    
+    
+        # Define the options for the GroupTag parameter
+        $GroupTagOptions = @("Development", "Enterprise", "MTR-")
+    
+        # Display the menu for the GroupTag parameter
+        Write-Host "Select a GroupTag:" -ForegroundColor Yellow        
+        for ($i = 0; $i -lt $GroupTagOptions.Count; $i++) {
+            Write-Host "[$($i + 1)]" -ForegroundColor White -NoNewline
+            Write-Host " $($GroupTagOptions[$i])" -ForegroundColor DarkCyan
+        }
+        $GroupTagChoice = Read-Host "Enter your choice"
+        $GroupTag = $GroupTagOptions[$GroupTagChoice - 1]
+    
+        # If GroupTag is MTR-, prompt for room name
+        if ($GroupTag -eq "MTR-") {
+            Write-Host "Enter the room name (e.g., BR The Garden): " -ForegroundColor Yellow -NoNewline
+            $RoomName = Read-Host
+            $RoomName = $RoomName -replace '\s+', ''
+            $GroupTag = $GroupTag + $RoomName
+        }
+    
+        # Prompt the user to enter a value for the AssignedComputerName parameter
+        do {
+            Write-Host "Enter the AssignedComputerName ex XXWIN-EID-XXXX (15 characters or less): " -ForegroundColor Yellow -NoNewline
+            $AssignedComputerName = (Read-Host).ToUpper()
+            if ($AssignedComputerName.Length -gt 15) {
+                Write-Host "WARNING: AssignedComputerName must be 15 characters or less" -ForegroundColor Yellow
+            }
+        } while ($AssignedComputerName.Length -gt 15)
+    
+        # Define the options for the AddToGroup parameter using the group names directly
+        $AddToGroupOptions = @(
+            "Autopilot_Devices-GeneralUsers",
+            "Autopilot_Devices-Box_CC",
+            "AutoPilot_Devices-Retail",
+            "Autopilot_Devices-CenterStageKiosk",
+            "Autopilot_Devices-SharedDevice",
+            "AutoPilot_Devices-TeamsRooms"
+        )
+    
+        # Display the menu for the AddToGroup parameter
+        Write-Host "Select an AddToGroup option:" -ForegroundColor Yellow
+        for ($i = 0; $i -lt $AddToGroupOptions.Count; $i++) {
+            Write-Host "[$($i + 1)]" -ForegroundColor White -NoNewline
+            Write-Host " $($AddToGroupOptions[$i])" -ForegroundColor DarkCyan
+        }
+    
+        $AddToGroupChoice = Read-Host "Enter your choice"
+        $AddToGroup = $AddToGroupOptions[$AddToGroupChoice - 1]
+    
+        # Output the selected AddToGroup value for verification
+        Write-Host "Tag: $GroupTag - Computer Name: $AssignedComputerName - Group: $AddToGroup" -ForegroundColor Green
+    
+        # Define the URL and temporary file path
+        $blobUrl = "https://ssintunedata.blob.core.windows.net/autopilot/autopilot.json.enc"
+        $tempFile = "$env:TEMP\autopilot.json.enc"
+    
+        # Download the encrypted file from Blob Storage
+        try {
+            Invoke-WebRequest -Uri $blobUrl -OutFile $tempFile -ErrorAction Stop
+        } catch {
+            Write-Error "Failed to download file from $blobUrl : $_"
+            return
+        }
+    
+        # Passphrase retry loop
+        $maxAttempts = 3
+        $attempt = 1
+        $decryptedSuccessfully = $false
+    
+        while (-not $decryptedSuccessfully -and $attempt -le $maxAttempts) {
+            # Prompt for passphrase
+            $passphrase = Read-Host "Enter the passphrase to enroll the device (Attempt $attempt of $maxAttempts)" -AsSecureString
+            $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($passphrase)
+            $plainPassphrase = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+    
+            # Decrypt the file
+            try {
+                $encryptedBytesWithSaltAndIV = [System.IO.File]::ReadAllBytes($tempFile)
+                $salt = $encryptedBytesWithSaltAndIV[0..15]
+                $iv = $encryptedBytesWithSaltAndIV[16..31]
+                $encryptedBytes = $encryptedBytesWithSaltAndIV[32..($encryptedBytesWithSaltAndIV.Length - 1)]
+    
+                $aes = [System.Security.Cryptography.Aes]::Create()
+                $aes.KeySize = 256
+                $aes.BlockSize = 128
+                $aes.Mode = [System.Security.Cryptography.CipherMode]::CBC
+                $aes.Padding = [System.Security.Cryptography.PaddingMode]::PKCS7
+    
+                $passphraseBytes = [System.Text.Encoding]::UTF8.GetBytes($plainPassphrase)
+                $keyDerivation = New-Object System.Security.Cryptography.Rfc2898DeriveBytes($passphraseBytes, $salt, 100000) # Increased to 100,000
+                $aes.Key = $keyDerivation.GetBytes(32)
+                $aes.IV = $iv
+    
+                $decryptor = $aes.CreateDecryptor()
+                $memoryStream = New-Object System.IO.MemoryStream
+                $cryptoStream = New-Object System.Security.Cryptography.CryptoStream($memoryStream, $decryptor, [System.Security.Cryptography.CryptoStreamMode]::Write)
+    
+                $cryptoStream.Write($encryptedBytes, 0, $encryptedBytes.Length)
+                $cryptoStream.FlushFinalBlock()
+    
+                $decryptedBytes = $memoryStream.ToArray()
+                $decryptedText = [System.Text.Encoding]::UTF8.GetString($decryptedBytes)
+    
+                $cryptoStream.Close()
+                $memoryStream.Close()
+                $aes.Dispose()
+    
+                # Parse the decrypted JSON
+                $jsonContent = $decryptedText | ConvertFrom-Json
+                $TenantID = $jsonContent.TenantID
+                $appID = $jsonContent.appid
+                $appsecret = $jsonContent.appsecret
+                Write-Host "[+] Successfully extracted tenant information" -ForegroundColor Green
+                $decryptedSuccessfully = $true
+            } catch {
+                Write-Host "Decryption or parsing failed (possibly incorrect passphrase). Please try again." -ForegroundColor Yellow
+                $attempt++
+            } finally {
+                # Clean up passphrase from memory
+                if ($bstr) {
+                    [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+                }
+                if (Get-Variable -Name plainPassphrase -ErrorAction SilentlyContinue) {
+                    Remove-Variable -Name plainPassphrase -Force
+                }
+            }
+        }
+    
+        # Clean up the temporary file
+        if (Test-Path $tempFile) {
+            Remove-Item $tempFile -Force
+        }
+    
+        # Check if decryption succeeded
+        if (-not $decryptedSuccessfully) {
+            Write-Error "Failed to decrypt after $maxAttempts attempts. Exiting."
+            return
+        }
+    
+        # Call the get-windowsautopilotinfo.ps1 script with the additional parameters
+        get-windowsautopilotinfo.ps1 -Assign -GroupTag $GroupTag -AssignedComputerName $AssignedComputerName -AddToGroup $AddToGroup -online -TenantID $TenantID -appID $appID -appsecret $appsecret
     }
 
 function Step-oobeRemoveAppxPackage {
