@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '25.3.7.2'
+$ScriptVersion = '25.3.7.3'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -212,57 +212,70 @@ function Step-oobeRegisterAutopilot {
         Install-Script Get-WindowsAutopilotInfo -Force
         Install-Script Get-AutopilotDiagnosticsCommunity -Force    
     
-        # Define the options for the GroupTag parameter
-        $GroupTagOptions = @("Development", "Enterprise", "MTR-")
+        # Loop until options are confirmed
+        $optionsConfirmed = $false
+        while (-not $optionsConfirmed) {
+            # Define the options for the GroupTag parameter
+            $GroupTagOptions = @("Development", "Enterprise", "MTR-")
     
-        # Display the menu for the GroupTag parameter
-        Write-Host "Select a GroupTag:" -ForegroundColor Yellow        
-        for ($i = 0; $i -lt $GroupTagOptions.Count; $i++) {
-            Write-Host "[$($i + 1)]" -ForegroundColor White -NoNewline
-            Write-Host " $($GroupTagOptions[$i])" -ForegroundColor DarkCyan
-        }
-        $GroupTagChoice = Read-Host "Enter your choice"
-        $GroupTag = $GroupTagOptions[$GroupTagChoice - 1]
-    
-        # If GroupTag is MTR-, prompt for room name
-        if ($GroupTag -eq "MTR-") {
-            Write-Host "Enter the room name (e.g., BR The Garden): " -ForegroundColor Yellow -NoNewline
-            $RoomName = Read-Host
-            $RoomName = $RoomName -replace '\s+', ''
-            $GroupTag = $GroupTag + $RoomName
-        }
-    
-        # Prompt the user to enter a value for the AssignedComputerName parameter
-        do {
-            Write-Host "Enter the AssignedComputerName ex XXWIN-EID-XXXX (15 characters or less): " -ForegroundColor Yellow -NoNewline
-            $AssignedComputerName = (Read-Host).ToUpper()
-            if ($AssignedComputerName.Length -gt 15) {
-                Write-Host "WARNING: AssignedComputerName must be 15 characters or less" -ForegroundColor Yellow
+            # Display the menu for the GroupTag parameter
+            Write-Host "Select a GroupTag:" -ForegroundColor Yellow        
+            for ($i = 0; $i -lt $GroupTagOptions.Count; $i++) {
+                Write-Host "[$($i + 1)]" -ForegroundColor White -NoNewline
+                Write-Host " $($GroupTagOptions[$i])" -ForegroundColor DarkCyan
             }
-        } while ($AssignedComputerName.Length -gt 15)
+            $GroupTagChoice = Read-Host "Enter your choice"
+            $GroupTag = $GroupTagOptions[$GroupTagChoice - 1]
     
-        # Define the options for the AddToGroup parameter using the group names directly
-        $AddToGroupOptions = @(
-            "Autopilot_Devices-GeneralUsers",
-            "Autopilot_Devices-Box_CC",
-            "AutoPilot_Devices-Retail",
-            "Autopilot_Devices-CenterStageKiosk",
-            "Autopilot_Devices-SharedDevice",
-            "AutoPilot_Devices-TeamsRooms"
-        )
+            # If GroupTag is MTR-, prompt for room name
+            if ($GroupTag -eq "MTR-") {
+                Write-Host "Enter the room name (e.g., BR The Garden): " -ForegroundColor Yellow -NoNewline
+                $RoomName = Read-Host
+                $RoomName = $RoomName -replace '\s+', ''
+                $GroupTag = $GroupTag + $RoomName
+            }
     
-        # Display the menu for the AddToGroup parameter
-        Write-Host "Select an AddToGroup option:" -ForegroundColor Yellow
-        for ($i = 0; $i -lt $AddToGroupOptions.Count; $i++) {
-            Write-Host "[$($i + 1)]" -ForegroundColor White -NoNewline
-            Write-Host " $($AddToGroupOptions[$i])" -ForegroundColor DarkCyan
+            # Prompt the user to enter a value for the AssignedComputerName parameter
+            do {
+                Write-Host "Enter the AssignedComputerName ex XXWIN-EID-XXXX (15 characters or less): " -ForegroundColor Yellow -NoNewline
+                $AssignedComputerName = (Read-Host).ToUpper()
+                if ($AssignedComputerName.Length -gt 15) {
+                    Write-Host "WARNING: AssignedComputerName must be 15 characters or less" -ForegroundColor Yellow
+                }
+            } while ($AssignedComputerName.Length -gt 15)
+    
+            # Define the options for the AddToGroup parameter using the group names directly
+            $AddToGroupOptions = @(
+                "Autopilot_Devices-GeneralUsers",
+                "Autopilot_Devices-Box_CC",
+                "AutoPilot_Devices-Retail",
+                "Autopilot_Devices-CenterStageKiosk",
+                "Autopilot_Devices-SharedDevice",
+                "AutoPilot_Devices-TeamsRooms"
+            )
+    
+            # Display the menu for the AddToGroup parameter
+            Write-Host "Select an AddToGroup option:" -ForegroundColor Yellow
+            for ($i = 0; $i -lt $AddToGroupOptions.Count; $i++) {
+                Write-Host "[$($i + 1)]" -ForegroundColor White -NoNewline
+                Write-Host " $($AddToGroupOptions[$i])" -ForegroundColor DarkCyan
+            }
+    
+            $AddToGroupChoice = Read-Host "Enter your choice"
+            $AddToGroup = $AddToGroupOptions[$AddToGroupChoice - 1]
+    
+            # Output the selected values for verification
+            Write-Host "Selected options:" -ForegroundColor Green
+            Write-Host "Tag: $GroupTag - Computer Name: $AssignedComputerName - Group: $AddToGroup" -ForegroundColor Green
+    
+            # Ask for confirmation
+            $confirmation = Read-Host "Are these options correct? (Y/N)"
+            $optionsConfirmed = $confirmation -eq 'Y' -or $confirmation -eq 'y'
+    
+            if (-not $optionsConfirmed) {
+                Write-Host "Please re-enter the options." -ForegroundColor Yellow
+            }
         }
-    
-        $AddToGroupChoice = Read-Host "Enter your choice"
-        $AddToGroup = $AddToGroupOptions[$AddToGroupChoice - 1]
-    
-        # Output the selected AddToGroup value for verification
-        Write-Host "Tag: $GroupTag - Computer Name: $AssignedComputerName - Group: $AddToGroup" -ForegroundColor Green
     
         # Define the URL and temporary file path
         $blobUrl = "https://ssintunedata.blob.core.windows.net/autopilot/autopilot.json.enc"
@@ -301,7 +314,7 @@ function Step-oobeRegisterAutopilot {
                 $aes.Padding = [System.Security.Cryptography.PaddingMode]::PKCS7
     
                 $passphraseBytes = [System.Text.Encoding]::UTF8.GetBytes($plainPassphrase)
-                $keyDerivation = New-Object System.Security.Cryptography.Rfc2898DeriveBytes($passphraseBytes, $salt, 100000) # Increased to 100,000
+                $keyDerivation = New-Object System.Security.Cryptography.Rfc2898DeriveBytes($passphraseBytes, $salt, 100000)
                 $aes.Key = $keyDerivation.GetBytes(32)
                 $aes.IV = $iv
     
