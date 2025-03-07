@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '25.3.7.4'
+$ScriptVersion = '25.3.7.5'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -195,7 +195,7 @@ function Step-oobeRegisterAutopilot {
         $result = [System.Windows.Forms.MessageBox]::Show($message, $caption, $options, [System.Windows.Forms.MessageBoxIcon]::Question)
         
         if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
-            Write-Host -ForegroundColor Yellow "[-] Registering Device in Autopilot using get-WindowsAutoPilotInfoCommunity"
+            Write-Host -ForegroundColor Yellow "[-] Registering Device in Autopilot using get-WindowsAutoPilotInfo"
             #Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity
             Step-oobeAutoPilotAppRegisteration
         }
@@ -209,7 +209,7 @@ function Step-oobeRegisterAutopilot {
         param ()
     
         # Install the get-windowsautopilotinfocommunity script
-        Install-Script Get-WindowsAutopilotInfoCommunity -Force
+        Install-Script Get-WindowsAutopilotInfo -Force
         Install-Script Get-AutopilotDiagnosticsCommunity -Force    
     
         # Loop until options are confirmed
@@ -365,7 +365,7 @@ function Step-oobeRegisterAutopilot {
         }
     
         # Call the get-windowsautopilotinfo.ps1 script with the additional parameters
-        get-windowsautopilotinfoCommunity.ps1 -Assign -GroupTag $GroupTag -AssignedComputerName $AssignedComputerName -AddToGroup $AddToGroup -online -TenantID $TenantID -appID $appID -appsecret $appsecret
+        get-windowsautopilotinfo.ps1 -Assign -GroupTag $GroupTag -AssignedComputerName $AssignedComputerName -AddToGroup $AddToGroup -online -TenantID $TenantID -appID $appID -appsecret $appsecret
     }
 
 function Step-oobeRemoveAppxPackage {
