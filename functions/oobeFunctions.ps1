@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '25.3.7.1'
+$ScriptVersion = '25.3.7.2'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -196,8 +196,8 @@ function Step-oobeRegisterAutopilot {
         
         if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
             Write-Host -ForegroundColor Yellow "[-] Registering Device in Autopilot using get-WindowsAutoPilotInfoCommunity"
-            Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity
-            #Step-oobeAutoPilotAppRegisteration
+            #Step-oobeInstallModuleGetWindowsAutopilotInfoCommunity
+            Step-oobeAutoPilotAppRegisteration
         }
         else {
             Write-Host -ForegroundColor Cyan "[!] Device registration with Autopilot skipped."
