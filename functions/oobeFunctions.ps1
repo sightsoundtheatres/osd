@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '25.3.7.5'
+$ScriptVersion = '25.4.5.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -725,34 +725,120 @@ function step-InstallModuleWinget {
 function step-setTimeZoneFromIP {
     [CmdletBinding()]
     param ()
-    # Fetch the time zone data from the API
-    $URIRequest = "http://worldtimeapi.org/api/ip"
-    $Response = (Invoke-WebRequest -Uri $URIRequest -UseBasicParsing).Content | ConvertFrom-Json
 
-    # Extract the timezone from the response
-    $TimeZoneAPI = $Response.timezone
+    Write-Host -ForegroundColor Yellow "[-] Attempting to set time zone based on IP address"
 
-    # Define the mapping
+    # Try to synchronize system time before making the API call
+    try {
+        Write-Host -ForegroundColor Yellow "[-] Synchronizing system time with time server"
+        w32tm /resync | Out-Null
+        Start-Sleep -Seconds 2
+    }
+    catch {
+        Write-Warning "Failed to synchronize system time. Proceeding anyway."
+    }
+
+    # Method 1: Use a more reliable API (ipapi.co) to fetch the time zone
+    $URIRequest = "https://ipapi.co/json/"
+    $TimeZoneAPI = $null
+    try {
+        Write-Host -ForegroundColor Yellow "[-] Fetching time zone from ipapi.co"
+        $Response = Invoke-WebRequest -Uri $URIRequest -UseBasicParsing -ErrorAction Stop
+        $TimeZoneAPI = ($Response.Content | ConvertFrom-Json).timezone
+    }
+    catch {
+        Write-Warning "Failed to fetch time zone from $URIRequest. Error: $($_.Exception.Message)"
+    }
+
+    # Method 2: Fallback to Windows Location Services if API fails
+    if (-not $TimeZoneAPI) {
+        Write-Host -ForegroundColor Yellow "[-] API failed, attempting to use Windows Location Services for time zone detection"
+        try {
+            # Ensure location services are enabled
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Value "Allow" -ErrorAction Stop
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\tzautoupdate" -Name "Start" -Value 3 -ErrorAction Stop
+            Start-Service -Name "tzautoupdate" -ErrorAction Stop
+
+            # Wait for the service to update the time zone
+            Start-Sleep -Seconds 5
+
+            # Get the current time zone
+            $CurrentTimeZone = (Get-TimeZone).Id
+            Write-Host -ForegroundColor Green "[+] Time zone detected via Windows Location Services: $CurrentTimeZone"
+            return  # Exit the function since we've set the time zone
+        }
+        catch {
+            Write-Warning "Failed to use Windows Location Services for time zone detection. Error: $($_.Exception.Message)"
+            Write-Host -ForegroundColor Yellow "[-] Using default time zone as fallback"
+            Set-TimeZone -Id "Eastern Standard Time"
+            Write-Host -ForegroundColor Green "[+] Time zone set to Eastern Standard Time as fallback"
+            return
+        }
+    }
+
+    # Define the mapping for API time zones to Windows time zones
     $WindowsTimeZones = @{
-        "America/Chicago" = "Central Standard Time"
+        # Eastern Time Zone
         "America/New_York" = "Eastern Standard Time"
-        "America/Denver" = "Mountain Standard Time"
-        "America/Phoenix" = "US Mountain Standard Time" 
-        "America/Los_Angeles" = "Pacific Standard Time"
-        "America/Indiana/Indianapolis" = "Eastern Standard Time"
         "America/Detroit" = "Eastern Standard Time"
         "America/Kentucky/Louisville" = "Eastern Standard Time"
+        "America/Indiana/Indianapolis" = "Eastern Standard Time"
+        "America/Indiana/Vincennes" = "Eastern Standard Time"
+        "America/Indiana/Winamac" = "Eastern Standard Time"
+        "America/Indiana/Marengo" = "Eastern Standard Time"
+        "America/Indiana/Petersburg" = "Eastern Standard Time"
+        "America/Indiana/Vevay" = "Eastern Standard Time"
+    
+        # Central Time Zone
+        "America/Chicago" = "Central Standard Time"
         "America/North_Dakota/Center" = "Central Standard Time"
+        "America/North_Dakota/Beulah" = "Central Standard Time"
+        "America/North_Dakota/New_Salem" = "Central Standard Time"
+        "America/Menominee" = "Central Standard Time"
+        "America/Indiana/Tell_City" = "Central Standard Time"
+        "America/Indiana/Knox" = "Central Standard Time"
+    
+        # Mountain Time Zone
+        "America/Denver" = "Mountain Standard Time"
         "America/Boise" = "Mountain Standard Time"
+        "America/Shiprock" = "Mountain Standard Time"
+        "America/Phoenix" = "US Mountain Standard Time"  # Does not observe DST
+    
+        # Pacific Time Zone
+        "America/Los_Angeles" = "Pacific Standard Time"
+        "America/Vancouver" = "Pacific Standard Time"
+    
+        # Alaska Time Zone
+        "America/Anchorage" = "Alaskan Standard Time"
+        "America/Metlakatla" = "Alaskan Standard Time"  # Approximation
+    
+        # Hawaii-Aleutian Time Zone
+        "Pacific/Honolulu" = "Hawaiian Standard Time"  # Does not observe DST
+        "America/Adak" = "Hawaiian Standard Time"  # Approximation, Adak observes DST
+    
+        # US Territories
+        "America/Puerto_Rico" = "SA Western Standard Time"  # UTC-4, no DST
+        "Pacific/Guam" = "West Pacific Standard Time"  # UTC+10
+        "Pacific/Pago_Pago" = "UTC-11:00"  # American Samoa
     }
 
     # Check if the timezone exists in the mapping
     if ($WindowsTimeZones.ContainsKey($TimeZoneAPI)) {
         $WindowsTimeZone = $WindowsTimeZones[$TimeZoneAPI]
-        Set-TimeZone -Id $WindowsTimeZone
-        Write-Host "[+] Time zone has been updated to - $WindowsTimeZone" -ForegroundColor Green 
-    } else {
-        Write-Warning "Time zone not found in the mapping. Using the default Windows time zone."
+        try {
+            Set-TimeZone -Id $WindowsTimeZone -ErrorAction Stop
+            Write-Host -ForegroundColor Green "[+] Time zone has been updated to - $WindowsTimeZone"
+        }
+        catch {
+            Write-Warning "Failed to set time zone to $WindowsTimeZone. Error: $($_.Exception.Message)"
+            Write-Host -ForegroundColor Yellow "[-] Using default time zone as fallback"
+            Set-TimeZone -Id "Eastern Standard Time"
+            Write-Host -ForegroundColor Green "[+] Time zone set to Eastern Standard Time as fallback"
+        }
+    }
+    else {
+        Write-Warning "Time zone '$TimeZoneAPI' not found in the mapping. Using default time zone."
+        Set-TimeZone -Id "Eastern Standard Time"
+        Write-Host -ForegroundColor Green "[+] Time zone set to Eastern Standard Time as fallback"
     }
 }
-
