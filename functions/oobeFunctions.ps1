@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '25.4.11.8'
+$ScriptVersion = '25.4.11.9'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -726,23 +726,7 @@ function Step-oobeSetDateTime {
             # Silently continue to the next step
         }
     
-        # Step 3: Uninstall Microsoft.DevHome
-        Write-Host -ForegroundColor Yellow "[-] Uninstalling Microsoft.DevHome"
-        try {
-            winget uninstall Microsoft.DevHome 
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host -ForegroundColor Green "[+] Microsoft.DevHome uninstalled successfully"
-            }
-            else {
-                Write-Host -ForegroundColor Yellow "[!] Microsoft.DevHome uninstall exited with code $LASTEXITCODE"
-            }
-        }
-        catch {
-            Write-Host -ForegroundColor Red "[!] Failed to uninstall Microsoft.DevHome: $_"
-            # Silently continue to the next step
-        }
-    
-        # Step 4: Upgrade all packages with winget
+        # Step 3: Upgrade all packages with winget
         Write-Host -ForegroundColor Yellow "[-] Upgrading winget packages"
         try {
             winget upgrade --all --accept-source-agreements --accept-package-agreements 
