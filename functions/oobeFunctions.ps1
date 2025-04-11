@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '25.4.5.1'
+$ScriptVersion = '25.4.11.1'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -840,5 +840,137 @@ function step-setTimeZoneFromIP {
         Write-Warning "Time zone '$TimeZoneAPI' not found in the mapping. Using default time zone."
         Set-TimeZone -Id "Eastern Standard Time"
         Write-Host -ForegroundColor Green "[+] Time zone set to Eastern Standard Time as fallback"
+    }
+}
+function step-SetExecutionPolicy {
+    [CmdletBinding()]
+    param ()
+        if ((Get-ExecutionPolicy -Scope CurrentUser) -ne 'RemoteSigned') {
+            Write-Host -ForegroundColor Yellow "[-] Set-ExecutionPolicy -Scope CurrentUser RemoteSigned"
+            Set-ExecutionPolicy RemoteSigned -Force -Scope CurrentUser
+        }
+        else {
+            Write-Host -ForegroundColor Green "[+] Get-ExecutionPolicy RemoteSigned [CurrentUser]"
+        }
+}
+function step-SetPowerShellProfile {
+    [CmdletBinding()]
+    param ()
+
+    $oobePowerShellProfile = @'
+# Ensure TLS 1.2 is supported
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+
+# Append Scripts folder to PATH if not already present
+$scriptsPath = "$Env:ProgramFiles\WindowsPowerShell\Scripts"
+if ($Env:Path -notlike "*$scriptsPath*") {
+    [System.Environment]::SetEnvironmentVariable('Path', $Env:Path + ";$scriptsPath", 'Process')
+}
+'@
+
+    try {
+        if (-not (Test-Path $Profile.CurrentUserAllHosts)) {
+            Write-Verbose "Creating PowerShell profile at $($Profile.CurrentUserAllHosts)"
+            $null = New-Item $Profile.CurrentUserAllHosts -ItemType File -Force -ErrorAction Stop
+            $oobePowerShellProfile | Set-Content -Path $Profile.CurrentUserAllHosts -Force -Encoding UTF8 -ErrorAction Stop
+            Write-Host -ForegroundColor Green "[+] Created PowerShell Profile [CurrentUserAllHosts]"
+        } else {
+            Write-Verbose "Profile already exists at $($Profile.CurrentUserAllHosts)"
+        }
+    } catch {
+        Write-Error "Failed to create PowerShell profile: $_"
+    }
+}
+function step-InstallPackageManagement {
+    [CmdletBinding()]
+    param ()
+        $InstalledModule = Get-PackageProvider -Name PowerShellGet | Where-Object {$_.Version -ge '2.2.5'} | Sort-Object Version -Descending | Select-Object -First 1
+        if (-not ($InstalledModule)) {
+            Write-Host -ForegroundColor Yellow "[-] Install-PackageProvider PowerShellGet -MinimumVersion 2.2.5"
+            Install-PackageProvider -Name PowerShellGet -MinimumVersion 2.2.5 -Force -Scope AllUsers | Out-Null
+            Import-Module PowerShellGet -Force -Scope Global -ErrorAction SilentlyContinue
+            Start-Sleep -Seconds 5
+        }
+    
+        $InstalledModule = Get-Module -Name PackageManagement -ListAvailable | Where-Object {$_.Version -ge '1.4.8.1'} | Sort-Object Version -Descending | Select-Object -First 1
+        if (-not ($InstalledModule)) {
+            Write-Host -ForegroundColor Yellow "[-] Install-Module PackageManagement -MinimumVersion 1.4.8.1"
+            Install-Module -Name PackageManagement -MinimumVersion 1.4.8.1 -Force -Confirm:$false -Source PSGallery -Scope AllUsers
+            Import-Module PackageManagement -Force -Scope Global -ErrorAction SilentlyContinue
+            Start-Sleep -Seconds 5
+        }
+    
+        Import-Module PackageManagement -Force -Scope Global -ErrorAction SilentlyContinue
+        $InstalledModule = Get-Module -Name PackageManagement -ListAvailable | Where-Object {$_.Version -ge '1.4.8.1'} | Sort-Object Version -Descending | Select-Object -First 1
+        if ($InstalledModule) {
+            Write-Host -ForegroundColor Green "[+] PackageManagement $([string]$InstalledModule.Version)"
+        }
+        Import-Module PowerShellGet -Force -Scope Global -ErrorAction SilentlyContinue
+        $InstalledModule = Get-PackageProvider -Name PowerShellGet | Where-Object {$_.Version -ge '2.2.5'} | Sort-Object Version -Descending | Select-Object -First 1
+        if ($InstalledModule) {
+            Write-Host -ForegroundColor Green "[+] PowerShellGet $([string]$InstalledModule.Version)"
+        }
+}
+function step-TrustPSGallery {
+    [CmdletBinding()]
+    param ()
+    $PowerShellGallery = Get-PSRepository -Name PSGallery -ErrorAction Ignore
+    if ($PowerShellGallery.InstallationPolicy -ne 'Trusted') {
+        Write-Host -ForegroundColor Yellow "[-] Set-PSRepository PSGallery Trusted"
+        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+    }
+    if ($PowerShellGallery.InstallationPolicy -eq 'Trusted') {
+        Write-Host -ForegroundColor Green "[+] PSRepository PSGallery Trusted"
+    }
+}
+function step-InstallPowerShellModule {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Name,
+
+        [System.Management.Automation.SwitchParameter]
+        $Force
+    )
+    # Do not install the Module by default
+    $InstallModule = $false
+
+    # Get the version from the local machine
+    $InstalledModule = Get-Module -Name $Name -ListAvailable -ErrorAction Ignore | Sort-Object Version -Descending | Select-Object -First 1
+    
+    # Get the version from PowerShell Gallery
+    $GalleryPSModule = Find-Module -Name $Name -ErrorAction Ignore -WarningAction Ignore
+
+    if ($InstalledModule) {
+        if (($GalleryPSModule.Version -as [version]) -gt ($InstalledModule.Version -as [version])) {
+            # The version in the gallery is newer than the installed version, so we need to install it
+            $InstallModule = $true
+        }
+    }
+    else {
+        # Get-Module did not find the module, so we need to install it
+        $InstallModule = $true
+    }
+
+    if ($InstallModule) {
+        if ($WindowsPhase -eq 'WinPE') {
+            Write-Host -ForegroundColor Yellow "[-] $Name $($GalleryPSModule.Version) [AllUsers]"
+            Install-Module $Name -Scope AllUsers -Force -SkipPublisherCheck -AllowClobber
+        }
+        elseif ($WindowsPhase -eq 'OOBE') {
+            Write-Host -ForegroundColor Yellow "[-] $Name $($GalleryPSModule.Version) [AllUsers]"
+            Install-Module $Name -Scope AllUsers -Force -SkipPublisherCheck -AllowClobber
+        }
+        else {
+            # Install the PowerShell Module in the OS
+            Write-Host -ForegroundColor Yellow "[-] $Name $($GalleryPSModule.Version) [CurrentUser]"
+            Install-Module $Name -Scope CurrentUser -Force -SkipPublisherCheck -AllowClobber
+        }
+    }
+    else {
+        # The module is already installed and up to date
+        Import-Module -Name $Name -Force
+        Write-Host -ForegroundColor Green "[+] $Name $($InstalledModule.Version)"
     }
 }

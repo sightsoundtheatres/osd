@@ -31,7 +31,7 @@ powershell iex (irm osd.sight-sound.dev)
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '25.2.2.1'
+$ScriptVersion = '25.4.11.1'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
@@ -49,7 +49,7 @@ else {
 }
 
 Write-Host -ForegroundColor Green "[+] $ScriptName $ScriptVersion ($WindowsPhase Phase)"
-Invoke-Expression -Command (Invoke-RestMethod -Uri https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/functions.ps1)
+#Invoke-Expression -Command (Invoke-RestMethod -Uri https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/functions.ps1)
 Invoke-Expression -Command (Invoke-RestMethod -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/oobeFunctions.ps1)
 #endregion
 
@@ -98,10 +98,16 @@ if ($WindowsPhase -eq 'AuditMode') {
 if ($WindowsPhase -eq 'OOBE') {
     #Load everything needed to setup a new computer and register to AutoPilot
     Step-installCertificates
-    osdcloud-StartOOBE -InstallWinget -WinGetUpgrade -ErrorAction SilentlyContinue
-    Step-desktopWallpaper
-    Step-InstallM365Apps
     step-setTimeZoneFromIP
+    step-SetExecutionPolicy
+    step-SetPowerShellProfile
+    step-InstallPackageManagement
+    step-TrustPSGallery
+    step-InstallPowerSHellModule -Name Pester
+    step-InstallPowerSHellModule -Name PSReadLine     
+    #osdcloud-StartOOBE -InstallWinget -WinGetUpgrade -ErrorAction SilentlyContinue
+    Step-desktopWallpaper
+    Step-InstallM365Apps    
     Step-oobeSetDateTime
     Step-oobeRegisterAutopilot 
     Step-oobeRemoveAppxPackageAllUsers
