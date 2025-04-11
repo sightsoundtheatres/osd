@@ -31,7 +31,7 @@ powershell iex (irm osd.sight-sound.dev)
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '25.4.11.2'
+$ScriptVersion = '25.4.11.3'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
@@ -103,10 +103,10 @@ if ($WindowsPhase -eq 'OOBE') {
     step-SetPowerShellProfile
     step-InstallPackageManagement
     step-TrustPSGallery
-    step-InstallPowerSHellModule -Name Pester
+    #step-InstallPowerSHellModule -Name Pester
     step-InstallPowerSHellModule -Name PSReadLine    
-    step-InstallPowerSHellModule -name Microsoft.WinGet.Client 
-    step-InstallWinget
+    #step-InstallPowerSHellModule -name Microsoft.WinGet.Client 
+    #step-InstallWinget
     #osdcloud-StartOOBE -InstallWinget -WinGetUpgrade -ErrorAction SilentlyContinue
     Step-desktopWallpaper
     Step-InstallM365Apps    
