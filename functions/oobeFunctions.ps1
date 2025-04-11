@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '25.4.11.2'
+$ScriptVersion = '25.4.11.3'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -701,7 +701,8 @@ function step-InstallWinget {
     param ()
     
     Write-Host -ForegroundColor Yellow "[-] Installing winget"
-    Repair-WinGetPackageManager
+    Import-Module -Name Microsoft.Winget.Client
+    Repair-WingetPackageManager -Force -Latest -Verbose
 
     Write-Host -ForegroundColor Yellow "[-] Upgrading winget packages"
     winget upgrade --all --accept-source-agreements --accept-package-agreements
