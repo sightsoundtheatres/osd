@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '25.4.11.5'
+$ScriptVersion = '25.4.11.6'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -699,28 +699,15 @@ function Step-oobeSetDateTime {
 function step-InstallWinget {
     [CmdletBinding()]
     param ()
-    
+        
     Write-Host -ForegroundColor Yellow "[-] Installing / upgrading winget"
     Import-Module -Name Microsoft.Winget.Client
     Repair-WingetPackageManager -Force -Latest
 
-    winget uninstall Microsoft.DevHome -e --accept-source-agreements --accept-package-agreements
+    winget uninstall Microsoft.DevHome 
 
     Write-Host -ForegroundColor Yellow "[-] Upgrading winget packages"
-    # Define apps to exclude by their WinGet package Id
-    $excludedApps = @("Microsoft.AppInstaller")
-
-    # Get list of upgradable packages
-    $upgradable = winget upgrade | Select-String -Pattern "^\S+\s+\S+" | ForEach-Object { $_.ToString().Split()[1] }
-
-    # Filter out excluded apps
-    $toUpgrade = $upgradable | Where-Object { $excludedApps -notcontains $_ }
-
-    # Upgrade each remaining package
-    foreach ($package in $toUpgrade) {
-    Write-Host -ForegroundColor Green "[+] Upgrading $package..."
-    winget upgrade --id $package --accept-source-agreements --accept-package-agreements --silent
-}
+    winget upgrade --all --accept-source-agreements --accept-package-agreements
     Write-Host -ForegroundColor Green "[+] winget packages upgraded"    
 }
 function step-setTimeZoneFromIP {
