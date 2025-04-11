@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ScriptName = 'oobeFunctions.sight-sound.dev'
-$ScriptVersion = '25.4.11.6'
+$ScriptVersion = '25.4.11.7'
 
 #region Initialize
 if ($env:SystemDrive -eq 'X:') {
@@ -696,20 +696,68 @@ function Step-oobeSetDateTime {
             Wait-Process $ProcessId
         }
     }
-function step-InstallWinget {
-    [CmdletBinding()]
-    param ()
-        
-    Write-Host -ForegroundColor Yellow "[-] Installing / upgrading winget"
-    Import-Module -Name Microsoft.Winget.Client
-    Repair-WingetPackageManager -Force -Latest
-
-    winget uninstall Microsoft.DevHome 
-
-    Write-Host -ForegroundColor Yellow "[-] Upgrading winget packages"
-    winget upgrade --all --accept-source-agreements --accept-package-agreements
-    Write-Host -ForegroundColor Green "[+] winget packages upgraded"    
-}
+    function step-InstallWinget {
+        [CmdletBinding()]
+        param (
+            [string]$Locate = "en-US"  # Default locale to en-US if not specified
+        )
+    
+        # Step 1: Set system locale to the specified value
+        Write-Host -ForegroundColor Yellow "[-] Setting system locale to $Locate"
+        try {
+            Set-WinSystemLocale -SystemLocale $Locate -ErrorAction Stop
+            Set-Culture -CultureInfo $Locate -ErrorAction Stop
+            Write-Host -ForegroundColor Green "[+] System locale set to $Locate"
+        }
+        catch {
+            Write-Host -ForegroundColor Red "[!] Failed to set system locale: $_"
+            # Silently continue to the next step
+        }
+    
+        # Step 2: Install/upgrade WinGet using the Microsoft.Winget.Client module
+        Write-Host -ForegroundColor Yellow "[-] Installing / upgrading winget"
+        try {
+            Import-Module -Name Microsoft.Winget.Client -ErrorAction Stop
+            Repair-WingetPackageManager -Force -Latest -ErrorAction Stop
+            Write-Host -ForegroundColor Green "[+] WinGet installed/upgraded successfully"
+        }
+        catch {
+            Write-Host -ForegroundColor Red "[!] Failed to install/upgrade WinGet: $_"
+            # Silently continue to the next step
+        }
+    
+        # Step 3: Uninstall Microsoft.DevHome
+        Write-Host -ForegroundColor Yellow "[-] Uninstalling Microsoft.DevHome"
+        try {
+            winget uninstall Microsoft.DevHome --accept-source-agreements --accept-package-agreements --silent
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host -ForegroundColor Green "[+] Microsoft.DevHome uninstalled successfully"
+            }
+            else {
+                Write-Host -ForegroundColor Yellow "[!] Microsoft.DevHome uninstall exited with code $LASTEXITCODE"
+            }
+        }
+        catch {
+            Write-Host -ForegroundColor Red "[!] Failed to uninstall Microsoft.DevHome: $_"
+            # Silently continue to the next step
+        }
+    
+        # Step 4: Upgrade all packages with winget
+        Write-Host -ForegroundColor Yellow "[-] Upgrading winget packages"
+        try {
+            winget upgrade --all --accept-source-agreements --accept-package-agreements 
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host -ForegroundColor Green "[+] winget packages upgraded"
+            }
+            else {
+                Write-Host -ForegroundColor Yellow "[!] winget upgrade exited with code $LASTEXITCODE"
+            }
+        }
+        catch {
+            Write-Host -ForegroundColor Red "[!] Failed to upgrade winget packages: $_"
+            # Silently continue to the next step
+        }
+    }
 function step-setTimeZoneFromIP {
     [CmdletBinding()]
     param ()
