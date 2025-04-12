@@ -31,7 +31,7 @@ powershell iex (irm osd.sight-sound.dev)
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '25.4.11.3'
+$ScriptVersion = '25.4.11.4'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
@@ -49,7 +49,7 @@ else {
 }
 
 Write-Host -ForegroundColor Green "[+] $ScriptName $ScriptVersion ($WindowsPhase Phase)"
-#Invoke-Expression -Command (Invoke-RestMethod -Uri https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/functions.ps1)
+Invoke-Expression -Command (Invoke-RestMethod -Uri https://raw.githubusercontent.com/OSDeploy/OSD/master/cloud/functions.ps1)
 Invoke-Expression -Command (Invoke-RestMethod -Uri https://raw.githubusercontent.com/sightsoundtheatres/osd/main/functions/oobeFunctions.ps1)
 #endregion
 
