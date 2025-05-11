@@ -31,7 +31,7 @@ powershell iex (irm osd.sight-sound.dev)
 [CmdletBinding()]
 param()
 $ScriptName = 'osd.sight-sound.dev'
-$ScriptVersion = '25.5.10.1'
+$ScriptVersion = '25.5.10.2'
 
 #region Initialize
 $Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
@@ -127,8 +127,7 @@ if ($WindowsPhase -eq 'OOBE') {
 if ($WindowsPhase -eq 'Windows') {
     #Load OSD and Azure stuff
     $null = Stop-Transcript -ErrorAction Ignore
-    # Write-Host "[-] This script is not intended to run in Windows phase at this time" -ForegroundColor Red
-    Step-installCertificates
+
     Invoke-Expression (Invoke-RestMethod scripts.sight-sound.dev)
 }
 
